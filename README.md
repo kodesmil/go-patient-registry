@@ -1,0 +1,64 @@
+# go-patient-registry
+
+_This generated README.md file loosely follows a [popular template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)._
+
+One paragraph of project description goes here.
+
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Prerequisites
+
+What things you need to install the software and how to install them.
+
+```
+Give examples
+```
+
+### Installing
+
+A step-by-step series of examples that tell you have to get a development environment running.
+
+Say what the step will be.
+
+```
+Give the example
+```
+
+And repeat.
+
+```
+until finished
+```
+
+End with an example of getting some data out of the system or using it for a little demo.
+
+
+### Profiling
+Run your app with `--profiler.enable` option and specify `--profiler.address` with `--profiler.port` if need 
+
+This option will enable [net/http/pprof](https://golang.org/pkg/net/http/pprof/) package and allows you to use `pprof` tool to optimize your code. Also it will enable pprof web interface with `address:port/debug/pprof` endpoint 
+
+Here is useful links for mentioned tools:
+
+- [golang.org](https://github.com/google/pprof)
+- [github](https://golang.org/pkg/net/http/pprof/)
+- [medium](https://medium.com/better-programming/profiling-a-golang-grpc-server-using-pprof-b6de1371fdd)
+
+
+## Deployment
+
+Add additional notes about how to deploy this application. Maybe list some common pitfalls or debugging strategies.
+
+## Running the tests
+
+Explain how to run the automated tests for this system.
+
+```
+Give an example
+```
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kodesmil/go-patient-registry/tags).

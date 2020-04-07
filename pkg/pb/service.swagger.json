@@ -1,0 +1,91 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "github.com/kodesmil/go-patient-registry/pkg/pb/service.proto",
+    "version": "version not set"
+  },
+  "paths": {
+    "/publish": {
+      "post": {
+        "tags": [
+          "GoPatientRegistry"
+        ],
+        "summary": "Example Publish call",
+        "operationId": "GoPatientRegistryPublish",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/servicePublishRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "POST operation response",
+            "schema": {
+              "$ref": "#/definitions/servicePublishResponse"
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "GoPatientRegistry"
+        ],
+        "operationId": "GoPatientRegistryGetVersion",
+        "responses": {
+          "200": {
+            "description": "GET operation response",
+            "schema": {
+              "$ref": "#/definitions/serviceVersionResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "servicePublishRequest": {
+      "type": "object",
+      "title": "Example Publish Request",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "servicePublishResponse": {
+      "type": "object",
+      "title": "Example Publish Response",
+      "properties": {
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceVersionResponse": {
+      "description": "TODO: Structure your own protobuf messages. Each protocol buffer message is a \nsmall logical record of information, containing a series of name-value pairs.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
