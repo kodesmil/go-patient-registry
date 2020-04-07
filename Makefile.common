@@ -122,7 +122,7 @@ endif
 run-swagger-ui:
 ifeq ($(WITH_GATEWAY), true)
 	(sleep 3; open http://127.0.0.1/ ) &
-	docker run --rm -p 80:8080 \
+	docker run --rm -p 8083:8080 \
 		-e SWAGGER_JSON=/json/service.swagger.json \
 		-v $(shell pwd)/pkg/pb/:/json \
 		swaggerapi/swagger-ui

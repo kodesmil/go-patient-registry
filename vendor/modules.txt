@@ -1,7 +1,11 @@
+# github.com/DATA-DOG/go-sqlmock v1.4.1
+## explicit
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+github.com/dgrijalva/jwt-go
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
 # github.com/gogo/protobuf v1.2.1
@@ -28,10 +32,12 @@ github.com/google/uuid
 # github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 ## explicit
 github.com/grpc-ecosystem/go-grpc-middleware
+github.com/grpc-ecosystem/go-grpc-middleware/auth
 github.com/grpc-ecosystem/go-grpc-middleware/logging
 github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus
 github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus
 github.com/grpc-ecosystem/go-grpc-middleware/tags
+github.com/grpc-ecosystem/go-grpc-middleware/util/metautils
 github.com/grpc-ecosystem/go-grpc-middleware/validator
 # github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 ## explicit
@@ -55,8 +61,10 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/infobloxopen/atlas-app-toolkit v0.20.0
 ## explicit
+github.com/infobloxopen/atlas-app-toolkit/auth
 github.com/infobloxopen/atlas-app-toolkit/errors
 github.com/infobloxopen/atlas-app-toolkit/gateway
+github.com/infobloxopen/atlas-app-toolkit/gorm
 github.com/infobloxopen/atlas-app-toolkit/gorm/resource
 github.com/infobloxopen/atlas-app-toolkit/health
 github.com/infobloxopen/atlas-app-toolkit/query
@@ -72,7 +80,9 @@ github.com/infobloxopen/atlas-pubsub
 github.com/infobloxopen/atlas-pubsub/grpc
 # github.com/infobloxopen/protoc-gen-gorm v0.20.0
 ## explicit
+github.com/infobloxopen/protoc-gen-gorm/errors
 github.com/infobloxopen/protoc-gen-gorm/options
+github.com/infobloxopen/protoc-gen-gorm/types
 # github.com/jinzhu/gorm v1.9.12
 ## explicit
 github.com/jinzhu/gorm

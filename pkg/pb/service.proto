@@ -2,61 +2,345 @@ syntax = "proto3";
 
 package service;
 
-import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
+import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
+option go_package = "pb";
 
-option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb;pb";
-
-// The GoPatientRegistry service, GetVersion RPC, and Version message
-// make up a simple "starter" example. It allows the Atlas CLI to generate an
-// end-to-end example for the sake of demonstration. Feel free to change 
-// GetVersion to better-suit how your versioning system, or get rid of it entirely.
-
-// Here are some helpful resources to aid you in your protobuf quest:
-// https://github.com/infobloxopen/atlas-contacts-app/blob/master/proto/contacts.proto
-// https://developers.google.com/protocol-buffers/docs/proto
-// https://github.com/grpc-ecosystem/grpc-gateway
-// https://developers.google.com/protocol-buffers/docs/style
-
-// Happy protobuffing!
-
-// TODO: Write a protobuf schema for the GoPatientRegistry service. The 
-// messages and RPCs will compose the API for the service.
-
-// TODO: Structure your own protobuf messages. Each protocol buffer message is a 
-// small logical record of information, containing a series of name-value pairs.
-message VersionResponse {
-  string version = 1;
-}
-// Example Publish Response
-message PublishResponse {
-  string status = 1;
-}
-
-// Example Publish Request
-message PublishRequest {
-  string message = 1;
-}
-// TODO: Define the GoPatientRegistry service and its methods. Feel free
-// to change the name of GoPatientRegistry to better-suit your naming
-// conventions.
-service GoPatientRegistry {
-  rpc GetVersion (google.protobuf.Empty) returns (VersionResponse) {
-    // TODO: Provide mappings between REST endpoints and service methods.
-    option (google.api.http) = {
-      get: "/version"
+message Profile {
+    option (gorm.opts) = {
+      ormable: true,
+      multi_account: true
     };
-  }
-
-  // Example Publish call
-  rpc Publish (PublishRequest) returns (PublishResponse) {
-    option (google.api.http) = {
-      post: "/publish"
-      body: "*"
-    };
-  }
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+    string name = 2;
+    string notes = 3;
+    repeated Contact contacts = 4;
+    repeated Group groups = 5;
 }
+
+message CreateProfileRequest {
+    Profile payload = 1;
+}
+
+message CreateProfileResponse {
+    Profile result = 1;
+}
+
+message ReadProfileRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message ReadProfileResponse {
+    Profile result = 1;
+}
+
+message UpdateProfileRequest {
+    Profile payload = 1;
+}
+
+message UpdateProfileResponse {
+    Profile result = 1;
+}
+
+message DeleteProfileRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message DeleteProfileResponse{}
+
+message ListProfileRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+message ListProfilesResponse {
+    repeated Profile results = 1;
+}
+
+service Profiles {
+    option (gorm.server).autogen = true;
+    rpc Create (CreateProfileRequest) returns (CreateProfileResponse) {
+        option (google.api.http) = {
+            post: "/profiles"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
+        option (google.api.http) = {
+            get: "/profiles/{id.resource_id}"
+        };
+    }
+
+    rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
+        option (google.api.http) = {
+            put: "/profiles/{payload.id.resource_id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
+        option (google.api.http) = {
+            delete: "/profiles/{id.resource_id}"
+        };
+        option (gorm.method).object_type = "Profile";
+    }
+
+    rpc List (ListProfileRequest) returns (ListProfilesResponse) {
+        option (google.api.http) = {
+            get: "/profiles"
+        };
+    }
+
+}
+
+message Group {
+    option (gorm.opts) = {
+      ormable: true,
+      multi_account: true
+    };
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+    string name = 2;
+    string notes = 3;
+    atlas.rpc.Identifier profile_id = 4;
+    repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
+}
+
+message CreateGroupRequest {
+    Group payload = 1;
+}
+
+message CreateGroupResponse {
+    Group result = 1;
+}
+
+message ReadGroupRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message ReadGroupResponse {
+    Group result = 1;
+}
+
+message UpdateGroupRequest {
+    Group payload = 1;
+}
+
+message UpdateGroupResponse {
+    Group result = 1;
+}
+
+message DeleteGroupRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message DeleteGroupResponse {}
+
+message ListGroupRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+message ListGroupsResponse {
+    repeated Group results = 1;
+}
+
+service Groups {
+    option (gorm.server).autogen = true;
+    rpc Create (CreateGroupRequest) returns (CreateGroupResponse) {
+        option (google.api.http) = {
+            post: "/groups"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadGroupRequest) returns (ReadGroupResponse) {
+        option (google.api.http) = {
+            get: "/groups/{id.resource_id}"
+        };
+    }
+
+    rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse) {
+        option (google.api.http) = {
+            put: "/groups/{payload.id.resource_id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse) {
+        option (google.api.http) = {
+            delete: "/groups/{id.resource_id}"
+        };
+        option (gorm.method).object_type = "Group";
+    }
+
+    rpc List (ListGroupRequest) returns (ListGroupsResponse) {
+        option (google.api.http) = {
+            get: "/groups"
+        };
+    }
+
+}
+
+message Contact {
+    option (gorm.opts) = {
+      ormable: true,
+      multi_account: true
+    };
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"  primary_key: true}];
+    string first_name = 2;
+    string middle_name = 3;
+    string last_name = 4;
+    string primary_email = 5 [(gorm.field).drop = true, (validate.rules).string.email = true];
+    string notes = 6;
+    repeated Email emails = 7;
+    Address home_address = 8;
+    Address work_address = 9;
+    atlas.rpc.Identifier profile_id = 10;
+    repeated Group groups = 11 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
+    // nicknames is arbitrary json, but should be used for a list of strings
+    gorm.types.JSONValue nicknames = 12;
+}
+
+message Email {
+    option (gorm.opts) = {
+      ormable: true,
+      multi_account: true,
+      include: [
+      {type: "*bool", name: "is_primary"}]
+};
+uint64 id = 1;
+string address = 2 [(gorm.field).tag.unique = true, (validate.rules).string.email = true];
+}
+
+message Address {
+    option (gorm.opts) = {
+      ormable: true,
+      multi_account: true
+    };
+    string address = 1;
+    string city = 2;
+    string state = 3;
+    string zip = 4;
+    string country = 5;
+}
+
+message CreateContactRequest {
+    Contact payload = 1;
+}
+
+message CreateContactResponse {
+    Contact result = 1;
+}
+
+message ReadContactRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message ReadContactResponse {
+    Contact result = 1;
+}
+
+message UpdateContactRequest {
+    Contact payload = 1;
+    google.protobuf.FieldMask fields = 2;
+}
+
+message UpdateContactResponse {
+    Contact result = 1;
+}
+
+message DeleteContactRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message DeleteContactResponse {}
+
+message ListContactsResponse {
+    repeated Contact results = 1;
+}
+
+message SMSRequest {
+    uint64 id = 1;
+    string message = 2;
+}
+
+message SMSResponse {}
+
+message ListContactRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+
+service Contacts {
+    option (gorm.server).autogen = true;
+    rpc Create (CreateContactRequest) returns (CreateContactResponse) {
+        option (google.api.http) = {
+            post: "/contacts"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadContactRequest) returns (ReadContactResponse) {
+        option (google.api.http) = {
+            get: "/contacts/{id.resource_id}"
+        };
+    }
+
+    rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
+        option (google.api.http) = {
+            put: "/contacts/{payload.id.resource_id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteContactRequest) returns (DeleteContactResponse) {
+        option (google.api.http) = {
+            delete: "/contacts/{id.resource_id}"
+        };
+        option (gorm.method).object_type = "Contact";
+    }
+
+    rpc List (ListContactRequest) returns (ListContactsResponse) {
+        option (google.api.http) = {
+            get: "/contacts"
+        };
+    }
+
+    rpc SendSMS (SMSRequest) returns (SMSResponse) {
+        option (google.api.http) = {
+            post: "/contacts/{id}/sms"
+            body: "*"
+        };
+    }
+}
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+  info: {
+    title: "Contacts";
+version: "1.0";
+contact: {
+name: "John Belamaric";
+url: "https://github.com/infobloxopen/atlas-contacts-app";
+email: "jbelamaric@infoblox.com";
+};
+};
+schemes: HTTP;
+schemes: HTTPS;
+consumes: "application/json";
+produces: "application/json";
+};

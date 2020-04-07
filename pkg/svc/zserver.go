@@ -1,17 +1,8 @@
 package svc
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"time"
-
-	"github.com/golang/protobuf/ptypes/empty"
-	pubsubgrpc "github.com/infobloxopen/atlas-pubsub/grpc"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
-	"github.com/spf13/viper"
-	"google.golang.org/grpc"
 )
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,34 +39,29 @@ const (
 	version = "0.0.1"
 )
 
-// Default implementation of the GoPatientRegistry server interface
-type server struct{ db *gorm.DB }
-
-// GetVersion returns the current version of the service
-func (server) GetVersion(context.Context, *empty.Empty) (*pb.VersionResponse, error) {
-	return &pb.VersionResponse{Version: version}, nil
+// NewProfilesServer returns an instance of the default profiles server interface
+func NewProfilesServer(database *gorm.DB) (pb.ProfilesServer, error) {
+	return &profilesServer{&pb.ProfilesDefaultServer{DB: database}}, nil
 }
 
-// Publish publishes a message to the pubsub server with the publish request message
-// TODO update example publish with your own logic.
-func (server) Publish(ctx context.Context, pr *pb.PublishRequest) (*pb.PublishResponse, error) {
-	var url = fmt.Sprintf("%s:%s", viper.GetString("atlas.pubsub.address"), viper.GetString("atlas.pubsub.port"))
-	var topic = viper.GetString("atlas.pubsub.publish")
-	log.Printf("publishing hello world message to %s with topic %q", url, topic)
-	conn, err := grpc.Dial(url, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("pubsub publisher: Failed to dial to grpc server: %v", err)
-	}
-	p := pubsubgrpc.NewPublisher(topic, conn)
-	msg := fmt.Sprintf("%s, %s %s", "Hello World", pr.GetMessage(), time.Now())
-	if err := p.Publish(context.Background(), []byte(msg), nil); err != nil {
-		return &pb.PublishResponse{Status: "Failed publishing message"}, nil
-	}
-
-	return &pb.PublishResponse{Status: "Message published"}, nil
+type profilesServer struct {
+	*pb.ProfilesDefaultServer
 }
 
-// NewBasicServer returns an instance of the default server interface
-func NewBasicServer(database *gorm.DB) (pb.GoPatientRegistryServer, error) {
-	return &server{db: database}, nil
+// NewGroupsServer returns an instance of the default groups server interface
+func NewGroupsServer(database *gorm.DB) (pb.GroupsServer, error) {
+	return &groupsServer{&pb.GroupsDefaultServer{DB: database}}, nil
+}
+
+type groupsServer struct {
+	*pb.GroupsDefaultServer
+}
+
+// NewContactsServer returns an instance of the default contacts server interface
+func NewContactsServer(database *gorm.DB) (pb.ContactsServer, error) {
+	return &contactsServer{&pb.ContactsDefaultServer{DB: database}}, nil
+}
+
+type contactsServer struct {
+	*pb.ContactsDefaultServer
 }

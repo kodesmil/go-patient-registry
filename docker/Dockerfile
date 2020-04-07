@@ -1,5 +1,5 @@
 # build the server binary
-FROM golang:1.13.1 AS builder
+FROM golang:1.14.1 AS builder
 LABEL stage=server-intermediate
 WORKDIR /go/src/github.com/kodesmil/go-patient-registry
 

@@ -2,8 +2,6 @@
 version: latest
 docker:
   registry: kodesmil
-  username: "{ Fill this in }"
-  password: "{ Fill this in }"
 
 #### Values that will be populated from env vaues
 env: "minikube"

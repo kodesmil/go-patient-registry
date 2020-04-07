@@ -1,0 +1,14 @@
+apiVersion: skaffold/v2beta1
+kind: Config
+metadata:
+  name: go-patient-registry
+build:
+  artifacts:
+  - image: infoblox/migrate
+    context: vendor/golang.org/x/net/http2
+  - image: kodesmil/go-patient-registry-server
+    context: docker
+deploy:
+  kubectl:
+    manifests:
+    - deploy/migrations.yaml

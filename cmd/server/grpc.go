@@ -53,11 +53,25 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		return nil, err
 	}
 	// register service implementation with the grpcServer
-	s, err := svc.NewBasicServer(db)
+
+	// register all of our services into the grpcServer
+	ps, err := svc.NewProfilesServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterGoPatientRegistryServer(grpcServer, s)
+	pb.RegisterProfilesServer(grpcServer, ps)
+
+	gs, err := svc.NewGroupsServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.RegisterGroupsServer(grpcServer, gs)
+
+	cs, err := svc.NewContactsServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.RegisterContactsServer(grpcServer, cs)
 
 	return grpcServer, nil
 }
