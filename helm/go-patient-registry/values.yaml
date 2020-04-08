@@ -21,6 +21,7 @@ service:
   type: ClusterIP
   grpcPort: 9090
   httpPort: 8080
+  postgresPort: 5432
 
 ingress:
   enabled: true
@@ -30,9 +31,12 @@ ingress:
   hosts:
     - host: "{{ .Values.env }}.{{ .Values.zone }}"
       paths:
-        - path: "/go-patient-registry/v1/"
+        - path: "/go-patient-registry/rest/v1/"
           name: "{{ include \"chart.fullname\" . }}"
           port: "{{ .Values.service.httpPort }}"
+        - path: "/go-patient-registry/grpc/v1/"
+          name: "{{ include \"chart.fullname\" . }}"
+          port: "{{ .Values.service.grpcPort }}"
 
   tls: []
   #  - secretName: chart-example-tls

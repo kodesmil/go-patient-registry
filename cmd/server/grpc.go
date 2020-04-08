@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
@@ -13,6 +15,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 	"github.com/kodesmil/go-patient-registry/pkg/svc"
+	migrate "github.com/kodesmil/go-patient-registry/db"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -47,11 +50,21 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		),
 	)
 
-	// create new postgres database
-	db, err := gorm.Open("postgres", dbConnectionString)
+	dbSQL, err := sql.Open("postgres", dbConnectionString)
 	if err != nil {
 		return nil, err
 	}
+	defer dbSQL.Close()
+	if err := migrate.MigrateDB(*dbSQL); err != nil {
+		return nil, err
+	}
+	fmt.Sprint("Hello!, migrated!")
+	db, err := gorm.Open("postgres", dbSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
 	// register service implementation with the grpcServer
 
 	// register all of our services into the grpcServer

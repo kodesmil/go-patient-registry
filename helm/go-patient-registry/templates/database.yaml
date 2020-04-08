@@ -9,8 +9,13 @@ metadata:
         app.kubernetes.io/part-of: go-patient-registry
         app.kubernetes.io/component: database
 spec:
+    type: NodePort
     ports:
-        - port: {{ .Values.postgres.port }}
+      - name: postgres
+        port: {{ .Values.service.postgresPort }}
+        targetPort: {{ .Values.service.postgresPort }}
+        nodePort: 30000
+        protocol: TCP
     selector:
         app.kubernetes.io/name: postgres
 ---
