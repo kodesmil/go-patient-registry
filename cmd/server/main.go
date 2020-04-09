@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"net/http"
@@ -123,7 +124,7 @@ func ServeExternal(logger *logrus.Logger) error {
 		logger.Fatalln(err)
 	}
 	grpc_prometheus.Register(grpcServer)
-
+	reflection.Register(grpcServer)
 	s, err := server.NewServer(
 		server.WithGrpcServer(grpcServer),
 		server.WithGateway(

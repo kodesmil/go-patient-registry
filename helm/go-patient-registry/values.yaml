@@ -29,12 +29,14 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: "{{ .Values.env }}.{{ .Values.zone }}"
+    - host: "rest.{{ .Values.env }}.{{ .Values.zone }}"
       paths:
-        - path: "/go-patient-registry/rest/v1/"
+        - path: "/"
           name: "{{ include \"chart.fullname\" . }}"
           port: "{{ .Values.service.httpPort }}"
-        - path: "/go-patient-registry/grpc/v1/"
+    - host: "grpc.{{ .Values.env }}.{{ .Values.zone }}"
+      paths:
+        - path: "/"
           name: "{{ include \"chart.fullname\" . }}"
           port: "{{ .Values.service.grpcPort }}"
 
