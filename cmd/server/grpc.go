@@ -2,9 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"time"
-
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/validator"
@@ -13,23 +10,23 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/requestid"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	migrate "github.com/kodesmil/go-patient-registry/db"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 	"github.com/kodesmil/go-patient-registry/pkg/svc"
-	migrate "github.com/kodesmil/go-patient-registry/db"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
 )
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
 	grpcServer := grpc.NewServer(
-		grpc.KeepaliveParams(
-			keepalive.ServerParameters{
-				Time:    time.Duration(viper.GetInt("config.keepalive.time")) * time.Second,
-				Timeout: time.Duration(viper.GetInt("config.keepalive.timeout")) * time.Second,
-			},
-		),
+		/*
+			grpc.KeepaliveParams(
+				keepalive.ServerParameters{
+					Time:    time.Duration(viper.GetInt("config.keepalive.time")) * time.Second,
+					Timeout: time.Duration(viper.GetInt("config.keepalive.timeout")) * time.Second,
+				},
+			),
+		*/
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
 				// logging middleware
@@ -58,14 +55,13 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	if err := migrate.MigrateDB(*dbSQL); err != nil {
 		return nil, err
 	}
-	fmt.Sprint("Hello!, migrated!")
+
 	db, err := gorm.Open("postgres", dbSQL)
+
 	if err != nil {
 		return nil, err
 	}
 	defer db.Close()
-
-	// register service implementation with the grpcServer
 
 	// register all of our services into the grpcServer
 	ps, err := svc.NewProfilesServer(db)
@@ -84,6 +80,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	if err != nil {
 		return nil, err
 	}
+
 	pb.RegisterContactsServer(grpcServer, cs)
 
 	return grpcServer, nil

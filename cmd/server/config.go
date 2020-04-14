@@ -18,14 +18,14 @@ const (
 
 	// Database
 	defaultDatabaseEnable = true
-	// DSN example: "postgres://postgres:postgres@postgres:5432/atlas_db?sslmode=disable"
+	// DSN example: "postgres://postgres:D6AQjmbzUC@postgresql-1586518706.default.svc.cluster.local:5432/go_patient_registry?sslmode=disable"
 	defaultDatabaseDSN      = ""
 	defaultDatabaseType     = "postgres"
-	defaultDatabaseAddress  = "0.0.0.0"
+	defaultDatabaseAddress  = "postgresql-1586518706.default.svc.cluster.local"
 	defaultDatabasePort     = "5432"
 	defaultDatabaseName     = "go_patient_registry"
 	defaultDatabaseUser     = "postgres"
-	defaultDatabasePassword = "postgres"
+	defaultDatabasePassword = "D6AQjmbzUC"
 	defaultDatabaseSSL      = "disable"
 	defaultDatabaseOption   = ""
 
@@ -56,7 +56,7 @@ const (
 	defaultInternalEnable    = true
 	defaultInternalAddress   = "0.0.0.0"
 	defaultInternalPort      = "8081"
-	defaultInternalHealth    = "/healthz"
+	defaultInternalHealth    = "/health"
 	defaultInternalReadiness = "/ready"
 
 	defaultConfigDirectory = "deploy/"
@@ -65,7 +65,7 @@ const (
 	defaultApplicationID   = "go-patient-registry"
 
 	// Logging
-	defaultLoggingLevel = "debug"
+	defaultLoggingLevel = "info"
 
 	//Profiler
 	defaultProfilerEnabled = false
