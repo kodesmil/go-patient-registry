@@ -31,7 +31,28 @@ service:
 
 ingress:
   enabled: true
+  name: "go-patient-registry-http"
   annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  tls:
+    - hosts:
+        - "*.kodesmil.com"
+      secretName: local-cert
+  hosts:
+    - host: rest.clinic.local.kodesmil.com
+      paths:
+        - path: /
+          backend:
+            serviceName: "go-patient-registry"
+            servicePort: 8080
+
+
+grpcIngress:
+  enabled: true
+  name: "go-patient-registry-grpc"
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
   tls:
@@ -46,12 +67,6 @@ ingress:
             serviceName: "go-patient-registry"
             servicePort: 9090
 
-    - host: rest.clinic.local.kodesmil.com
-      paths:
-        - path: /
-          backend:
-            serviceName: "go-patient-registry"
-            servicePort: 8080
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local

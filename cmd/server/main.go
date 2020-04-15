@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"net/http"
@@ -20,6 +19,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/infobloxopen/atlas-app-toolkit/gateway"
 	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
@@ -58,6 +58,7 @@ func main() {
 
 func NewLogger() *logrus.Logger {
 	logger := logrus.StandardLogger()
+
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 
 	// Set the log level on the default logger based on command line flag
@@ -119,10 +120,12 @@ func ServeExternal(logger *logrus.Logger) error {
 	if viper.GetString("database.dsn") == "" {
 		setDBConnection()
 	}
+
 	grpcServer, err := NewGRPCServer(logger, viper.GetString("database.dsn"))
 	if err != nil {
 		logger.Fatalln(err)
 	}
+
 	grpc_prometheus.Register(grpcServer)
 	reflection.Register(grpcServer)
 	s, err := server.NewServer(
