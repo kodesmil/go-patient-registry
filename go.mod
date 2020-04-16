@@ -6,7 +6,9 @@ require (
 	cloud.google.com/go v0.56.0 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200206145737-bbfc9a55622e // indirect
+	github.com/envoyproxy/protoc-gen-validate v0.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/fullstorydev/grpcui v0.2.1 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.0
@@ -15,6 +17,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.14.3
+	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334 // indirect
 	github.com/infobloxopen/atlas-app-toolkit v0.20.0
 	github.com/infobloxopen/atlas-pubsub v0.3.1
 	github.com/infobloxopen/protoc-gen-gorm v0.20.0
@@ -23,6 +26,7 @@ require (
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.3.0 // indirect
+	github.com/lyft/protoc-gen-star v0.4.14 // indirect
 	github.com/lyft/protoc-gen-validate v0.3.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.2.2 // indirect
