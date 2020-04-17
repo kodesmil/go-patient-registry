@@ -4,7 +4,6 @@ package service;
 
 import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
-import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
 import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
@@ -202,7 +201,7 @@ message Contact {
     string first_name = 2;
     string middle_name = 3;
     string last_name = 4;
-    string primary_email = 5 [(gorm.field).drop = true, (validate.rules).string.email = true];
+    string primary_email = 5 [(gorm.field).drop = true];
     string notes = 6;
     repeated Email emails = 7;
     Address home_address = 8;
@@ -221,7 +220,7 @@ message Email {
       {type: "*bool", name: "is_primary"}]
 };
 uint64 id = 1;
-string address = 2 [(gorm.field).tag.unique = true, (validate.rules).string.email = true];
+string address = 2 [(gorm.field).tag.unique = true];
 }
 
 message Address {
@@ -330,17 +329,17 @@ service Contacts {
 }
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-  info: {
-    title: "Contacts";
-version: "1.0";
-contact: {
-name: "John Belamaric";
-url: "https://github.com/infobloxopen/atlas-contacts-app";
-email: "jbelamaric@infoblox.com";
-};
-};
-schemes: HTTP;
-schemes: HTTPS;
-consumes: "application/json";
-produces: "application/json";
+    info: {
+        title: "Contacts";
+        version: "1.0";
+        contact: {
+            name: "John Belamaric";
+            url: "https://github.com/infobloxopen/atlas-contacts-app";
+            email: "jbelamaric@infoblox.com";
+        };
+    };
+    schemes: HTTP;
+    schemes: HTTPS;
+    consumes: "application/json";
+    produces: "application/json";
 };

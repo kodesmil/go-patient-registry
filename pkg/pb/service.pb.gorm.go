@@ -51,25 +51,38 @@ It has these top-level messages:
 */
 package pb
 
-import context "context"
-import fmt "fmt"
-import strings "strings"
+import (
+	context "context"
+	fmt "fmt"
 
-import auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
-import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
-import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
-import gorm1 "github.com/jinzhu/gorm"
-import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
-import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+	strings "strings"
 
-import math "math"
-import _ "google.golang.org/genproto/protobuf/field_mask"
-import _ "google.golang.org/genproto/googleapis/api/annotations"
-import _ "github.com/lyft/protoc-gen-validate/validate"
-import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
-import _ "github.com/infobloxopen/atlas-app-toolkit/query"
-import _ "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
+	auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
+
+	errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
+
+	field_mask1 "google.golang.org/genproto/protobuf/field_mask"
+
+	gorm1 "github.com/jinzhu/gorm"
+
+	gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+
+	query1 "github.com/infobloxopen/atlas-app-toolkit/query"
+
+	resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+
+	math "math"
+
+	_ "google.golang.org/genproto/protobuf/field_mask"
+
+	_ "google.golang.org/genproto/googleapis/api/annotations"
+
+	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
+
+	_ "github.com/infobloxopen/atlas-app-toolkit/query"
+
+	_ "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = fmt.Errorf
