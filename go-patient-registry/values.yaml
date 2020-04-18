@@ -1,15 +1,14 @@
-# Default values for go-patient-registry-helm.
+# Default values for go-patient-registry.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
-nameOverride: ""
+nameOverride: "go-patient-registry"
 fullnameOverride: "go-patient-registry"
 
 podSecurityContext: {}
@@ -27,6 +26,7 @@ service:
   type: ClusterIP
   httpPort: 8080
   grpcPort: 9090
+  debugPort: 3000
   healthPort: 8081
 
 ingress:
@@ -35,19 +35,18 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: "kodesmil-letsencrypt"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
   tls:
     - hosts:
         - "*.dev.api.kodesmil.com"
       secretName: letsencrypt-cert
   hosts:
-    - host: rest.clinic.dev.api.kodesmil.com
+    - host: rest-clinic.dev.api.kodesmil.com
       paths:
         - path: /
           backend:
             serviceName: "go-patient-registry"
-            servicePort: http
+            servicePort: 8080
 
 
 grpcIngress:
@@ -58,19 +57,18 @@ grpcIngress:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx
-    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
   tls:
     - hosts:
         - "*.dev.api.kodesmil.com"
       secretName: letsencrypt-cert
   hosts:
-    - host: grpc.clinic.dev.api.kodesmil.com
+    - host: grpc-clinic.dev.api.kodesmil.com
       paths:
         - path: /
           backend:
             serviceName: "go-patient-registry"
-            servicePort: grpc
+            servicePort: 9090
 
   #  - secretName: chart-example-tls
   #    hosts:

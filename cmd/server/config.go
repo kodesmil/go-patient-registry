@@ -31,7 +31,7 @@ const (
 	defaultDatabaseOption   = ""
 
 	// PubSub
-	defaultPubsubEnable       = true
+	defaultPubsubEnable       = false
 	defaultPubsubAddress      = "pubsub.atlas"
 	defaultPubsubPort         = "5555"
 	defaultPubsubPublish      = "example_hello"

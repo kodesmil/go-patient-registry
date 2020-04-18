@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "go-patient-registry-helm.fullname" . }}
+  name: {{ include "go-patient-registry.fullname" . }}
   labels:
-    {{- include "go-patient-registry-helm.labels" . | nindent 4 }}
+    {{- include "go-patient-registry.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: grpc
   selector:
-    {{- include "go-patient-registry-helm.selectorLabels" . | nindent 4 }}
+    {{- include "go-patient-registry.selectorLabels" . | nindent 4 }}

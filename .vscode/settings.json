@@ -1,0 +1,8 @@
+{
+    "cloudcode.last-used-context": {
+        "Run on Kubernetes": {
+            "kubeConfigPath": "/home/murbanski-personal/.kube/config",
+            "contextName": "gke_motim1_europe-north1-a_motim"
+        }
+    }
+}

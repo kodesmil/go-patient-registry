@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run on Kubernetes",
+            "type": "cloudcode.kubernetes",
+            "request": "launch",
+            "skaffoldConfig": "${workspaceFolder}/skaffold.yaml",
+            "watch": true,
+            "cleanUp": true,
+            "portForward": true,
+            "imageRegistry": "gcr.io/motim1"
+        },
+        {
+            "name": "Attach to Kubernetes pod (backend)",
+            "type": "cloudcode.kubernetes",
+            "request": "attach",
+            "language": "Go",
+            "debugPort": 3000,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/src/",
+            "podSelector": {
+                "app": "kodesmil"
+            }
+        }
+    ]
+  }
+  

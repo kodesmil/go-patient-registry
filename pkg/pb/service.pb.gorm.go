@@ -695,8 +695,10 @@ func DefaultCreateProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Prof
 	if in == nil {
 		return nil, errors1.NilArgumentError
 	}
+	println("Before ORM")
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
+		println(err)
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeCreate_); ok {
@@ -704,6 +706,7 @@ func DefaultCreateProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Prof
 			return nil, err
 		}
 	}
+	println("Just before Create")
 	if err = db.Create(&ormObj).Error; err != nil {
 		return nil, err
 	}
@@ -2396,6 +2399,8 @@ type ProfilesDefaultServer struct {
 // Create ...
 func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileRequest) (*CreateProfileResponse, error) {
 	db := m.DB
+	println("Hi!")
+
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeCreate); ok {
 		var err error
 		if db, err = custom.BeforeCreate(ctx, db); err != nil {

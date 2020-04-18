@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "go-patient-registry-helm.fullname" . }}
+  name: {{ include "go-patient-registry.fullname" . }}
   labels:
-    {{- include "go-patient-registry-helm.labels" . | nindent 4 }}
+    {{- include "go-patient-registry.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "go-patient-registry-helm.selectorLabels" . | nindent 6 }}
+      {{- include "go-patient-registry.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "go-patient-registry-helm.selectorLabels" . | nindent 8 }}
+        {{- include "go-patient-registry.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,6 +33,8 @@ spec:
             - name: grpc
               containerPort: {{ .Values.service.grpcPort }}
               protocol: TCP
+            - name: debug
+              containerPort: {{ .Values.service.debugPort }}
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/etc/secrets/firebase-service-config.json"

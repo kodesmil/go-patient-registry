@@ -8,11 +8,13 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
-	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
-	"github.com/infobloxopen/atlas-app-toolkit/requestid"
+
+	/*
+		grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+		grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+		grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	*/
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	migrate "github.com/kodesmil/go-patient-registry/db"
@@ -26,11 +28,11 @@ import (
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
 	firebaseAuth := func(ctx context.Context) (context.Context, error) {
-		token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(token)
+		fmt.Println("Token", token)
 		// newCtx := context.WithValue(ctx, "tokenInfo", tokenInfo)
 		return ctx, nil
 	}
@@ -45,21 +47,22 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 			grpc_middleware.ChainUnaryServer(
 				// authenticate
 				grpc_auth.UnaryServerInterceptor(firebaseAuth),
+				/*
+					// logging middleware
+					grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
 
-				// logging middleware
-				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+					// Request-Id interceptor
+					requestid.UnaryServerInterceptor(),
 
-				// Request-Id interceptor
-				requestid.UnaryServerInterceptor(),
+					// Metrics middleware
+					grpc_prometheus.UnaryServerInterceptor,
 
-				// Metrics middleware
-				grpc_prometheus.UnaryServerInterceptor,
+					// validation middleware
+					grpc_validator.UnaryServerInterceptor(),
 
-				// validation middleware
-				grpc_validator.UnaryServerInterceptor(),
-
-				// collection operators middleware
-				gateway.UnaryServerInterceptor(),
+					// collection operators middleware
+					gateway.UnaryServerInterceptor(),
+				*/
 			),
 		),
 	)
@@ -80,7 +83,6 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	defer db.Close()
 
-	// register all of our services into the grpcServer
 	ps, err := svc.NewProfilesServer(db)
 	if err != nil {
 		return nil, err
