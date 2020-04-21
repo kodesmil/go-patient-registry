@@ -20,7 +20,7 @@
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/src/",
             "podSelector": {
-                "app": "kodesmil"
+                "app.kubernetes.io/name": "go-patient-registry"
             }
         }
     ]

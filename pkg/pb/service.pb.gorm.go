@@ -57,6 +57,10 @@ import (
 
 	strings "strings"
 
+	"github.com/dgrijalva/jwt-go"
+
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+
 	auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
 
 	errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
@@ -108,6 +112,7 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 	to := ProfileORM{}
 	var err error
 	if prehook, ok := interface{}(m).(ProfileWithBeforeToORM); ok {
+		fmt.Println("ok")
 		if err = prehook.BeforeToORM(ctx, &to); err != nil {
 			return to, err
 		}
@@ -117,6 +122,7 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 	} else {
 		to.Id = v
 	}
+	fmt.Println("Aaaaaaaaaaaaaaaa")
 	to.Name = m.Name
 	to.Notes = m.Notes
 	for _, v := range m.Contacts {
@@ -141,8 +147,11 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 			to.Groups = append(to.Groups, nil)
 		}
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
+	fmt.Println("Aaaaaaaaaaaaaaaa 2")
+	accountID, err := GetJWTFieldWithTokenType(ctx, "Bearer", "user_id")
+	fmt.Println(accountID)
 	if err != nil {
+		fmt.Println(err)
 		return to, err
 	}
 	to.AccountID = accountID
@@ -150,6 +159,35 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 		err = posthook.AfterToORM(ctx, &to)
 	}
 	return to, err
+}
+
+func GetJWTFieldWithTokenType(ctx context.Context, tokenType, tokenField string) (string, error) {
+	token, err := getToken(ctx, tokenType)
+	if err != nil {
+		return "", err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", err
+	}
+	jwtField, ok := claims[tokenField]
+	if !ok {
+		return "", err
+	}
+	return fmt.Sprint(jwtField), nil
+}
+
+func getToken(ctx context.Context, tokenField string) (jwt.Token, error) {
+	tokenStr, err := grpc_auth.AuthFromMD(ctx, tokenField)
+	if err != nil {
+		return jwt.Token{}, err
+	}
+	parser := jwt.Parser{}
+	token, _, err := parser.ParseUnverified(tokenStr, jwt.MapClaims{})
+	if err != nil {
+		return jwt.Token{}, err
+	}
+	return *token, nil
 }
 
 // ToPB runs the BeforeToPB hook if present, converts the fields of this

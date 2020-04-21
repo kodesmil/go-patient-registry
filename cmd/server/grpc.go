@@ -1,13 +1,10 @@
 package main
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 
 	/*
 		grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
@@ -27,15 +24,18 @@ import (
 )
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
-	firebaseAuth := func(ctx context.Context) (context.Context, error) {
-		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
-		if err != nil {
-			return nil, err
+	/*
+		firebaseAuth := func(ctx context.Context) (context.Context, error) {
+			token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+			if err != nil {
+				return nil, err
+			}
+			fmt.Println("Token", token)
+			// newCtx := context.WithValue(ctx, "tokenInfo", tokenInfo)
+			return ctx, nil
 		}
-		fmt.Println("Token", token)
-		// newCtx := context.WithValue(ctx, "tokenInfo", tokenInfo)
-		return ctx, nil
-	}
+		grpc_auth.UnaryServerInterceptor(firebaseAuth),
+	*/
 	grpcServer := grpc.NewServer(
 		grpc.KeepaliveParams(
 			keepalive.ServerParameters{
@@ -45,24 +45,23 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		),
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
-				// authenticate
-				grpc_auth.UnaryServerInterceptor(firebaseAuth),
-				/*
-					// logging middleware
-					grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
+			// authenticate
+			/*
+				// logging middleware
+				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
 
-					// Request-Id interceptor
-					requestid.UnaryServerInterceptor(),
+				// Request-Id interceptor
+				requestid.UnaryServerInterceptor(),
 
-					// Metrics middleware
-					grpc_prometheus.UnaryServerInterceptor,
+				// Metrics middleware
+				grpc_prometheus.UnaryServerInterceptor,
 
-					// validation middleware
-					grpc_validator.UnaryServerInterceptor(),
+				// validation middleware
+				grpc_validator.UnaryServerInterceptor(),
 
-					// collection operators middleware
-					gateway.UnaryServerInterceptor(),
-				*/
+				// collection operators middleware
+				gateway.UnaryServerInterceptor(),
+			*/
 			),
 		),
 	)
@@ -71,7 +70,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	if err != nil {
 		return nil, err
 	}
-	defer dbSQL.Close()
+	// defer dbSQL.Close()
 	if err := migrate.MigrateDB(*dbSQL); err != nil {
 		return nil, err
 	}
@@ -81,7 +80,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
+	// defer db.Close()
 
 	ps, err := svc.NewProfilesServer(db)
 	if err != nil {

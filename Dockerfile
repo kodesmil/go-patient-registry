@@ -10,7 +10,8 @@ RUN go mod download
 COPY . ./
 RUN GO111MODULE=on GOTRACEBACK=all CGO_ENABLED=0 GOOS=linux go build -gcflags='all=-N -l' -o /bin/server ./cmd/server
 
-ENTRYPOINT ["dlv", "exec", "/bin/server", "--continue", "--accept-multiclient", "--api-version=2", "--headless", "--listen=:3000", "--log", "-v"]
+ENTRYPOINT ["dlv", "exec", "/bin/server", "--continue", "--accept-multiclient", "--api-version=2", "--headless", "--listen=:3000", "--log"]
 
 # FROM scratch
 # COPY --from=build /bin/server /bin/server
+# ENTRYPOINT ["/bin/server"]

@@ -1,15 +1,20 @@
-apiVersion: skaffold/v2beta1
+apiVersion: skaffold/v2beta2
 kind: Config
 metadata:
   name: go-patient-registry
 build:
   artifacts:
-    - image: kodesmil/go-patient-registry
+    - image: go-patient-registry
 deploy:
   helm:
     releases:
       - name: go-patient-registry
         chartPath: go-patient-registry
+        namespace: qa
         version: 1.0.0
         values:
-          image.repository: kodesmil/go-patient-registry
+          image.repository: go-patient-registry
+profiles:
+- name: cloudbuild
+  build:
+    googleCloudBuild: {}

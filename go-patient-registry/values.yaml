@@ -38,10 +38,10 @@ ingress:
     kubernetes.io/ingress.class: "nginx"
   tls:
     - hosts:
-        - "*.dev.api.kodesmil.com"
+        - "*.qa.api.kodesmil.com"
       secretName: letsencrypt-cert
   hosts:
-    - host: rest-clinic.dev.api.kodesmil.com
+    - host: rest-clinic.qa.api.kodesmil.com
       paths:
         - path: /
           backend:
@@ -60,10 +60,10 @@ grpcIngress:
     kubernetes.io/ingress.class: "nginx"
   tls:
     - hosts:
-        - "*.dev.api.kodesmil.com"
+        - "*.qa.api.kodesmil.com"
       secretName: letsencrypt-cert
   hosts:
-    - host: grpc-clinic.dev.api.kodesmil.com
+    - host: grpc-clinic.qa.api.kodesmil.com
       paths:
         - path: /
           backend:

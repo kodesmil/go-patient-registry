@@ -218,9 +218,9 @@ message Email {
       multi_account: true,
       include: [
       {type: "*bool", name: "is_primary"}]
-};
-uint64 id = 1;
-string address = 2 [(gorm.field).tag.unique = true];
+    };
+    uint64 id = 1;
+    string address = 2 [(gorm.field).tag.unique = true];
 }
 
 message Address {

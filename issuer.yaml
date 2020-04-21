@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: kodesmil-issuer
+spec:
+  acme:
+    email: hello@kodesmil.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: kodesmil-issuer-account-key
+    solvers:
+    - dns01:
+        clouddns:
+          project: motim1
+          serviceAccountSecretRef:
+            name: clouddns-dns01-linux-solver-svc-acct
+            key: key.json

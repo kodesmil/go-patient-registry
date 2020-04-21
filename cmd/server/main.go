@@ -86,7 +86,7 @@ func ServeInternal(logger *logrus.Logger) error {
 		viper.GetString("internal.health"),
 		viper.GetString("internal.readiness"),
 	)
-	healthChecker.AddReadiness("DB ready check", dbReady)
+	// healthChecker.AddReadiness("DB ready check", dbReady)
 	healthChecker.AddLiveness("ping", health.HTTPGetCheck(
 		fmt.Sprint("http://", viper.GetString("internal.address"), ":", viper.GetString("internal.port"), "/ping"), time.Minute),
 	)
