@@ -1,19 +1,23 @@
 package main
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 
-	/*
-		grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
-		grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-		grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	*/
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/kodesmil/atlas-app-toolkit/gateway"
+	"github.com/kodesmil/atlas-app-toolkit/requestid"
 	migrate "github.com/kodesmil/go-patient-registry/db"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 	"github.com/kodesmil/go-patient-registry/pkg/svc"
@@ -24,18 +28,30 @@ import (
 )
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
-	/*
-		firebaseAuth := func(ctx context.Context) (context.Context, error) {
-			token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
-			if err != nil {
-				return nil, err
-			}
-			fmt.Println("Token", token)
-			// newCtx := context.WithValue(ctx, "tokenInfo", tokenInfo)
-			return ctx, nil
+
+	firebaseAuth := func(ctx context.Context) (context.Context, error) {
+		rawToken, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		if err != nil {
+			return nil, err
 		}
-		grpc_auth.UnaryServerInterceptor(firebaseAuth),
-	*/
+		parser := jwt.Parser{}
+		token, _, err := parser.ParseUnverified(rawToken, jwt.MapClaims{})
+		if err != nil {
+			return ctx, err
+		}
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return ctx, errors.New("Error retrieving claim")
+		}
+		userID, ok := claims["user_id"]
+		if !ok {
+			return ctx, errors.New("Error retrieving claim")
+		}
+		var key interface{} = "AccountID"
+		ctx = context.WithValue(ctx, key, userID)
+		return ctx, nil
+	}
+
 	grpcServer := grpc.NewServer(
 		grpc.KeepaliveParams(
 			keepalive.ServerParameters{
@@ -45,8 +61,9 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		),
 		grpc.UnaryInterceptor(
 			grpc_middleware.ChainUnaryServer(
-			// authenticate
-			/*
+				// authenticate
+				grpc_auth.UnaryServerInterceptor(firebaseAuth),
+
 				// logging middleware
 				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
 
@@ -61,7 +78,6 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 
 				// collection operators middleware
 				gateway.UnaryServerInterceptor(),
-			*/
 			),
 		),
 	)

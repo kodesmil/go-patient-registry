@@ -33,6 +33,10 @@ spec:
             - name: cloudsql-instance-credentials
               mountPath: /secrets/cloudsql
               readOnly: true
+          ports:
+            - name: http
+              containerPort: 5432
+              protocol: TCP
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

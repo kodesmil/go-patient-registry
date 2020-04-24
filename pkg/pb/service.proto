@@ -4,13 +4,14 @@ package service;
 
 import "google/protobuf/field_mask.proto";
 import "google/api/annotations.proto";
+import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
-import "protoc-gen-gorm/options/gorm.proto";
-import "protoc-gen-gorm/types/types.proto";
-import "atlas-app-toolkit/query/collection_operators.proto";
-import "atlas-app-toolkit/rpc/resource/resource.proto";
+import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
+import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
+import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
-option go_package = "pb";
+option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb";
 
 message Profile {
     option (gorm.opts) = {

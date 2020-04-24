@@ -569,8 +569,9 @@
           "type": "string"
         },
         "nicknames": {
+          "type": "object",
           "title": "nicknames is arbitrary json, but should be used for a list of strings",
-          "$ref": "#/definitions/typesJSONValue"
+          "additionalProperties": {}
         },
         "notes": {
           "type": "string"
@@ -613,8 +614,9 @@
           "type": "string"
         },
         "nicknames": {
+          "type": "object",
           "title": "nicknames is arbitrary json, but should be used for a list of strings",
-          "$ref": "#/definitions/typesJSONValue"
+          "additionalProperties": {}
         },
         "notes": {
           "type": "string"
@@ -836,10 +838,6 @@
           "$ref": "#/definitions/serviceProfile"
         }
       }
-    },
-    "typesJSONValue": {
-      "type": "object",
-      "format": "string"
     }
   }
 }
