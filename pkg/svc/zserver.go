@@ -1,9 +1,6 @@
 package svc
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 )
@@ -26,17 +23,20 @@ type groupsServer struct {
 	*pb.GroupsDefaultServer
 }
 
-func (s *contactsServer) Create(ctx context.Context, in *pb.CreateContactRequest) (*pb.CreateContactResponse, error) {
-	println("Hello")
-	fmt.Println(in)
-	resp, _ := s.ContactsDefaultServer.Create(ctx, in)
-	return resp, nil
+// NewJournalEntriesServer returns an instance of the default journal server interface
+func NewJournalEntriesServer(database *gorm.DB) (pb.JournalEntriesServer, error) {
+	return &journalEntriesServer{&pb.JournalEntriesDefaultServer{DB: database}}, nil
 }
 
-func NewContactsServer(database *gorm.DB) (pb.ContactsServer, error) {
-	return &contactsServer{&pb.ContactsDefaultServer{DB: database}}, nil
+type journalEntriesServer struct {
+	*pb.JournalEntriesDefaultServer
 }
 
-type contactsServer struct {
-	*pb.ContactsDefaultServer
+// NewJournalSubjectsServer returns an instance of the default journal server interface
+func NewJournalSubjectsServer(database *gorm.DB) (pb.JournalSubjectsServer, error) {
+	return &journalSubjectsServer{&pb.JournalSubjectsDefaultServer{DB: database}}, nil
+}
+
+type journalSubjectsServer struct {
+	*pb.JournalSubjectsDefaultServer
 }

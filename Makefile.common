@@ -15,39 +15,13 @@ SERVER_BINARY           ?= $(BUILD_PATH)/server
 SERVER_PATH             ?= $(PROJECT_ROOT)/cmd/server
 SERVER_DOCKERFILE       ?= $(DOCKERFILE_PATH)/Dockerfile
 
-# configuration for the protobuf gentool
-SRCROOT_ON_HOST         ?= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
-SRCROOT_IN_CONTAINER    ?= /go/src/$(PROJECT_ROOT)
-DOCKER_RUNNER           ?= docker run -u `id -u`:`id -g` --rm -v $(SRCROOT_ON_HOST):$(SRCROOT_IN_CONTAINER)
-DOCKER_GENERATOR        ?= infoblox/atlas-gentool:latest
-GENERATOR               ?= $(DOCKER_RUNNER) $(DOCKER_GENERATOR)
-
 # configuration for building on host machine
 GO_CACHE                ?= -pkgdir $(BUILD_PATH)/go-cache
 GO_BUILD_FLAGS          ?= $(GO_CACHE) -i -v
 GO_TEST_FLAGS           ?= -v -cover
 GO_PACKAGES             ?= $(shell go list ./... | grep -v vendor)
 
-
-PROTOBUF_ARGS =  -I=$(HOME)/go/pkg/mod
-PROTOBUF_ARGS += --go_out=plugins=grpc:.
-PROTOBUF_ARGS += --validate_out="lang=go:."
-WITH_DATABASE ?= false
-WITH_GATEWAY  ?= false
-
 GO_MOD = go.mod
-
-
-ifeq ($(WITH_DATABASE), true)
-PROTOBUF_ARGS += --gorm_out=.
-endif
-
-ifeq ($(WITH_GATEWAY), true)
-PROTOBUF_ARGS += --grpc-gateway_out="logtostderr=true,allow_delete_body=true:."
-PROTOBUF_ARGS += --swagger_out="atlas_patch=true,allow_delete_body=true:."
-else ifeq ($(WITH_EXPAND), true)
-PROTOBUF_ARGS += --grpc-gateway_out=logtostderr=true:.
-endif
 
 .PHONY all: all-atlas
 all-atlas: vendor-atlas protobuf-atlas docker-atlas

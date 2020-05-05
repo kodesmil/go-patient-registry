@@ -3,26 +3,167 @@ syntax = "proto3";
 package service;
 
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
-import "github.com/infobloxopen/protoc-gen-gorm/options/gorm.proto";
-import "github.com/infobloxopen/protoc-gen-gorm/types/types.proto";
-import "github.com/infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
-import "github.com/infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
+import "infobloxopen/protoc-gen-gorm/options/gorm.proto";
+import "infobloxopen/protoc-gen-gorm/types/types.proto";
+import "infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
+import "infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb";
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Journal
+
+message JournalSubject {
+    option (gorm.opts) = {
+        ormable: true,
+    };
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    string key = 2;
+    string name = 3;
+    enum Type {
+        ACTIVITY = 0;
+        SYMPTOM = 1;
+    }
+    Type type = 4;
+}
+
+message JournalEntry {
+    option (gorm.opts) = {
+        ormable: true,
+        multi_account: true
+    };
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    atlas.rpc.Identifier journal_id = 2;
+    enum Severity {
+        NONE = 0;
+        LOW = 1;
+        MID = 2;
+        HIGH = 3;
+    }
+    Severity severity = 3;
+    string note = 4;
+    google.type.Date day = 5;
+    atlas.rpc.Identifier journal_subject_id = 6;
+}
+
+message CreateJournalEntryRequest {
+    JournalEntry payload = 1;
+}
+
+message CreateJournalEntryResponse {
+    JournalEntry result = 1;
+}
+
+message ReadJournalEntryRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message ReadJournalEntryResponse {
+    JournalEntry result = 1;
+}
+
+message UpdateJournalEntryRequest {
+    JournalEntry payload = 1;
+}
+
+message UpdateJournalEntryResponse {
+    JournalEntry result = 1;
+}
+
+message DeleteJournalEntryRequest {
+    atlas.rpc.Identifier id = 1;
+}
+
+message DeleteJournalEntryResponse{}
+
+message ListJournalEntryRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+message ListJournalEntryResponse {
+    repeated JournalEntry results = 1;
+}
+
+message ListJournalSubjectRequest {
+    infoblox.api.Filtering filter = 1;
+    infoblox.api.Sorting order_by = 2;
+    infoblox.api.FieldSelection fields = 3;
+    infoblox.api.Pagination paging = 4;
+}
+
+message ListJournalSubjectResponse {
+    repeated JournalSubject results = 1;
+}
+
+service JournalEntries {
+    option (gorm.server).autogen = true;
+
+    rpc Create (CreateJournalEntryRequest) returns (CreateJournalEntryResponse) {
+        option (google.api.http) = {
+            post: "/journals/entries"
+            body: "payload"
+        };
+    }
+
+    rpc Read (ReadJournalEntryRequest) returns (ReadJournalEntryResponse) {
+        option (google.api.http) = {
+            get: "/journals/entries/{id.resource_id}"
+        };
+    }
+
+    rpc Update (UpdateJournalEntryRequest) returns (UpdateJournalEntryResponse) {
+        option (google.api.http) = {
+            put: "/journals/entries/{payload.id.resource_id}"
+            body: "payload"
+        };
+    }
+
+    rpc Delete (DeleteJournalEntryRequest) returns (DeleteJournalEntryResponse) {
+        option (google.api.http) = {
+            delete: "/journals/entries/{id.resource_id}"
+        };
+        option (gorm.method).object_type = "JournalEntry";
+    }
+
+    rpc List (ListJournalEntryRequest) returns (ListJournalEntryResponse) {
+        option (google.api.http) = {
+            get: "/journals/entries"
+        };
+    }
+}
+
+service JournalSubjects {
+    option (gorm.server).autogen = true;
+
+    rpc List (ListJournalSubjectRequest) returns (ListJournalSubjectResponse) {
+        option (google.api.http) = {
+            get: "/journals/subjects"
+        };
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Profile
 
 message Profile {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
-    string name = 2;
-    string notes = 3;
-    repeated Contact contacts = 4;
-    repeated Group groups = 5;
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    string notes = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string primary_email = 5 [(gorm.field).drop = true];
 }
 
 message CreateProfileRequest {
@@ -103,16 +244,18 @@ service Profiles {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Group
+
 message Group {
     option (gorm.opts) = {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
     string name = 2;
     string notes = 3;
     atlas.rpc.Identifier profile_id = 4;
-    repeated Contact contacts = 5 [(gorm.field).many_to_many = {}];
 }
 
 message CreateGroupRequest {
@@ -152,7 +295,7 @@ message ListGroupRequest {
     infoblox.api.Pagination paging = 4;
 }
 
-message ListGroupsResponse {
+message ListGroupResponse {
     repeated Group results = 1;
 }
 
@@ -185,149 +328,14 @@ service Groups {
         option (gorm.method).object_type = "Group";
     }
 
-    rpc List (ListGroupRequest) returns (ListGroupsResponse) {
+    rpc List (ListGroupRequest) returns (ListGroupResponse) {
         option (google.api.http) = {
             get: "/groups"
         };
     }
-
 }
 
-message Contact {
-    option (gorm.opts) = {
-      ormable: true,
-      multi_account: true
-    };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial"  primary_key: true}];
-    string first_name = 2;
-    string middle_name = 3;
-    string last_name = 4;
-    string primary_email = 5 [(gorm.field).drop = true];
-    string notes = 6;
-    repeated Email emails = 7;
-    Address home_address = 8;
-    Address work_address = 9;
-    atlas.rpc.Identifier profile_id = 10;
-    repeated Group groups = 11 [(gorm.field).many_to_many = {jointable: "group_contacts"}];
-    // nicknames is arbitrary json, but should be used for a list of strings
-    gorm.types.JSONValue nicknames = 12;
-}
-
-message Email {
-    option (gorm.opts) = {
-      ormable: true,
-      multi_account: true,
-      include: [
-      {type: "*bool", name: "is_primary"}]
-    };
-    uint64 id = 1;
-    string address = 2 [(gorm.field).tag.unique = true];
-}
-
-message Address {
-    option (gorm.opts) = {
-      ormable: true,
-      multi_account: true
-    };
-    string address = 1;
-    string city = 2;
-    string state = 3;
-    string zip = 4;
-    string country = 5;
-}
-
-message CreateContactRequest {
-    Contact payload = 1;
-}
-
-message CreateContactResponse {
-    Contact result = 1;
-}
-
-message ReadContactRequest {
-    atlas.rpc.Identifier id = 1;
-}
-
-message ReadContactResponse {
-    Contact result = 1;
-}
-
-message UpdateContactRequest {
-    Contact payload = 1;
-    google.protobuf.FieldMask fields = 2;
-}
-
-message UpdateContactResponse {
-    Contact result = 1;
-}
-
-message DeleteContactRequest {
-    atlas.rpc.Identifier id = 1;
-}
-
-message DeleteContactResponse {}
-
-message ListContactsResponse {
-    repeated Contact results = 1;
-}
-
-message SMSRequest {
-    uint64 id = 1;
-    string message = 2;
-}
-
-message SMSResponse {}
-
-message ListContactRequest {
-    infoblox.api.Filtering filter = 1;
-    infoblox.api.Sorting order_by = 2;
-    infoblox.api.FieldSelection fields = 3;
-    infoblox.api.Pagination paging = 4;
-}
-
-
-service Contacts {
-    option (gorm.server).autogen = true;
-    rpc Create (CreateContactRequest) returns (CreateContactResponse) {
-        option (google.api.http) = {
-            post: "/contacts"
-            body: "payload"
-        };
-    }
-
-    rpc Read (ReadContactRequest) returns (ReadContactResponse) {
-        option (google.api.http) = {
-            get: "/contacts/{id.resource_id}"
-        };
-    }
-
-    rpc Update (UpdateContactRequest) returns (UpdateContactResponse) {
-        option (google.api.http) = {
-            put: "/contacts/{payload.id.resource_id}"
-            body: "payload"
-        };
-    }
-
-    rpc Delete (DeleteContactRequest) returns (DeleteContactResponse) {
-        option (google.api.http) = {
-            delete: "/contacts/{id.resource_id}"
-        };
-        option (gorm.method).object_type = "Contact";
-    }
-
-    rpc List (ListContactRequest) returns (ListContactsResponse) {
-        option (google.api.http) = {
-            get: "/contacts"
-        };
-    }
-
-    rpc SendSMS (SMSRequest) returns (SMSResponse) {
-        option (google.api.http) = {
-            post: "/contacts/{id}/sms"
-            body: "*"
-        };
-    }
-}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Swagger
 
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {

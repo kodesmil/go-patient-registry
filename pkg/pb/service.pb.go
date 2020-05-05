@@ -7,14 +7,16 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
 	query "github.com/infobloxopen/atlas-app-toolkit/query"
 	resource "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	_ "github.com/infobloxopen/protoc-gen-gorm/options"
-	types "github.com/infobloxopen/protoc-gen-gorm/types"
+	_ "github.com/infobloxopen/protoc-gen-gorm/types"
 	_ "github.com/lyft/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	field_mask "google.golang.org/genproto/protobuf/field_mask"
+	date "google.golang.org/genproto/googleapis/type/date"
+	_ "google.golang.org/genproto/protobuf/field_mask"
 	grpc "google.golang.org/grpc"
 	math "math"
 )
@@ -30,12 +32,718 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type JournalSubject_Type int32
+
+const (
+	JournalSubject_ACTIVITY JournalSubject_Type = 0
+	JournalSubject_SYMPTOM  JournalSubject_Type = 1
+)
+
+var JournalSubject_Type_name = map[int32]string{
+	0: "ACTIVITY",
+	1: "SYMPTOM",
+}
+
+var JournalSubject_Type_value = map[string]int32{
+	"ACTIVITY": 0,
+	"SYMPTOM":  1,
+}
+
+func (x JournalSubject_Type) String() string {
+	return proto.EnumName(JournalSubject_Type_name, int32(x))
+}
+
+func (JournalSubject_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{0, 0}
+}
+
+type JournalEntry_Severity int32
+
+const (
+	JournalEntry_NONE JournalEntry_Severity = 0
+	JournalEntry_LOW  JournalEntry_Severity = 1
+	JournalEntry_MID  JournalEntry_Severity = 2
+	JournalEntry_HIGH JournalEntry_Severity = 3
+)
+
+var JournalEntry_Severity_name = map[int32]string{
+	0: "NONE",
+	1: "LOW",
+	2: "MID",
+	3: "HIGH",
+}
+
+var JournalEntry_Severity_value = map[string]int32{
+	"NONE": 0,
+	"LOW":  1,
+	"MID":  2,
+	"HIGH": 3,
+}
+
+func (x JournalEntry_Severity) String() string {
+	return proto.EnumName(JournalEntry_Severity_name, int32(x))
+}
+
+func (JournalEntry_Severity) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{1, 0}
+}
+
+type JournalSubject struct {
+	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Key                  string               `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	Name                 string               `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Type                 JournalSubject_Type  `protobuf:"varint,4,opt,name=type,proto3,enum=service.JournalSubject_Type" json:"type,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *JournalSubject) Reset()         { *m = JournalSubject{} }
+func (m *JournalSubject) String() string { return proto.CompactTextString(m) }
+func (*JournalSubject) ProtoMessage()    {}
+func (*JournalSubject) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{0}
+}
+
+func (m *JournalSubject) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JournalSubject.Unmarshal(m, b)
+}
+func (m *JournalSubject) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JournalSubject.Marshal(b, m, deterministic)
+}
+func (m *JournalSubject) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JournalSubject.Merge(m, src)
+}
+func (m *JournalSubject) XXX_Size() int {
+	return xxx_messageInfo_JournalSubject.Size(m)
+}
+func (m *JournalSubject) XXX_DiscardUnknown() {
+	xxx_messageInfo_JournalSubject.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_JournalSubject proto.InternalMessageInfo
+
+func (m *JournalSubject) GetId() *resource.Identifier {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+func (m *JournalSubject) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *JournalSubject) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *JournalSubject) GetType() JournalSubject_Type {
+	if m != nil {
+		return m.Type
+	}
+	return JournalSubject_ACTIVITY
+}
+
+type JournalEntry struct {
+	Id                   *resource.Identifier  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	JournalId            *resource.Identifier  `protobuf:"bytes,2,opt,name=journal_id,json=journalId,proto3" json:"journal_id,omitempty"`
+	Severity             JournalEntry_Severity `protobuf:"varint,3,opt,name=severity,proto3,enum=service.JournalEntry_Severity" json:"severity,omitempty"`
+	Note                 string                `protobuf:"bytes,4,opt,name=note,proto3" json:"note,omitempty"`
+	Day                  *date.Date            `protobuf:"bytes,5,opt,name=day,proto3" json:"day,omitempty"`
+	JournalSubjectId     *resource.Identifier  `protobuf:"bytes,6,opt,name=journal_subject_id,json=journalSubjectId,proto3" json:"journal_subject_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *JournalEntry) Reset()         { *m = JournalEntry{} }
+func (m *JournalEntry) String() string { return proto.CompactTextString(m) }
+func (*JournalEntry) ProtoMessage()    {}
+func (*JournalEntry) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{1}
+}
+
+func (m *JournalEntry) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JournalEntry.Unmarshal(m, b)
+}
+func (m *JournalEntry) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JournalEntry.Marshal(b, m, deterministic)
+}
+func (m *JournalEntry) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JournalEntry.Merge(m, src)
+}
+func (m *JournalEntry) XXX_Size() int {
+	return xxx_messageInfo_JournalEntry.Size(m)
+}
+func (m *JournalEntry) XXX_DiscardUnknown() {
+	xxx_messageInfo_JournalEntry.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_JournalEntry proto.InternalMessageInfo
+
+func (m *JournalEntry) GetId() *resource.Identifier {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+func (m *JournalEntry) GetJournalId() *resource.Identifier {
+	if m != nil {
+		return m.JournalId
+	}
+	return nil
+}
+
+func (m *JournalEntry) GetSeverity() JournalEntry_Severity {
+	if m != nil {
+		return m.Severity
+	}
+	return JournalEntry_NONE
+}
+
+func (m *JournalEntry) GetNote() string {
+	if m != nil {
+		return m.Note
+	}
+	return ""
+}
+
+func (m *JournalEntry) GetDay() *date.Date {
+	if m != nil {
+		return m.Day
+	}
+	return nil
+}
+
+func (m *JournalEntry) GetJournalSubjectId() *resource.Identifier {
+	if m != nil {
+		return m.JournalSubjectId
+	}
+	return nil
+}
+
+type CreateJournalEntryRequest struct {
+	Payload              *JournalEntry `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *CreateJournalEntryRequest) Reset()         { *m = CreateJournalEntryRequest{} }
+func (m *CreateJournalEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateJournalEntryRequest) ProtoMessage()    {}
+func (*CreateJournalEntryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{2}
+}
+
+func (m *CreateJournalEntryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateJournalEntryRequest.Unmarshal(m, b)
+}
+func (m *CreateJournalEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateJournalEntryRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateJournalEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateJournalEntryRequest.Merge(m, src)
+}
+func (m *CreateJournalEntryRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateJournalEntryRequest.Size(m)
+}
+func (m *CreateJournalEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateJournalEntryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateJournalEntryRequest proto.InternalMessageInfo
+
+func (m *CreateJournalEntryRequest) GetPayload() *JournalEntry {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateJournalEntryResponse struct {
+	Result               *JournalEntry `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *CreateJournalEntryResponse) Reset()         { *m = CreateJournalEntryResponse{} }
+func (m *CreateJournalEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateJournalEntryResponse) ProtoMessage()    {}
+func (*CreateJournalEntryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{3}
+}
+
+func (m *CreateJournalEntryResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateJournalEntryResponse.Unmarshal(m, b)
+}
+func (m *CreateJournalEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateJournalEntryResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateJournalEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateJournalEntryResponse.Merge(m, src)
+}
+func (m *CreateJournalEntryResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateJournalEntryResponse.Size(m)
+}
+func (m *CreateJournalEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateJournalEntryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateJournalEntryResponse proto.InternalMessageInfo
+
+func (m *CreateJournalEntryResponse) GetResult() *JournalEntry {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadJournalEntryRequest struct {
+	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *ReadJournalEntryRequest) Reset()         { *m = ReadJournalEntryRequest{} }
+func (m *ReadJournalEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadJournalEntryRequest) ProtoMessage()    {}
+func (*ReadJournalEntryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{4}
+}
+
+func (m *ReadJournalEntryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadJournalEntryRequest.Unmarshal(m, b)
+}
+func (m *ReadJournalEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadJournalEntryRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadJournalEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadJournalEntryRequest.Merge(m, src)
+}
+func (m *ReadJournalEntryRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadJournalEntryRequest.Size(m)
+}
+func (m *ReadJournalEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadJournalEntryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadJournalEntryRequest proto.InternalMessageInfo
+
+func (m *ReadJournalEntryRequest) GetId() *resource.Identifier {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type ReadJournalEntryResponse struct {
+	Result               *JournalEntry `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *ReadJournalEntryResponse) Reset()         { *m = ReadJournalEntryResponse{} }
+func (m *ReadJournalEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadJournalEntryResponse) ProtoMessage()    {}
+func (*ReadJournalEntryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{5}
+}
+
+func (m *ReadJournalEntryResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadJournalEntryResponse.Unmarshal(m, b)
+}
+func (m *ReadJournalEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadJournalEntryResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadJournalEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadJournalEntryResponse.Merge(m, src)
+}
+func (m *ReadJournalEntryResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadJournalEntryResponse.Size(m)
+}
+func (m *ReadJournalEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadJournalEntryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadJournalEntryResponse proto.InternalMessageInfo
+
+func (m *ReadJournalEntryResponse) GetResult() *JournalEntry {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateJournalEntryRequest struct {
+	Payload              *JournalEntry `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *UpdateJournalEntryRequest) Reset()         { *m = UpdateJournalEntryRequest{} }
+func (m *UpdateJournalEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateJournalEntryRequest) ProtoMessage()    {}
+func (*UpdateJournalEntryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{6}
+}
+
+func (m *UpdateJournalEntryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateJournalEntryRequest.Unmarshal(m, b)
+}
+func (m *UpdateJournalEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateJournalEntryRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateJournalEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateJournalEntryRequest.Merge(m, src)
+}
+func (m *UpdateJournalEntryRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateJournalEntryRequest.Size(m)
+}
+func (m *UpdateJournalEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateJournalEntryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateJournalEntryRequest proto.InternalMessageInfo
+
+func (m *UpdateJournalEntryRequest) GetPayload() *JournalEntry {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateJournalEntryResponse struct {
+	Result               *JournalEntry `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *UpdateJournalEntryResponse) Reset()         { *m = UpdateJournalEntryResponse{} }
+func (m *UpdateJournalEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateJournalEntryResponse) ProtoMessage()    {}
+func (*UpdateJournalEntryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{7}
+}
+
+func (m *UpdateJournalEntryResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateJournalEntryResponse.Unmarshal(m, b)
+}
+func (m *UpdateJournalEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateJournalEntryResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateJournalEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateJournalEntryResponse.Merge(m, src)
+}
+func (m *UpdateJournalEntryResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateJournalEntryResponse.Size(m)
+}
+func (m *UpdateJournalEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateJournalEntryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateJournalEntryResponse proto.InternalMessageInfo
+
+func (m *UpdateJournalEntryResponse) GetResult() *JournalEntry {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteJournalEntryRequest struct {
+	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *DeleteJournalEntryRequest) Reset()         { *m = DeleteJournalEntryRequest{} }
+func (m *DeleteJournalEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteJournalEntryRequest) ProtoMessage()    {}
+func (*DeleteJournalEntryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{8}
+}
+
+func (m *DeleteJournalEntryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteJournalEntryRequest.Unmarshal(m, b)
+}
+func (m *DeleteJournalEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteJournalEntryRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteJournalEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteJournalEntryRequest.Merge(m, src)
+}
+func (m *DeleteJournalEntryRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteJournalEntryRequest.Size(m)
+}
+func (m *DeleteJournalEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteJournalEntryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteJournalEntryRequest proto.InternalMessageInfo
+
+func (m *DeleteJournalEntryRequest) GetId() *resource.Identifier {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type DeleteJournalEntryResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteJournalEntryResponse) Reset()         { *m = DeleteJournalEntryResponse{} }
+func (m *DeleteJournalEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteJournalEntryResponse) ProtoMessage()    {}
+func (*DeleteJournalEntryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{9}
+}
+
+func (m *DeleteJournalEntryResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteJournalEntryResponse.Unmarshal(m, b)
+}
+func (m *DeleteJournalEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteJournalEntryResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteJournalEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteJournalEntryResponse.Merge(m, src)
+}
+func (m *DeleteJournalEntryResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteJournalEntryResponse.Size(m)
+}
+func (m *DeleteJournalEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteJournalEntryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteJournalEntryResponse proto.InternalMessageInfo
+
+type ListJournalEntryRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListJournalEntryRequest) Reset()         { *m = ListJournalEntryRequest{} }
+func (m *ListJournalEntryRequest) String() string { return proto.CompactTextString(m) }
+func (*ListJournalEntryRequest) ProtoMessage()    {}
+func (*ListJournalEntryRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{10}
+}
+
+func (m *ListJournalEntryRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListJournalEntryRequest.Unmarshal(m, b)
+}
+func (m *ListJournalEntryRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListJournalEntryRequest.Marshal(b, m, deterministic)
+}
+func (m *ListJournalEntryRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListJournalEntryRequest.Merge(m, src)
+}
+func (m *ListJournalEntryRequest) XXX_Size() int {
+	return xxx_messageInfo_ListJournalEntryRequest.Size(m)
+}
+func (m *ListJournalEntryRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListJournalEntryRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListJournalEntryRequest proto.InternalMessageInfo
+
+func (m *ListJournalEntryRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListJournalEntryRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListJournalEntryRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListJournalEntryRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListJournalEntryResponse struct {
+	Results              []*JournalEntry `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *ListJournalEntryResponse) Reset()         { *m = ListJournalEntryResponse{} }
+func (m *ListJournalEntryResponse) String() string { return proto.CompactTextString(m) }
+func (*ListJournalEntryResponse) ProtoMessage()    {}
+func (*ListJournalEntryResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{11}
+}
+
+func (m *ListJournalEntryResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListJournalEntryResponse.Unmarshal(m, b)
+}
+func (m *ListJournalEntryResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListJournalEntryResponse.Marshal(b, m, deterministic)
+}
+func (m *ListJournalEntryResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListJournalEntryResponse.Merge(m, src)
+}
+func (m *ListJournalEntryResponse) XXX_Size() int {
+	return xxx_messageInfo_ListJournalEntryResponse.Size(m)
+}
+func (m *ListJournalEntryResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListJournalEntryResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListJournalEntryResponse proto.InternalMessageInfo
+
+func (m *ListJournalEntryResponse) GetResults() []*JournalEntry {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type ListJournalSubjectRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListJournalSubjectRequest) Reset()         { *m = ListJournalSubjectRequest{} }
+func (m *ListJournalSubjectRequest) String() string { return proto.CompactTextString(m) }
+func (*ListJournalSubjectRequest) ProtoMessage()    {}
+func (*ListJournalSubjectRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{12}
+}
+
+func (m *ListJournalSubjectRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListJournalSubjectRequest.Unmarshal(m, b)
+}
+func (m *ListJournalSubjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListJournalSubjectRequest.Marshal(b, m, deterministic)
+}
+func (m *ListJournalSubjectRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListJournalSubjectRequest.Merge(m, src)
+}
+func (m *ListJournalSubjectRequest) XXX_Size() int {
+	return xxx_messageInfo_ListJournalSubjectRequest.Size(m)
+}
+func (m *ListJournalSubjectRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListJournalSubjectRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListJournalSubjectRequest proto.InternalMessageInfo
+
+func (m *ListJournalSubjectRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListJournalSubjectRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListJournalSubjectRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListJournalSubjectRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListJournalSubjectResponse struct {
+	Results              []*JournalSubject `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *ListJournalSubjectResponse) Reset()         { *m = ListJournalSubjectResponse{} }
+func (m *ListJournalSubjectResponse) String() string { return proto.CompactTextString(m) }
+func (*ListJournalSubjectResponse) ProtoMessage()    {}
+func (*ListJournalSubjectResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4223590d2dd0caaa, []int{13}
+}
+
+func (m *ListJournalSubjectResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListJournalSubjectResponse.Unmarshal(m, b)
+}
+func (m *ListJournalSubjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListJournalSubjectResponse.Marshal(b, m, deterministic)
+}
+func (m *ListJournalSubjectResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListJournalSubjectResponse.Merge(m, src)
+}
+func (m *ListJournalSubjectResponse) XXX_Size() int {
+	return xxx_messageInfo_ListJournalSubjectResponse.Size(m)
+}
+func (m *ListJournalSubjectResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListJournalSubjectResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListJournalSubjectResponse proto.InternalMessageInfo
+
+func (m *ListJournalSubjectResponse) GetResults() []*JournalSubject {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
 type Profile struct {
 	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name                 string               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Notes                string               `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
-	Contacts             []*Contact           `protobuf:"bytes,4,rep,name=contacts,proto3" json:"contacts,omitempty"`
-	Groups               []*Group             `protobuf:"bytes,5,rep,name=groups,proto3" json:"groups,omitempty"`
+	Notes                string               `protobuf:"bytes,2,opt,name=notes,proto3" json:"notes,omitempty"`
+	FirstName            string               `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName             string               `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	PrimaryEmail         string               `protobuf:"bytes,5,opt,name=primary_email,json=primaryEmail,proto3" json:"primary_email,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -45,7 +753,7 @@ func (m *Profile) Reset()         { *m = Profile{} }
 func (m *Profile) String() string { return proto.CompactTextString(m) }
 func (*Profile) ProtoMessage()    {}
 func (*Profile) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{0}
+	return fileDescriptor_4223590d2dd0caaa, []int{14}
 }
 
 func (m *Profile) XXX_Unmarshal(b []byte) error {
@@ -73,13 +781,6 @@ func (m *Profile) GetId() *resource.Identifier {
 	return nil
 }
 
-func (m *Profile) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
 func (m *Profile) GetNotes() string {
 	if m != nil {
 		return m.Notes
@@ -87,18 +788,25 @@ func (m *Profile) GetNotes() string {
 	return ""
 }
 
-func (m *Profile) GetContacts() []*Contact {
+func (m *Profile) GetFirstName() string {
 	if m != nil {
-		return m.Contacts
+		return m.FirstName
 	}
-	return nil
+	return ""
 }
 
-func (m *Profile) GetGroups() []*Group {
+func (m *Profile) GetLastName() string {
 	if m != nil {
-		return m.Groups
+		return m.LastName
 	}
-	return nil
+	return ""
+}
+
+func (m *Profile) GetPrimaryEmail() string {
+	if m != nil {
+		return m.PrimaryEmail
+	}
+	return ""
 }
 
 type CreateProfileRequest struct {
@@ -112,7 +820,7 @@ func (m *CreateProfileRequest) Reset()         { *m = CreateProfileRequest{} }
 func (m *CreateProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateProfileRequest) ProtoMessage()    {}
 func (*CreateProfileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{1}
+	return fileDescriptor_4223590d2dd0caaa, []int{15}
 }
 
 func (m *CreateProfileRequest) XXX_Unmarshal(b []byte) error {
@@ -151,7 +859,7 @@ func (m *CreateProfileResponse) Reset()         { *m = CreateProfileResponse{} }
 func (m *CreateProfileResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateProfileResponse) ProtoMessage()    {}
 func (*CreateProfileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{2}
+	return fileDescriptor_4223590d2dd0caaa, []int{16}
 }
 
 func (m *CreateProfileResponse) XXX_Unmarshal(b []byte) error {
@@ -190,7 +898,7 @@ func (m *ReadProfileRequest) Reset()         { *m = ReadProfileRequest{} }
 func (m *ReadProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadProfileRequest) ProtoMessage()    {}
 func (*ReadProfileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{3}
+	return fileDescriptor_4223590d2dd0caaa, []int{17}
 }
 
 func (m *ReadProfileRequest) XXX_Unmarshal(b []byte) error {
@@ -229,7 +937,7 @@ func (m *ReadProfileResponse) Reset()         { *m = ReadProfileResponse{} }
 func (m *ReadProfileResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadProfileResponse) ProtoMessage()    {}
 func (*ReadProfileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{4}
+	return fileDescriptor_4223590d2dd0caaa, []int{18}
 }
 
 func (m *ReadProfileResponse) XXX_Unmarshal(b []byte) error {
@@ -268,7 +976,7 @@ func (m *UpdateProfileRequest) Reset()         { *m = UpdateProfileRequest{} }
 func (m *UpdateProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateProfileRequest) ProtoMessage()    {}
 func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{5}
+	return fileDescriptor_4223590d2dd0caaa, []int{19}
 }
 
 func (m *UpdateProfileRequest) XXX_Unmarshal(b []byte) error {
@@ -307,7 +1015,7 @@ func (m *UpdateProfileResponse) Reset()         { *m = UpdateProfileResponse{} }
 func (m *UpdateProfileResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateProfileResponse) ProtoMessage()    {}
 func (*UpdateProfileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{6}
+	return fileDescriptor_4223590d2dd0caaa, []int{20}
 }
 
 func (m *UpdateProfileResponse) XXX_Unmarshal(b []byte) error {
@@ -346,7 +1054,7 @@ func (m *DeleteProfileRequest) Reset()         { *m = DeleteProfileRequest{} }
 func (m *DeleteProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteProfileRequest) ProtoMessage()    {}
 func (*DeleteProfileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{7}
+	return fileDescriptor_4223590d2dd0caaa, []int{21}
 }
 
 func (m *DeleteProfileRequest) XXX_Unmarshal(b []byte) error {
@@ -384,7 +1092,7 @@ func (m *DeleteProfileResponse) Reset()         { *m = DeleteProfileResponse{} }
 func (m *DeleteProfileResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteProfileResponse) ProtoMessage()    {}
 func (*DeleteProfileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{8}
+	return fileDescriptor_4223590d2dd0caaa, []int{22}
 }
 
 func (m *DeleteProfileResponse) XXX_Unmarshal(b []byte) error {
@@ -419,7 +1127,7 @@ func (m *ListProfileRequest) Reset()         { *m = ListProfileRequest{} }
 func (m *ListProfileRequest) String() string { return proto.CompactTextString(m) }
 func (*ListProfileRequest) ProtoMessage()    {}
 func (*ListProfileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{9}
+	return fileDescriptor_4223590d2dd0caaa, []int{23}
 }
 
 func (m *ListProfileRequest) XXX_Unmarshal(b []byte) error {
@@ -479,7 +1187,7 @@ func (m *ListProfilesResponse) Reset()         { *m = ListProfilesResponse{} }
 func (m *ListProfilesResponse) String() string { return proto.CompactTextString(m) }
 func (*ListProfilesResponse) ProtoMessage()    {}
 func (*ListProfilesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{10}
+	return fileDescriptor_4223590d2dd0caaa, []int{24}
 }
 
 func (m *ListProfilesResponse) XXX_Unmarshal(b []byte) error {
@@ -512,7 +1220,6 @@ type Group struct {
 	Name                 string               `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Notes                string               `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
 	ProfileId            *resource.Identifier `protobuf:"bytes,4,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
-	Contacts             []*Contact           `protobuf:"bytes,5,rep,name=contacts,proto3" json:"contacts,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -522,7 +1229,7 @@ func (m *Group) Reset()         { *m = Group{} }
 func (m *Group) String() string { return proto.CompactTextString(m) }
 func (*Group) ProtoMessage()    {}
 func (*Group) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{11}
+	return fileDescriptor_4223590d2dd0caaa, []int{25}
 }
 
 func (m *Group) XXX_Unmarshal(b []byte) error {
@@ -571,13 +1278,6 @@ func (m *Group) GetProfileId() *resource.Identifier {
 	return nil
 }
 
-func (m *Group) GetContacts() []*Contact {
-	if m != nil {
-		return m.Contacts
-	}
-	return nil
-}
-
 type CreateGroupRequest struct {
 	Payload              *Group   `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -589,7 +1289,7 @@ func (m *CreateGroupRequest) Reset()         { *m = CreateGroupRequest{} }
 func (m *CreateGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupRequest) ProtoMessage()    {}
 func (*CreateGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{12}
+	return fileDescriptor_4223590d2dd0caaa, []int{26}
 }
 
 func (m *CreateGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -628,7 +1328,7 @@ func (m *CreateGroupResponse) Reset()         { *m = CreateGroupResponse{} }
 func (m *CreateGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateGroupResponse) ProtoMessage()    {}
 func (*CreateGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{13}
+	return fileDescriptor_4223590d2dd0caaa, []int{27}
 }
 
 func (m *CreateGroupResponse) XXX_Unmarshal(b []byte) error {
@@ -667,7 +1367,7 @@ func (m *ReadGroupRequest) Reset()         { *m = ReadGroupRequest{} }
 func (m *ReadGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadGroupRequest) ProtoMessage()    {}
 func (*ReadGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{14}
+	return fileDescriptor_4223590d2dd0caaa, []int{28}
 }
 
 func (m *ReadGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -706,7 +1406,7 @@ func (m *ReadGroupResponse) Reset()         { *m = ReadGroupResponse{} }
 func (m *ReadGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadGroupResponse) ProtoMessage()    {}
 func (*ReadGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{15}
+	return fileDescriptor_4223590d2dd0caaa, []int{29}
 }
 
 func (m *ReadGroupResponse) XXX_Unmarshal(b []byte) error {
@@ -745,7 +1445,7 @@ func (m *UpdateGroupRequest) Reset()         { *m = UpdateGroupRequest{} }
 func (m *UpdateGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupRequest) ProtoMessage()    {}
 func (*UpdateGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{16}
+	return fileDescriptor_4223590d2dd0caaa, []int{30}
 }
 
 func (m *UpdateGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -784,7 +1484,7 @@ func (m *UpdateGroupResponse) Reset()         { *m = UpdateGroupResponse{} }
 func (m *UpdateGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateGroupResponse) ProtoMessage()    {}
 func (*UpdateGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{17}
+	return fileDescriptor_4223590d2dd0caaa, []int{31}
 }
 
 func (m *UpdateGroupResponse) XXX_Unmarshal(b []byte) error {
@@ -823,7 +1523,7 @@ func (m *DeleteGroupRequest) Reset()         { *m = DeleteGroupRequest{} }
 func (m *DeleteGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteGroupRequest) ProtoMessage()    {}
 func (*DeleteGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{18}
+	return fileDescriptor_4223590d2dd0caaa, []int{32}
 }
 
 func (m *DeleteGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -861,7 +1561,7 @@ func (m *DeleteGroupResponse) Reset()         { *m = DeleteGroupResponse{} }
 func (m *DeleteGroupResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteGroupResponse) ProtoMessage()    {}
 func (*DeleteGroupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{19}
+	return fileDescriptor_4223590d2dd0caaa, []int{33}
 }
 
 func (m *DeleteGroupResponse) XXX_Unmarshal(b []byte) error {
@@ -896,7 +1596,7 @@ func (m *ListGroupRequest) Reset()         { *m = ListGroupRequest{} }
 func (m *ListGroupRequest) String() string { return proto.CompactTextString(m) }
 func (*ListGroupRequest) ProtoMessage()    {}
 func (*ListGroupRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{20}
+	return fileDescriptor_4223590d2dd0caaa, []int{34}
 }
 
 func (m *ListGroupRequest) XXX_Unmarshal(b []byte) error {
@@ -945,784 +1645,62 @@ func (m *ListGroupRequest) GetPaging() *query.Pagination {
 	return nil
 }
 
-type ListGroupsResponse struct {
+type ListGroupResponse struct {
 	Results              []*Group `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ListGroupsResponse) Reset()         { *m = ListGroupsResponse{} }
-func (m *ListGroupsResponse) String() string { return proto.CompactTextString(m) }
-func (*ListGroupsResponse) ProtoMessage()    {}
-func (*ListGroupsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{21}
-}
-
-func (m *ListGroupsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListGroupsResponse.Unmarshal(m, b)
-}
-func (m *ListGroupsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListGroupsResponse.Marshal(b, m, deterministic)
-}
-func (m *ListGroupsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListGroupsResponse.Merge(m, src)
-}
-func (m *ListGroupsResponse) XXX_Size() int {
-	return xxx_messageInfo_ListGroupsResponse.Size(m)
-}
-func (m *ListGroupsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListGroupsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListGroupsResponse proto.InternalMessageInfo
-
-func (m *ListGroupsResponse) GetResults() []*Group {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type Contact struct {
-	Id           *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	FirstName    string               `protobuf:"bytes,2,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	MiddleName   string               `protobuf:"bytes,3,opt,name=middle_name,json=middleName,proto3" json:"middle_name,omitempty"`
-	LastName     string               `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	PrimaryEmail string               `protobuf:"bytes,5,opt,name=primary_email,json=primaryEmail,proto3" json:"primary_email,omitempty"`
-	Notes        string               `protobuf:"bytes,6,opt,name=notes,proto3" json:"notes,omitempty"`
-	Emails       []*Email             `protobuf:"bytes,7,rep,name=emails,proto3" json:"emails,omitempty"`
-	HomeAddress  *Address             `protobuf:"bytes,8,opt,name=home_address,json=homeAddress,proto3" json:"home_address,omitempty"`
-	WorkAddress  *Address             `protobuf:"bytes,9,opt,name=work_address,json=workAddress,proto3" json:"work_address,omitempty"`
-	ProfileId    *resource.Identifier `protobuf:"bytes,10,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
-	Groups       []*Group             `protobuf:"bytes,11,rep,name=groups,proto3" json:"groups,omitempty"`
-	// nicknames is arbitrary json, but should be used for a list of strings
-	Nicknames            *types.JSONValue `protobuf:"bytes,12,opt,name=nicknames,proto3" json:"nicknames,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *Contact) Reset()         { *m = Contact{} }
-func (m *Contact) String() string { return proto.CompactTextString(m) }
-func (*Contact) ProtoMessage()    {}
-func (*Contact) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{22}
-}
-
-func (m *Contact) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Contact.Unmarshal(m, b)
-}
-func (m *Contact) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Contact.Marshal(b, m, deterministic)
-}
-func (m *Contact) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Contact.Merge(m, src)
-}
-func (m *Contact) XXX_Size() int {
-	return xxx_messageInfo_Contact.Size(m)
-}
-func (m *Contact) XXX_DiscardUnknown() {
-	xxx_messageInfo_Contact.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Contact proto.InternalMessageInfo
-
-func (m *Contact) GetId() *resource.Identifier {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-func (m *Contact) GetFirstName() string {
-	if m != nil {
-		return m.FirstName
-	}
-	return ""
-}
-
-func (m *Contact) GetMiddleName() string {
-	if m != nil {
-		return m.MiddleName
-	}
-	return ""
-}
-
-func (m *Contact) GetLastName() string {
-	if m != nil {
-		return m.LastName
-	}
-	return ""
-}
-
-func (m *Contact) GetPrimaryEmail() string {
-	if m != nil {
-		return m.PrimaryEmail
-	}
-	return ""
-}
-
-func (m *Contact) GetNotes() string {
-	if m != nil {
-		return m.Notes
-	}
-	return ""
-}
-
-func (m *Contact) GetEmails() []*Email {
-	if m != nil {
-		return m.Emails
-	}
-	return nil
-}
-
-func (m *Contact) GetHomeAddress() *Address {
-	if m != nil {
-		return m.HomeAddress
-	}
-	return nil
-}
-
-func (m *Contact) GetWorkAddress() *Address {
-	if m != nil {
-		return m.WorkAddress
-	}
-	return nil
-}
-
-func (m *Contact) GetProfileId() *resource.Identifier {
-	if m != nil {
-		return m.ProfileId
-	}
-	return nil
-}
-
-func (m *Contact) GetGroups() []*Group {
-	if m != nil {
-		return m.Groups
-	}
-	return nil
-}
-
-func (m *Contact) GetNicknames() *types.JSONValue {
-	if m != nil {
-		return m.Nicknames
-	}
-	return nil
-}
-
-type Email struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address              string   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Email) Reset()         { *m = Email{} }
-func (m *Email) String() string { return proto.CompactTextString(m) }
-func (*Email) ProtoMessage()    {}
-func (*Email) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{23}
-}
-
-func (m *Email) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Email.Unmarshal(m, b)
-}
-func (m *Email) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Email.Marshal(b, m, deterministic)
-}
-func (m *Email) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Email.Merge(m, src)
-}
-func (m *Email) XXX_Size() int {
-	return xxx_messageInfo_Email.Size(m)
-}
-func (m *Email) XXX_DiscardUnknown() {
-	xxx_messageInfo_Email.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Email proto.InternalMessageInfo
-
-func (m *Email) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *Email) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-type Address struct {
-	Address              string   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	City                 string   `protobuf:"bytes,2,opt,name=city,proto3" json:"city,omitempty"`
-	State                string   `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
-	Zip                  string   `protobuf:"bytes,4,opt,name=zip,proto3" json:"zip,omitempty"`
-	Country              string   `protobuf:"bytes,5,opt,name=country,proto3" json:"country,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Address) Reset()         { *m = Address{} }
-func (m *Address) String() string { return proto.CompactTextString(m) }
-func (*Address) ProtoMessage()    {}
-func (*Address) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{24}
-}
-
-func (m *Address) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Address.Unmarshal(m, b)
-}
-func (m *Address) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Address.Marshal(b, m, deterministic)
-}
-func (m *Address) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Address.Merge(m, src)
-}
-func (m *Address) XXX_Size() int {
-	return xxx_messageInfo_Address.Size(m)
-}
-func (m *Address) XXX_DiscardUnknown() {
-	xxx_messageInfo_Address.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Address proto.InternalMessageInfo
-
-func (m *Address) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *Address) GetCity() string {
-	if m != nil {
-		return m.City
-	}
-	return ""
-}
-
-func (m *Address) GetState() string {
-	if m != nil {
-		return m.State
-	}
-	return ""
-}
-
-func (m *Address) GetZip() string {
-	if m != nil {
-		return m.Zip
-	}
-	return ""
-}
-
-func (m *Address) GetCountry() string {
-	if m != nil {
-		return m.Country
-	}
-	return ""
-}
-
-type CreateContactRequest struct {
-	Payload              *Contact `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateContactRequest) Reset()         { *m = CreateContactRequest{} }
-func (m *CreateContactRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateContactRequest) ProtoMessage()    {}
-func (*CreateContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{25}
-}
-
-func (m *CreateContactRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateContactRequest.Unmarshal(m, b)
-}
-func (m *CreateContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateContactRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateContactRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateContactRequest.Merge(m, src)
-}
-func (m *CreateContactRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateContactRequest.Size(m)
-}
-func (m *CreateContactRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateContactRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateContactRequest proto.InternalMessageInfo
-
-func (m *CreateContactRequest) GetPayload() *Contact {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateContactResponse struct {
-	Result               *Contact `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateContactResponse) Reset()         { *m = CreateContactResponse{} }
-func (m *CreateContactResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateContactResponse) ProtoMessage()    {}
-func (*CreateContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{26}
-}
-
-func (m *CreateContactResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateContactResponse.Unmarshal(m, b)
-}
-func (m *CreateContactResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateContactResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateContactResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateContactResponse.Merge(m, src)
-}
-func (m *CreateContactResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateContactResponse.Size(m)
-}
-func (m *CreateContactResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateContactResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateContactResponse proto.InternalMessageInfo
-
-func (m *CreateContactResponse) GetResult() *Contact {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadContactRequest struct {
-	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *ReadContactRequest) Reset()         { *m = ReadContactRequest{} }
-func (m *ReadContactRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadContactRequest) ProtoMessage()    {}
-func (*ReadContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{27}
-}
-
-func (m *ReadContactRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadContactRequest.Unmarshal(m, b)
-}
-func (m *ReadContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadContactRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadContactRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadContactRequest.Merge(m, src)
-}
-func (m *ReadContactRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadContactRequest.Size(m)
-}
-func (m *ReadContactRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadContactRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadContactRequest proto.InternalMessageInfo
-
-func (m *ReadContactRequest) GetId() *resource.Identifier {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type ReadContactResponse struct {
-	Result               *Contact `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReadContactResponse) Reset()         { *m = ReadContactResponse{} }
-func (m *ReadContactResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadContactResponse) ProtoMessage()    {}
-func (*ReadContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{28}
-}
-
-func (m *ReadContactResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadContactResponse.Unmarshal(m, b)
-}
-func (m *ReadContactResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadContactResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadContactResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadContactResponse.Merge(m, src)
-}
-func (m *ReadContactResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadContactResponse.Size(m)
-}
-func (m *ReadContactResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadContactResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadContactResponse proto.InternalMessageInfo
-
-func (m *ReadContactResponse) GetResult() *Contact {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateContactRequest struct {
-	Payload              *Contact              `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	Fields               *field_mask.FieldMask `protobuf:"bytes,2,opt,name=fields,proto3" json:"fields,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *UpdateContactRequest) Reset()         { *m = UpdateContactRequest{} }
-func (m *UpdateContactRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateContactRequest) ProtoMessage()    {}
-func (*UpdateContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{29}
-}
-
-func (m *UpdateContactRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateContactRequest.Unmarshal(m, b)
-}
-func (m *UpdateContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateContactRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateContactRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateContactRequest.Merge(m, src)
-}
-func (m *UpdateContactRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateContactRequest.Size(m)
-}
-func (m *UpdateContactRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateContactRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateContactRequest proto.InternalMessageInfo
-
-func (m *UpdateContactRequest) GetPayload() *Contact {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-func (m *UpdateContactRequest) GetFields() *field_mask.FieldMask {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-type UpdateContactResponse struct {
-	Result               *Contact `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *UpdateContactResponse) Reset()         { *m = UpdateContactResponse{} }
-func (m *UpdateContactResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateContactResponse) ProtoMessage()    {}
-func (*UpdateContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{30}
-}
-
-func (m *UpdateContactResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateContactResponse.Unmarshal(m, b)
-}
-func (m *UpdateContactResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateContactResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateContactResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateContactResponse.Merge(m, src)
-}
-func (m *UpdateContactResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateContactResponse.Size(m)
-}
-func (m *UpdateContactResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateContactResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateContactResponse proto.InternalMessageInfo
-
-func (m *UpdateContactResponse) GetResult() *Contact {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteContactRequest struct {
-	Id                   *resource.Identifier `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *DeleteContactRequest) Reset()         { *m = DeleteContactRequest{} }
-func (m *DeleteContactRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteContactRequest) ProtoMessage()    {}
-func (*DeleteContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{31}
-}
-
-func (m *DeleteContactRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteContactRequest.Unmarshal(m, b)
-}
-func (m *DeleteContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteContactRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteContactRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteContactRequest.Merge(m, src)
-}
-func (m *DeleteContactRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteContactRequest.Size(m)
-}
-func (m *DeleteContactRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteContactRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteContactRequest proto.InternalMessageInfo
-
-func (m *DeleteContactRequest) GetId() *resource.Identifier {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type DeleteContactResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteContactResponse) Reset()         { *m = DeleteContactResponse{} }
-func (m *DeleteContactResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteContactResponse) ProtoMessage()    {}
-func (*DeleteContactResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{32}
-}
-
-func (m *DeleteContactResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteContactResponse.Unmarshal(m, b)
-}
-func (m *DeleteContactResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteContactResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteContactResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteContactResponse.Merge(m, src)
-}
-func (m *DeleteContactResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteContactResponse.Size(m)
-}
-func (m *DeleteContactResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteContactResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteContactResponse proto.InternalMessageInfo
-
-type ListContactsResponse struct {
-	Results              []*Contact `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *ListContactsResponse) Reset()         { *m = ListContactsResponse{} }
-func (m *ListContactsResponse) String() string { return proto.CompactTextString(m) }
-func (*ListContactsResponse) ProtoMessage()    {}
-func (*ListContactsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{33}
-}
-
-func (m *ListContactsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListContactsResponse.Unmarshal(m, b)
-}
-func (m *ListContactsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListContactsResponse.Marshal(b, m, deterministic)
-}
-func (m *ListContactsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListContactsResponse.Merge(m, src)
-}
-func (m *ListContactsResponse) XXX_Size() int {
-	return xxx_messageInfo_ListContactsResponse.Size(m)
-}
-func (m *ListContactsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListContactsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListContactsResponse proto.InternalMessageInfo
-
-func (m *ListContactsResponse) GetResults() []*Contact {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type SMSRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Message              string   `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SMSRequest) Reset()         { *m = SMSRequest{} }
-func (m *SMSRequest) String() string { return proto.CompactTextString(m) }
-func (*SMSRequest) ProtoMessage()    {}
-func (*SMSRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{34}
-}
-
-func (m *SMSRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMSRequest.Unmarshal(m, b)
-}
-func (m *SMSRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMSRequest.Marshal(b, m, deterministic)
-}
-func (m *SMSRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMSRequest.Merge(m, src)
-}
-func (m *SMSRequest) XXX_Size() int {
-	return xxx_messageInfo_SMSRequest.Size(m)
-}
-func (m *SMSRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMSRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SMSRequest proto.InternalMessageInfo
-
-func (m *SMSRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *SMSRequest) GetMessage() string {
-	if m != nil {
-		return m.Message
-	}
-	return ""
-}
-
-type SMSResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SMSResponse) Reset()         { *m = SMSResponse{} }
-func (m *SMSResponse) String() string { return proto.CompactTextString(m) }
-func (*SMSResponse) ProtoMessage()    {}
-func (*SMSResponse) Descriptor() ([]byte, []int) {
+func (m *ListGroupResponse) Reset()         { *m = ListGroupResponse{} }
+func (m *ListGroupResponse) String() string { return proto.CompactTextString(m) }
+func (*ListGroupResponse) ProtoMessage()    {}
+func (*ListGroupResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4223590d2dd0caaa, []int{35}
 }
 
-func (m *SMSResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SMSResponse.Unmarshal(m, b)
+func (m *ListGroupResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListGroupResponse.Unmarshal(m, b)
 }
-func (m *SMSResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SMSResponse.Marshal(b, m, deterministic)
+func (m *ListGroupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListGroupResponse.Marshal(b, m, deterministic)
 }
-func (m *SMSResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SMSResponse.Merge(m, src)
+func (m *ListGroupResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListGroupResponse.Merge(m, src)
 }
-func (m *SMSResponse) XXX_Size() int {
-	return xxx_messageInfo_SMSResponse.Size(m)
+func (m *ListGroupResponse) XXX_Size() int {
+	return xxx_messageInfo_ListGroupResponse.Size(m)
 }
-func (m *SMSResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SMSResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SMSResponse proto.InternalMessageInfo
-
-type ListContactRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
+func (m *ListGroupResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListGroupResponse.DiscardUnknown(m)
 }
 
-func (m *ListContactRequest) Reset()         { *m = ListContactRequest{} }
-func (m *ListContactRequest) String() string { return proto.CompactTextString(m) }
-func (*ListContactRequest) ProtoMessage()    {}
-func (*ListContactRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4223590d2dd0caaa, []int{36}
-}
+var xxx_messageInfo_ListGroupResponse proto.InternalMessageInfo
 
-func (m *ListContactRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListContactRequest.Unmarshal(m, b)
-}
-func (m *ListContactRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListContactRequest.Marshal(b, m, deterministic)
-}
-func (m *ListContactRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListContactRequest.Merge(m, src)
-}
-func (m *ListContactRequest) XXX_Size() int {
-	return xxx_messageInfo_ListContactRequest.Size(m)
-}
-func (m *ListContactRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListContactRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListContactRequest proto.InternalMessageInfo
-
-func (m *ListContactRequest) GetFilter() *query.Filtering {
+func (m *ListGroupResponse) GetResults() []*Group {
 	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListContactRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListContactRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListContactRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
+		return m.Results
 	}
 	return nil
 }
 
 func init() {
+	proto.RegisterEnum("service.JournalSubject_Type", JournalSubject_Type_name, JournalSubject_Type_value)
+	proto.RegisterEnum("service.JournalEntry_Severity", JournalEntry_Severity_name, JournalEntry_Severity_value)
+	proto.RegisterType((*JournalSubject)(nil), "service.JournalSubject")
+	proto.RegisterType((*JournalEntry)(nil), "service.JournalEntry")
+	proto.RegisterType((*CreateJournalEntryRequest)(nil), "service.CreateJournalEntryRequest")
+	proto.RegisterType((*CreateJournalEntryResponse)(nil), "service.CreateJournalEntryResponse")
+	proto.RegisterType((*ReadJournalEntryRequest)(nil), "service.ReadJournalEntryRequest")
+	proto.RegisterType((*ReadJournalEntryResponse)(nil), "service.ReadJournalEntryResponse")
+	proto.RegisterType((*UpdateJournalEntryRequest)(nil), "service.UpdateJournalEntryRequest")
+	proto.RegisterType((*UpdateJournalEntryResponse)(nil), "service.UpdateJournalEntryResponse")
+	proto.RegisterType((*DeleteJournalEntryRequest)(nil), "service.DeleteJournalEntryRequest")
+	proto.RegisterType((*DeleteJournalEntryResponse)(nil), "service.DeleteJournalEntryResponse")
+	proto.RegisterType((*ListJournalEntryRequest)(nil), "service.ListJournalEntryRequest")
+	proto.RegisterType((*ListJournalEntryResponse)(nil), "service.ListJournalEntryResponse")
+	proto.RegisterType((*ListJournalSubjectRequest)(nil), "service.ListJournalSubjectRequest")
+	proto.RegisterType((*ListJournalSubjectResponse)(nil), "service.ListJournalSubjectResponse")
 	proto.RegisterType((*Profile)(nil), "service.Profile")
 	proto.RegisterType((*CreateProfileRequest)(nil), "service.CreateProfileRequest")
 	proto.RegisterType((*CreateProfileResponse)(nil), "service.CreateProfileResponse")
@@ -1744,22 +1722,7 @@ func init() {
 	proto.RegisterType((*DeleteGroupRequest)(nil), "service.DeleteGroupRequest")
 	proto.RegisterType((*DeleteGroupResponse)(nil), "service.DeleteGroupResponse")
 	proto.RegisterType((*ListGroupRequest)(nil), "service.ListGroupRequest")
-	proto.RegisterType((*ListGroupsResponse)(nil), "service.ListGroupsResponse")
-	proto.RegisterType((*Contact)(nil), "service.Contact")
-	proto.RegisterType((*Email)(nil), "service.Email")
-	proto.RegisterType((*Address)(nil), "service.Address")
-	proto.RegisterType((*CreateContactRequest)(nil), "service.CreateContactRequest")
-	proto.RegisterType((*CreateContactResponse)(nil), "service.CreateContactResponse")
-	proto.RegisterType((*ReadContactRequest)(nil), "service.ReadContactRequest")
-	proto.RegisterType((*ReadContactResponse)(nil), "service.ReadContactResponse")
-	proto.RegisterType((*UpdateContactRequest)(nil), "service.UpdateContactRequest")
-	proto.RegisterType((*UpdateContactResponse)(nil), "service.UpdateContactResponse")
-	proto.RegisterType((*DeleteContactRequest)(nil), "service.DeleteContactRequest")
-	proto.RegisterType((*DeleteContactResponse)(nil), "service.DeleteContactResponse")
-	proto.RegisterType((*ListContactsResponse)(nil), "service.ListContactsResponse")
-	proto.RegisterType((*SMSRequest)(nil), "service.SMSRequest")
-	proto.RegisterType((*SMSResponse)(nil), "service.SMSResponse")
-	proto.RegisterType((*ListContactRequest)(nil), "service.ListContactRequest")
+	proto.RegisterType((*ListGroupResponse)(nil), "service.ListGroupResponse")
 }
 
 func init() {
@@ -1767,115 +1730,117 @@ func init() {
 }
 
 var fileDescriptor_4223590d2dd0caaa = []byte{
-	// 1720 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x58, 0x4b, 0x8f, 0xdb, 0xc6,
-	0x1d, 0x2f, 0x65, 0x3d, 0xff, 0x72, 0x5c, 0x65, 0x76, 0x5d, 0x53, 0xda, 0xdd, 0x56, 0x20, 0x50,
-	0x63, 0xb1, 0x8e, 0x44, 0x47, 0x36, 0x5a, 0x64, 0xdd, 0x6c, 0x6b, 0xb9, 0x69, 0x11, 0xa3, 0x4e,
-	0x02, 0x09, 0xe9, 0x21, 0x40, 0x20, 0x8c, 0xc8, 0x91, 0x76, 0xb2, 0x14, 0x87, 0xe1, 0x50, 0x9b,
-	0xa8, 0x6d, 0x2e, 0xe9, 0xb1, 0xb7, 0xf6, 0xd2, 0xaf, 0xd0, 0x43, 0x3f, 0xc0, 0xee, 0x67, 0xc8,
-	0xad, 0xe7, 0xa2, 0x3d, 0xf4, 0x83, 0x14, 0x9c, 0x07, 0x45, 0x52, 0x94, 0xf7, 0x11, 0x20, 0x87,
-	0x5c, 0x04, 0xce, 0xfc, 0x5f, 0xf3, 0x7f, 0xfd, 0xe6, 0x3f, 0x82, 0x5f, 0xcc, 0x69, 0x74, 0xba,
-	0x9c, 0xf6, 0x1d, 0xb6, 0xb0, 0xcf, 0x98, 0x4b, 0xf8, 0x82, 0x7a, 0xf6, 0x9c, 0xf5, 0x02, 0x1c,
-	0x51, 0xe2, 0x47, 0xbd, 0x90, 0xcc, 0x29, 0x8f, 0xc2, 0x95, 0x1d, 0x9c, 0xcd, 0xed, 0x60, 0x6a,
-	0x73, 0x12, 0x9e, 0x53, 0x87, 0xf4, 0x83, 0x90, 0x45, 0x0c, 0xd5, 0xd4, 0xb2, 0xd3, 0x9d, 0x33,
-	0x36, 0xf7, 0x88, 0x2d, 0xb6, 0xa7, 0xcb, 0x99, 0x3d, 0xa3, 0xc4, 0x73, 0x27, 0x0b, 0xcc, 0xcf,
-	0x24, 0x6b, 0x67, 0x5f, 0x71, 0xe0, 0x80, 0xda, 0xd8, 0xf7, 0x59, 0x84, 0x23, 0xca, 0x7c, 0xae,
-	0xa8, 0xcf, 0x52, 0xc7, 0xf0, 0x56, 0xb3, 0x48, 0x2a, 0x72, 0x7a, 0x73, 0xe2, 0xf7, 0xce, 0xb1,
-	0x47, 0x5d, 0x1c, 0x11, 0x7b, 0xe3, 0x43, 0x09, 0xbf, 0x95, 0x62, 0xe6, 0x5f, 0xe0, 0xf9, 0x9c,
-	0x84, 0x36, 0x0b, 0x84, 0xfa, 0x02, 0x53, 0xc7, 0x29, 0x53, 0xd4, 0x9f, 0xb1, 0xa9, 0xc7, 0xbe,
-	0x64, 0x01, 0xf1, 0xd3, 0x26, 0xe7, 0x2c, 0x5c, 0x24, 0x2a, 0xe2, 0x85, 0x92, 0x7d, 0xe7, 0xba,
-	0xb2, 0xd1, 0x2a, 0x20, 0x5c, 0xfe, 0x2a, 0xd1, 0x97, 0xdb, 0x44, 0x71, 0xe4, 0x61, 0xde, 0xc3,
-	0x41, 0xd0, 0x8b, 0x18, 0xf3, 0xce, 0x68, 0x64, 0x7f, 0xbe, 0x24, 0xe1, 0xca, 0x76, 0x98, 0xe7,
-	0x11, 0x27, 0x3e, 0xc2, 0x84, 0x05, 0x24, 0xc4, 0x11, 0x0b, 0xb5, 0xae, 0xf7, 0xae, 0xaf, 0x2b,
-	0x0c, 0x1c, 0x3b, 0x24, 0x9c, 0x2d, 0x43, 0x87, 0x24, 0x1f, 0x52, 0x8d, 0xf5, 0x8d, 0x01, 0xb5,
-	0x8f, 0x42, 0x36, 0xa3, 0x1e, 0x41, 0x3f, 0x87, 0x12, 0x75, 0x4d, 0xa3, 0x6b, 0x1c, 0x36, 0x07,
-	0xf7, 0xfb, 0x42, 0x4f, 0x3f, 0x0c, 0x9c, 0xfe, 0xfb, 0x2e, 0xf1, 0x23, 0x3a, 0xa3, 0x24, 0x1c,
-	0xb6, 0x2e, 0x2f, 0xda, 0x77, 0x01, 0x50, 0x95, 0x93, 0x90, 0x62, 0xef, 0xd0, 0x18, 0x95, 0xa8,
-	0x8b, 0x10, 0x94, 0x7d, 0xbc, 0x20, 0x66, 0xa9, 0x6b, 0x1c, 0x36, 0x46, 0xe2, 0x1b, 0xed, 0x42,
-	0xc5, 0x67, 0x11, 0xe1, 0xe6, 0x1d, 0xb1, 0x29, 0x17, 0xe8, 0x2d, 0xa8, 0x3b, 0xcc, 0x8f, 0xb0,
-	0x13, 0x71, 0xb3, 0xdc, 0xbd, 0x73, 0xd8, 0x1c, 0xb4, 0xfa, 0xba, 0x9c, 0x5e, 0x48, 0xc2, 0x28,
-	0xe1, 0x40, 0x0f, 0xa1, 0x3a, 0x0f, 0xd9, 0x32, 0xe0, 0x66, 0x45, 0xf0, 0xde, 0x4b, 0x78, 0x7f,
-	0x1b, 0x6f, 0x8f, 0x14, 0xf5, 0xb8, 0x7e, 0x79, 0xd1, 0x2e, 0xd7, 0x8d, 0xae, 0x61, 0x0d, 0x61,
-	0xf7, 0x45, 0x48, 0x70, 0x44, 0x94, 0x4f, 0x23, 0xf2, 0xf9, 0x92, 0xf0, 0x08, 0x1d, 0x41, 0x2d,
-	0xc0, 0x2b, 0x8f, 0x61, 0xed, 0xdf, 0xda, 0xac, 0xe6, 0xd4, 0x0c, 0xd6, 0x73, 0xb8, 0x9f, 0xd3,
-	0xc1, 0x03, 0xe6, 0x73, 0x82, 0x0e, 0xa1, 0x1a, 0x12, 0xbe, 0xf4, 0xa2, 0xad, 0x3a, 0x14, 0xdd,
-	0x7a, 0x06, 0x68, 0x44, 0xb0, 0x9b, 0x3b, 0xc4, 0x4f, 0xaf, 0x8c, 0x6f, 0x1c, 0x4d, 0xeb, 0x97,
-	0xb0, 0x93, 0x11, 0xbe, 0xb1, 0xf5, 0x21, 0xec, 0x7e, 0x1c, 0xb8, 0xdf, 0x3a, 0x08, 0x39, 0x1d,
-	0x37, 0x3e, 0xc6, 0xbb, 0xb0, 0xfb, 0x6b, 0xe2, 0x91, 0x8d, 0x63, 0x5c, 0x33, 0x0c, 0x0f, 0xe0,
-	0x7e, 0x4e, 0x5c, 0x9e, 0xc0, 0xfa, 0x8f, 0x01, 0xe8, 0x77, 0x94, 0x47, 0x39, 0xb5, 0x36, 0x54,
-	0x67, 0xd4, 0x8b, 0x48, 0xa8, 0x54, 0x3f, 0xe8, 0xeb, 0xb6, 0xe8, 0xe3, 0x80, 0xf6, 0x7f, 0x23,
-	0x68, 0xd4, 0x9f, 0x8f, 0x14, 0x1b, 0x7a, 0x0c, 0x75, 0x16, 0xba, 0x24, 0x9c, 0x4c, 0x57, 0xa2,
-	0x72, 0xe3, 0xd3, 0x64, 0x44, 0xc6, 0x2c, 0x8c, 0x62, 0x81, 0x9a, 0x60, 0x1b, 0xae, 0xd0, 0xd3,
-	0xd8, 0x04, 0xf1, 0x5c, 0x59, 0xd4, 0xcd, 0xc1, 0x7e, 0xde, 0x04, 0xf1, 0xdc, 0x31, 0x51, 0x1d,
-	0x3b, 0x52, 0xbc, 0xe8, 0x31, 0x54, 0x03, 0x3c, 0xa7, 0xfe, 0xdc, 0x2c, 0x0b, 0x29, 0x33, 0x2b,
-	0xf5, 0x51, 0x4c, 0xc3, 0x52, 0x42, 0xf2, 0xc5, 0x09, 0x4c, 0x39, 0xc8, 0x93, 0xd8, 0x1f, 0x41,
-	0x4d, 0xc6, 0x96, 0x9b, 0x46, 0xae, 0x79, 0x92, 0x04, 0x2a, 0x06, 0xeb, 0xbf, 0x06, 0x54, 0x44,
-	0x97, 0x7c, 0x17, 0x6d, 0xfd, 0x14, 0x20, 0x90, 0x07, 0x98, 0x50, 0x57, 0xb9, 0xb9, 0x25, 0xb5,
-	0x0d, 0xc5, 0xf8, 0xbe, 0x8b, 0x9e, 0xa6, 0xc0, 0xa0, 0x52, 0x0c, 0x06, 0xc3, 0xea, 0xe5, 0x45,
-	0xbb, 0x34, 0xf8, 0xc1, 0x1a, 0x14, 0x52, 0xcd, 0x7e, 0x02, 0x48, 0x36, 0xaa, 0x44, 0x03, 0x55,
-	0x07, 0x87, 0xf9, 0x2a, 0xcf, 0xa3, 0x46, 0x52, 0xe3, 0xef, 0xc2, 0x4e, 0x46, 0x5e, 0x45, 0xf9,
-	0x61, 0xae, 0xc2, 0x37, 0x50, 0x47, 0xd5, 0xf7, 0x3b, 0xd0, 0x8a, 0xfb, 0x34, 0x63, 0xfc, 0x9a,
-	0xb5, 0xfd, 0x0c, 0xde, 0x4c, 0x89, 0xde, 0xd0, 0xee, 0x09, 0x20, 0xd9, 0x9a, 0xb7, 0x77, 0x3b,
-	0x23, 0x7f, 0x43, 0xf3, 0xcf, 0x00, 0xc9, 0xbe, 0xbc, 0x8d, 0xe3, 0xf7, 0x61, 0x27, 0x23, 0xac,
-	0x5a, 0xfa, 0xdf, 0x06, 0xb4, 0xe2, 0x8a, 0xcf, 0xa8, 0xfc, 0x1e, 0x35, 0xf4, 0x89, 0x44, 0x2c,
-	0xe1, 0x1e, 0x4f, 0x41, 0x69, 0xae, 0x9d, 0x37, 0x52, 0xa6, 0x9b, 0xf9, 0x1f, 0x65, 0xa8, 0xa9,
-	0x8e, 0xb8, 0x7d, 0x3b, 0x1f, 0x00, 0xcc, 0x68, 0xc8, 0xa3, 0x49, 0xaa, 0xa9, 0x1b, 0x62, 0xe7,
-	0x83, 0xb8, 0xb3, 0x7f, 0x02, 0xcd, 0x05, 0x75, 0x5d, 0x8f, 0x48, 0xba, 0xec, 0x6f, 0x90, 0x5b,
-	0x82, 0x61, 0x0f, 0x1a, 0x1e, 0xd6, 0xe2, 0x65, 0x41, 0xae, 0xc7, 0x1b, 0x82, 0xf8, 0x08, 0xde,
-	0x08, 0x42, 0xba, 0xc0, 0xe1, 0x6a, 0x42, 0x16, 0x98, 0x7a, 0x66, 0x25, 0x66, 0x90, 0xed, 0xdb,
-	0x32, 0x46, 0x77, 0x15, 0xf1, 0xbd, 0x98, 0xb6, 0x06, 0x91, 0x6a, 0x1a, 0x44, 0x1e, 0x42, 0x55,
-	0x88, 0x72, 0xb3, 0x96, 0x8b, 0x86, 0x90, 0x1a, 0x29, 0x2a, 0x7a, 0x02, 0x77, 0x4f, 0xd9, 0x82,
-	0x4c, 0xb0, 0xeb, 0x86, 0x84, 0x73, 0xb3, 0x9e, 0xbb, 0x87, 0x9e, 0xcb, 0xfd, 0x51, 0x33, 0xe6,
-	0x52, 0x8b, 0x58, 0xe8, 0x0b, 0x16, 0x9e, 0x25, 0x42, 0x8d, 0x6d, 0x42, 0x31, 0x97, 0x16, 0xca,
-	0xc2, 0x1a, 0x5c, 0x13, 0xd6, 0x4e, 0x92, 0xa9, 0xa5, 0x59, 0x94, 0xd5, 0xe1, 0x8f, 0x2e, 0x2f,
-	0xda, 0x68, 0xd0, 0x82, 0x7b, 0x82, 0x6b, 0xa2, 0x81, 0x4d, 0x4f, 0x33, 0xe8, 0x09, 0x34, 0x7c,
-	0xea, 0x9c, 0xc5, 0x61, 0xe6, 0xe6, 0x5d, 0x65, 0x54, 0x0c, 0xa0, 0x72, 0x96, 0x7c, 0x39, 0xfe,
-	0xf0, 0x83, 0xdf, 0x63, 0x6f, 0x49, 0x46, 0x6b, 0xbe, 0x14, 0x2a, 0x7e, 0x02, 0x15, 0x19, 0xe5,
-	0x7b, 0x49, 0xa1, 0x94, 0x45, 0xfe, 0x2d, 0xa8, 0x69, 0xef, 0x45, 0xf2, 0x87, 0x42, 0x06, 0x4a,
-	0x8f, 0x8d, 0x91, 0x26, 0x1c, 0x1f, 0x5c, 0x5e, 0xb4, 0xdb, 0x75, 0x03, 0xed, 0x40, 0xe5, 0x68,
-	0xca, 0x98, 0x87, 0x80, 0xf2, 0x89, 0xca, 0x5d, 0xd7, 0xb0, 0xfe, 0x6c, 0x40, 0x4d, 0x07, 0xc7,
-	0x5c, 0xab, 0x33, 0x44, 0x1a, 0xf5, 0x32, 0xbe, 0x37, 0x1c, 0x1a, 0xad, 0xf4, 0xbd, 0x11, 0x7f,
-	0xc7, 0x29, 0xe7, 0x11, 0x8e, 0x74, 0x5d, 0xc9, 0x05, 0x6a, 0xc1, 0x9d, 0x3f, 0xd0, 0x40, 0x15,
-	0x53, 0xfc, 0x19, 0x6b, 0x75, 0xd8, 0xd2, 0x8f, 0xc2, 0x95, 0xac, 0xa0, 0x91, 0x5e, 0x16, 0x0d,
-	0x79, 0x7a, 0x62, 0xbc, 0x7a, 0xbe, 0xd1, 0x9c, 0x9b, 0x43, 0x5e, 0xa2, 0xe3, 0xca, 0xf9, 0x46,
-	0x73, 0xe6, 0x86, 0xbc, 0xdc, 0x21, 0x6e, 0x36, 0xe4, 0xdd, 0xde, 0xfa, 0xb9, 0x1e, 0xf2, 0x6e,
-	0x1f, 0x04, 0x34, 0x48, 0xe0, 0x4f, 0xc2, 0x65, 0xa7, 0x2f, 0x1f, 0x68, 0x7d, 0xfd, 0x84, 0x93,
-	0x08, 0xf8, 0x0a, 0xf3, 0x33, 0x0d, 0x7e, 0xeb, 0xc1, 0xf0, 0xf6, 0x47, 0x4f, 0x06, 0xc3, 0xdb,
-	0x85, 0x2e, 0x19, 0x0c, 0x73, 0x27, 0xd0, 0x63, 0xd3, 0x0b, 0xdd, 0x50, 0xd7, 0x18, 0x9b, 0x92,
-	0x90, 0x68, 0xa4, 0xfd, 0x19, 0xc0, 0xf8, 0xd5, 0x58, 0x9f, 0x28, 0xdf, 0x42, 0x26, 0xd4, 0x16,
-	0x84, 0x73, 0x3c, 0xd7, 0xf8, 0xa9, 0x97, 0xd6, 0x1b, 0xd0, 0x14, 0x72, 0xb9, 0x19, 0x35, 0xe7,
-	0xe1, 0xf7, 0xe7, 0x4a, 0x1b, 0xfc, 0xb3, 0x0c, 0x75, 0x3d, 0xa0, 0x22, 0x07, 0xaa, 0xb2, 0x9b,
-	0xd0, 0xc1, 0x3a, 0xb4, 0x05, 0xef, 0xb0, 0xce, 0x8f, 0xb7, 0x91, 0x55, 0xdc, 0x3a, 0x5f, 0xff,
-	0xeb, 0x7f, 0x7f, 0x2b, 0xed, 0x5a, 0x0d, 0x5b, 0xe1, 0x29, 0x3f, 0x4e, 0xaa, 0x95, 0x40, 0x39,
-	0x6e, 0x19, 0xb4, 0x97, 0xe8, 0xd8, 0x7c, 0x63, 0x75, 0xf6, 0x8b, 0x89, 0x4a, 0xbd, 0x25, 0xd4,
-	0xef, 0xa3, 0x4e, 0xa2, 0xde, 0xfe, 0x23, 0x75, 0xfb, 0xfa, 0x4d, 0x3c, 0xa1, 0xee, 0x57, 0xe8,
-	0x4f, 0x50, 0x95, 0x05, 0x9e, 0xf2, 0xa5, 0xe8, 0x39, 0x95, 0xf2, 0xa5, 0xf0, 0xa5, 0x64, 0x3d,
-	0x11, 0xc6, 0x7a, 0x1d, 0x2b, 0x65, 0x4c, 0xf9, 0xd2, 0xcf, 0x19, 0x5d, 0x3b, 0xf9, 0x25, 0x54,
-	0x65, 0x71, 0xa7, 0xac, 0x17, 0xbd, 0xa2, 0x52, 0xd6, 0x8b, 0x5f, 0x49, 0xf6, 0xe5, 0x45, 0xbb,
-	0x91, 0xbc, 0xed, 0xa5, 0xdf, 0x47, 0xaf, 0xf3, 0xfb, 0x63, 0x28, 0xc7, 0x15, 0x9b, 0x0a, 0xef,
-	0xe6, 0x23, 0xab, 0x73, 0x50, 0x44, 0x4c, 0x3a, 0xcd, 0x7a, 0x53, 0xd8, 0x69, 0xa2, 0x75, 0xfa,
-	0x3a, 0x62, 0x02, 0xa8, 0x1b, 0x83, 0xbf, 0x94, 0xa1, 0x2a, 0xe7, 0x1f, 0xf4, 0x69, 0x52, 0x2d,
-	0x7b, 0xb9, 0x72, 0x48, 0xcf, 0x7f, 0xa9, 0x54, 0x16, 0x4c, 0xe9, 0x96, 0x29, 0x4c, 0x21, 0xab,
-	0x66, 0xab, 0x3f, 0x01, 0x92, 0x10, 0x4e, 0x54, 0x9d, 0xb4, 0x33, 0xa5, 0x90, 0x51, 0xdd, 0x29,
-	0x22, 0x29, 0xc5, 0x5d, 0xa1, 0xb8, 0x83, 0x4c, 0xa5, 0x78, 0x33, 0x52, 0xe7, 0x49, 0x85, 0xec,
-	0xe5, 0x4a, 0x60, 0xcb, 0xf9, 0x0b, 0xc6, 0x6d, 0xeb, 0x6d, 0x61, 0xe6, 0x51, 0xa7, 0x9b, 0x98,
-	0xb9, 0xb2, 0x36, 0x82, 0xa4, 0x36, 0xf6, 0x72, 0xc9, 0xdf, 0x62, 0xb7, 0x68, 0xd4, 0x7e, 0x74,
-	0x79, 0xd1, 0xae, 0xa9, 0xa7, 0xa1, 0xf4, 0xf4, 0x68, 0xbb, 0xa7, 0x1f, 0xaa, 0x9a, 0x68, 0x67,
-	0xd2, 0x9e, 0xb1, 0xb6, 0xb7, 0x49, 0x5a, 0xd7, 0xc3, 0x0f, 0x85, 0x85, 0x06, 0xd2, 0x49, 0x4a,
-	0xaa, 0xe1, 0xeb, 0x0a, 0xd4, 0x35, 0x4e, 0xbf, 0x06, 0x3d, 0xb2, 0xf0, 0xb9, 0x81, 0x1e, 0xf9,
-	0x0b, 0x60, 0x8d, 0x1e, 0xc9, 0x6b, 0xf1, 0x0a, 0xf4, 0xc8, 0x19, 0xd8, 0x2f, 0x26, 0x6e, 0xa0,
-	0x87, 0x56, 0x7f, 0x13, 0xf4, 0xd8, 0xea, 0x4b, 0xe1, 0x75, 0x9a, 0x42, 0x8f, 0xb5, 0xb1, 0x6f,
-	0x81, 0x1e, 0x5b, 0xad, 0x17, 0x5f, 0xa5, 0x0a, 0x3d, 0xd4, 0x76, 0x82, 0x1e, 0xdb, 0xfd, 0x2e,
-	0x46, 0x8f, 0x9c, 0xd5, 0x83, 0x22, 0x62, 0x11, 0x7a, 0x24, 0xff, 0x00, 0x8e, 0xa1, 0x36, 0x26,
-	0xbe, 0x3b, 0x7e, 0x35, 0x46, 0x3b, 0x89, 0xf0, 0xfa, 0x82, 0xee, 0xec, 0x66, 0x37, 0x95, 0xa2,
-	0x03, 0xa1, 0xe8, 0x81, 0x85, 0x32, 0x07, 0xfe, 0xca, 0xe6, 0x0b, 0x7e, 0x6c, 0x1c, 0xe9, 0x22,
-	0x1c, 0x7e, 0x63, 0xfc, 0xf5, 0xf9, 0xdf, 0x0d, 0xe4, 0xaf, 0x4b, 0xd1, 0xfa, 0x14, 0xee, 0xbd,
-	0x64, 0xa7, 0x7e, 0x77, 0x48, 0x3c, 0xbc, 0xc0, 0x21, 0x75, 0xd0, 0xe0, 0x34, 0x8a, 0x02, 0x7e,
-	0x6c, 0xdb, 0xaf, 0xff, 0xbf, 0x55, 0x1b, 0xea, 0xe1, 0x20, 0xe8, 0x3c, 0xf8, 0x6c, 0xaa, 0xe5,
-	0x7f, 0x95, 0xdc, 0xa3, 0x0e, 0x5b, 0x0c, 0xee, 0xbc, 0xdd, 0x7f, 0x7c, 0x54, 0x32, 0x4a, 0x83,
-	0x16, 0x0e, 0x02, 0x8f, 0x3a, 0xe2, 0x4a, 0xb5, 0x3f, 0xe3, 0xcc, 0x3f, 0xde, 0xd8, 0xf9, 0xa4,
-	0x7f, 0xb3, 0xbf, 0xe5, 0xa7, 0x55, 0x31, 0xb5, 0x3d, 0xf9, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0x54, 0x42, 0x87, 0x22, 0xcf, 0x17, 0x00, 0x00,
+	// 1758 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x59, 0x4f, 0x73, 0xdb, 0xc6,
+	0x15, 0x0f, 0x28, 0x9a, 0x7f, 0x9e, 0x5c, 0x85, 0x5a, 0xcb, 0x15, 0x09, 0x49, 0x29, 0x83, 0xb4,
+	0x1d, 0x0d, 0x5d, 0x02, 0x32, 0xe3, 0x1c, 0x2a, 0xc5, 0x49, 0x4c, 0xdb, 0x4d, 0xd8, 0xf8, 0xdf,
+	0x50, 0x4e, 0x3b, 0xe9, 0x4c, 0x86, 0xb3, 0x24, 0x96, 0xf4, 0x4a, 0x20, 0x16, 0x01, 0x96, 0x4e,
+	0x38, 0x6d, 0x2f, 0x3d, 0xf4, 0xd0, 0x43, 0x3b, 0xd3, 0x5c, 0xfa, 0x11, 0x7a, 0xe9, 0x07, 0x90,
+	0xbe, 0x41, 0x3b, 0xbd, 0xf5, 0xdc, 0xe9, 0x25, 0xd3, 0x7b, 0xbf, 0x41, 0x07, 0x8b, 0x05, 0x04,
+	0x80, 0x00, 0x2d, 0xb1, 0x3d, 0xf9, 0xa2, 0x01, 0xb1, 0xef, 0xbd, 0xdf, 0x7b, 0x6f, 0x7f, 0xef,
+	0xed, 0x5b, 0x08, 0xde, 0x9f, 0x50, 0xfe, 0x62, 0x36, 0xd4, 0x47, 0x6c, 0x6a, 0x9c, 0x32, 0x93,
+	0x78, 0x53, 0x6a, 0x19, 0x13, 0xd6, 0x76, 0x30, 0xa7, 0xc4, 0xe6, 0x6d, 0x97, 0x4c, 0xa8, 0xc7,
+	0xdd, 0xb9, 0xe1, 0x9c, 0x4e, 0x0c, 0x67, 0x68, 0x78, 0xc4, 0x7d, 0x49, 0x47, 0x44, 0x77, 0x5c,
+	0xc6, 0x19, 0x2a, 0xcb, 0x9f, 0x6a, 0x73, 0xc2, 0xd8, 0xc4, 0x22, 0x86, 0x78, 0x3d, 0x9c, 0x8d,
+	0x8d, 0x31, 0x25, 0x96, 0x39, 0x98, 0x62, 0xef, 0x34, 0x10, 0x55, 0xbf, 0x97, 0x96, 0xe0, 0x74,
+	0x4a, 0x3c, 0x8e, 0xa7, 0x8e, 0x14, 0xf8, 0xae, 0x14, 0xe0, 0x73, 0x87, 0x18, 0x26, 0xe6, 0x12,
+	0x43, 0xdd, 0x95, 0xef, 0xb1, 0x43, 0x0d, 0x6c, 0xdb, 0x8c, 0x63, 0x4e, 0x99, 0xed, 0xc9, 0xd5,
+	0xa3, 0x98, 0xff, 0xd6, 0x7c, 0xcc, 0x03, 0xfb, 0xa3, 0xf6, 0x84, 0xd8, 0xed, 0x97, 0xd8, 0xa2,
+	0xbe, 0x21, 0x63, 0xe1, 0x41, 0x2a, 0xff, 0x28, 0x26, 0xec, 0x7d, 0x85, 0x27, 0x13, 0xe2, 0x1a,
+	0xcc, 0x11, 0xe6, 0x33, 0xa0, 0x0c, 0x6a, 0x8f, 0xd9, 0xd0, 0x62, 0x5f, 0x33, 0x87, 0xd8, 0x71,
+	0x9c, 0x09, 0x73, 0xa7, 0x91, 0x9e, 0xff, 0x43, 0x2a, 0xe8, 0x4b, 0x15, 0xfc, 0x38, 0xbd, 0xe0,
+	0xaf, 0x94, 0xff, 0x30, 0x21, 0x8f, 0xb9, 0x85, 0xbd, 0x36, 0x76, 0x9c, 0x36, 0x67, 0xcc, 0x3a,
+	0xa5, 0xdc, 0xf8, 0x72, 0x46, 0xdc, 0xb9, 0x31, 0x62, 0x96, 0x45, 0x46, 0x3e, 0xd8, 0x80, 0x39,
+	0xc4, 0xc5, 0x9c, 0xb9, 0xa1, 0x81, 0xc3, 0x57, 0x18, 0x70, 0x9d, 0x91, 0xe1, 0x12, 0x8f, 0xcd,
+	0xdc, 0x11, 0x89, 0x1e, 0x02, 0x5d, 0xed, 0x6f, 0x0a, 0x6c, 0xfc, 0x94, 0xcd, 0x5c, 0x1b, 0x5b,
+	0xc7, 0xb3, 0xe1, 0x09, 0x19, 0x71, 0xf4, 0x1e, 0x14, 0xa8, 0x59, 0x57, 0x9a, 0xca, 0xfe, 0x7a,
+	0xe7, 0xa6, 0x2e, 0xcc, 0xe9, 0xae, 0x33, 0xd2, 0x7b, 0x26, 0xb1, 0x39, 0x1d, 0x53, 0xe2, 0x76,
+	0x37, 0xce, 0xcf, 0x1a, 0x00, 0x15, 0x54, 0x9c, 0xcd, 0xa8, 0xb9, 0xaf, 0xf4, 0x0b, 0xd4, 0x44,
+	0x35, 0x58, 0x3b, 0x25, 0xf3, 0x7a, 0xa1, 0xa9, 0xec, 0x57, 0xfb, 0xfe, 0x23, 0x42, 0x50, 0xb4,
+	0xf1, 0x94, 0xd4, 0xd7, 0xc4, 0x2b, 0xf1, 0x8c, 0x0e, 0xa0, 0xe8, 0xc7, 0x5e, 0x2f, 0x36, 0x95,
+	0xfd, 0x8d, 0xce, 0xae, 0x1e, 0x12, 0x2b, 0xe9, 0x83, 0xfe, 0x7c, 0xee, 0x90, 0xbe, 0x90, 0xd4,
+	0xde, 0x86, 0xa2, 0xff, 0x0b, 0x5d, 0x87, 0xca, 0xbd, 0xfb, 0xcf, 0x7b, 0x3f, 0xeb, 0x3d, 0xff,
+	0xbc, 0xf6, 0x06, 0x5a, 0x87, 0xf2, 0xf1, 0xe7, 0x8f, 0x9f, 0x3d, 0x7f, 0xfa, 0xb8, 0xa6, 0x1c,
+	0x96, 0xce, 0xcf, 0x1a, 0x85, 0x8a, 0xa2, 0xfd, 0xa7, 0x00, 0xd7, 0xa5, 0xa1, 0x87, 0x36, 0x77,
+	0xe7, 0xab, 0x86, 0x72, 0x07, 0xe0, 0x24, 0x30, 0x33, 0xa0, 0xa6, 0x88, 0x28, 0x4f, 0xbd, 0x5f,
+	0x95, 0x82, 0x3d, 0x13, 0x1d, 0x42, 0xc5, 0x23, 0x2f, 0x89, 0x4b, 0xf9, 0x5c, 0x84, 0xbc, 0xd1,
+	0x79, 0x2b, 0x1d, 0x9e, 0xf0, 0x4a, 0x3f, 0x96, 0x52, 0xfd, 0x48, 0x5e, 0xa4, 0x8a, 0xf1, 0x20,
+	0x2d, 0x7e, 0xaa, 0x18, 0x27, 0xe8, 0x1d, 0x58, 0x33, 0xf1, 0xbc, 0x7e, 0x4d, 0xc0, 0x6f, 0xea,
+	0x41, 0x3d, 0xe8, 0x7e, 0x4e, 0xf4, 0x07, 0x98, 0x93, 0xbe, 0xbf, 0x8a, 0xee, 0x03, 0x0a, 0x5d,
+	0xf5, 0x82, 0xdc, 0xf9, 0x2e, 0x97, 0x96, 0xb9, 0x5c, 0x3b, 0x49, 0xe4, 0xba, 0x67, 0x6a, 0x07,
+	0x50, 0x09, 0x7d, 0x42, 0x15, 0x28, 0x3e, 0x79, 0xfa, 0xe4, 0x61, 0xed, 0x0d, 0x54, 0x86, 0xb5,
+	0x47, 0x4f, 0x7f, 0x5e, 0x53, 0xfc, 0x87, 0xc7, 0xbd, 0x07, 0xb5, 0x82, 0xbf, 0xf6, 0x49, 0xef,
+	0xe3, 0x4f, 0x6a, 0x6b, 0x87, 0x95, 0xf3, 0xb3, 0x46, 0xb1, 0xa2, 0x34, 0x15, 0xed, 0x11, 0x34,
+	0xee, 0xbb, 0x04, 0x73, 0x12, 0x0f, 0xb1, 0x4f, 0xbe, 0x9c, 0x11, 0x8f, 0x23, 0x03, 0xca, 0x0e,
+	0x9e, 0x5b, 0x0c, 0x5f, 0x6c, 0x42, 0x56, 0x46, 0xfa, 0xa1, 0x94, 0xf6, 0x29, 0xa8, 0x59, 0xd6,
+	0x3c, 0x87, 0xd9, 0x1e, 0x41, 0x6d, 0x28, 0xb9, 0xc4, 0x9b, 0x59, 0x7c, 0xb9, 0x35, 0x29, 0xa4,
+	0x7d, 0x04, 0xdb, 0x7d, 0x82, 0xcd, 0x2c, 0xc7, 0x7e, 0xf0, 0x4a, 0x62, 0xf8, 0x44, 0xd0, 0x7a,
+	0x50, 0x5f, 0xb4, 0xb0, 0x9a, 0x33, 0x8f, 0xa0, 0xf1, 0x99, 0x63, 0xfe, 0x1f, 0xf3, 0x94, 0x65,
+	0x6d, 0x35, 0xd7, 0xba, 0xd0, 0x78, 0x40, 0x2c, 0x92, 0xed, 0xda, 0x25, 0x33, 0xb5, 0x0b, 0x6a,
+	0x96, 0x8d, 0xc0, 0x21, 0xed, 0x5b, 0x05, 0xb6, 0x1f, 0x51, 0x8f, 0x67, 0xc7, 0x5e, 0x1a, 0x53,
+	0x8b, 0x13, 0x57, 0x82, 0x6c, 0x47, 0xfd, 0x53, 0xc7, 0x0e, 0xd5, 0x7f, 0x22, 0xd6, 0xa8, 0x3d,
+	0xe9, 0x4b, 0x31, 0x74, 0x00, 0x15, 0xe6, 0x9a, 0xc4, 0x1d, 0x0c, 0xe7, 0x51, 0x6d, 0x26, 0x54,
+	0x8e, 0x99, 0xcb, 0x7d, 0x85, 0xb2, 0x10, 0xeb, 0xce, 0xd1, 0x1d, 0x1f, 0x82, 0x58, 0xa6, 0x27,
+	0xea, 0x72, 0xbd, 0xb3, 0x9b, 0x86, 0x20, 0x96, 0x79, 0x4c, 0x64, 0x7b, 0xed, 0x4b, 0x59, 0x74,
+	0x00, 0x25, 0x07, 0x4f, 0xa8, 0x3d, 0x11, 0x55, 0xb9, 0xde, 0xa9, 0x27, 0xb5, 0x9e, 0xf9, 0x6b,
+	0x38, 0xd0, 0x08, 0xe4, 0xb4, 0x4f, 0xa1, 0xbe, 0x18, 0xa5, 0xdc, 0x13, 0x03, 0xca, 0x41, 0xba,
+	0xbd, 0xba, 0xd2, 0x5c, 0x5b, 0xb2, 0xc5, 0x52, 0x4a, 0xfb, 0xb7, 0x02, 0x8d, 0x98, 0x35, 0x59,
+	0xad, 0xaf, 0x61, 0xd6, 0x9e, 0x82, 0x9a, 0x15, 0xa7, 0xcc, 0xdb, 0xed, 0x74, 0xde, 0xb6, 0x73,
+	0xce, 0x8c, 0x8b, 0xcc, 0xfd, 0x55, 0x81, 0xf2, 0x33, 0x97, 0x8d, 0xa9, 0x45, 0x56, 0x3d, 0x01,
+	0xb6, 0xe0, 0x9a, 0xdf, 0x83, 0x3d, 0x79, 0x9c, 0x05, 0x3f, 0xd0, 0x1e, 0xc0, 0x98, 0xba, 0x1e,
+	0x1f, 0xc4, 0x8e, 0xb5, 0xaa, 0x78, 0xf3, 0xc4, 0x3f, 0xdb, 0x76, 0xa0, 0x6a, 0xe1, 0x70, 0x35,
+	0xe8, 0xe4, 0x15, 0xff, 0x85, 0x58, 0xbc, 0x05, 0xdf, 0x71, 0x5c, 0x3a, 0xc5, 0xee, 0x7c, 0x40,
+	0xa6, 0x98, 0x5a, 0xa2, 0xaf, 0x57, 0xbb, 0xe2, 0xe8, 0xaa, 0x29, 0xfd, 0xeb, 0x72, 0xf1, 0xa1,
+	0xbf, 0x16, 0x6b, 0xaf, 0x5d, 0xd8, 0x0a, 0x1a, 0xa2, 0x0c, 0x28, 0xdc, 0xff, 0x56, 0xba, 0x63,
+	0xd4, 0xa2, 0xb4, 0x84, 0x92, 0x51, 0xb3, 0xb8, 0x07, 0x37, 0x53, 0x36, 0x64, 0x6e, 0xf7, 0x53,
+	0x7d, 0x62, 0xd1, 0x46, 0xd8, 0x22, 0x8e, 0x00, 0xf9, 0x8d, 0x30, 0xe5, 0xc4, 0x25, 0x7b, 0xc3,
+	0x87, 0x70, 0x23, 0xa1, 0x7c, 0x65, 0xf4, 0x2e, 0x6c, 0x05, 0xdd, 0xee, 0x7f, 0x4b, 0x42, 0xca,
+	0xc6, 0x95, 0xdd, 0xb8, 0x0b, 0x5b, 0x41, 0x8f, 0x5b, 0x2d, 0x0d, 0xdb, 0x70, 0x33, 0xa5, 0x2e,
+	0xbb, 0xe3, 0xbf, 0x14, 0x40, 0x7e, 0x05, 0xa4, 0xcc, 0xbe, 0x46, 0x25, 0xde, 0x85, 0xad, 0x58,
+	0x80, 0x5e, 0x94, 0xfb, 0x56, 0xba, 0xb8, 0x33, 0x36, 0x30, 0xac, 0xea, 0x3f, 0x2b, 0x70, 0xed,
+	0x63, 0x97, 0xcd, 0x9c, 0x55, 0x6b, 0x3a, 0x1c, 0x47, 0x0b, 0xb1, 0x71, 0x34, 0xaa, 0xf3, 0xb5,
+	0x78, 0x9d, 0xdf, 0x01, 0x70, 0x02, 0x78, 0x7f, 0x98, 0x2a, 0x2e, 0x9d, 0xff, 0xa4, 0x60, 0xcf,
+	0x8c, 0x15, 0xed, 0x07, 0x80, 0x82, 0x82, 0x13, 0xfe, 0x86, 0xfb, 0xb9, 0x9f, 0x66, 0xeb, 0x46,
+	0x14, 0x6c, 0x20, 0x17, 0x71, 0xf5, 0x2e, 0xdc, 0x48, 0xe8, 0xcb, 0x6c, 0xfd, 0x30, 0xc5, 0xd4,
+	0xb4, 0x7e, 0xc8, 0xd3, 0x1f, 0x43, 0xcd, 0xaf, 0xb7, 0x04, 0xf8, 0x25, 0x39, 0x7a, 0x04, 0x9b,
+	0x31, 0xd5, 0x2b, 0xe2, 0x7e, 0x00, 0x28, 0x28, 0xb1, 0xd5, 0xc3, 0x4e, 0xe8, 0x5f, 0x11, 0xfe,
+	0x08, 0x50, 0x50, 0x5f, 0xab, 0x04, 0x7e, 0x13, 0x6e, 0x24, 0x94, 0x65, 0x69, 0xfe, 0x53, 0x81,
+	0x9a, 0xcf, 0xdc, 0x84, 0xc9, 0xd7, 0xa8, 0x30, 0xef, 0xc2, 0x66, 0x2c, 0xbc, 0xa8, 0x23, 0xa6,
+	0xaa, 0x72, 0x61, 0xc7, 0xe4, 0x72, 0xe7, 0x9b, 0x6b, 0xd1, 0xed, 0xd1, 0x9f, 0x5e, 0x28, 0xf1,
+	0xd0, 0x0c, 0x4a, 0x01, 0x77, 0x91, 0x16, 0x69, 0xe5, 0x5e, 0x10, 0xd4, 0x77, 0x96, 0xca, 0xc8,
+	0x4d, 0xd0, 0x7e, 0xf3, 0x8f, 0x6f, 0xbf, 0x29, 0xec, 0x6a, 0x9b, 0x86, 0xbc, 0xb9, 0x78, 0x06,
+	0x09, 0xd0, 0x0e, 0x43, 0xee, 0xa0, 0xaf, 0xa0, 0xe8, 0x13, 0x17, 0x35, 0x23, 0x83, 0x39, 0xa3,
+	0xbf, 0xfa, 0xf6, 0x12, 0x09, 0x09, 0xd8, 0x12, 0x80, 0xdf, 0x47, 0xda, 0x02, 0xa0, 0xf1, 0x4b,
+	0x6a, 0xea, 0xe1, 0x15, 0x7a, 0x40, 0xcd, 0x5f, 0xa3, 0xdf, 0x2b, 0x50, 0x0a, 0x58, 0x1b, 0x0b,
+	0x38, 0x77, 0xd2, 0x8f, 0x05, 0x9c, 0x3f, 0xbf, 0x6b, 0x47, 0x02, 0xff, 0x3d, 0xb5, 0x95, 0x81,
+	0x2f, 0x03, 0xd6, 0x53, 0x7e, 0x5c, 0x64, 0xe2, 0x0f, 0x0a, 0x94, 0x02, 0x2a, 0xc7, 0x1c, 0xca,
+	0x9d, 0xef, 0x63, 0x0e, 0x2d, 0x99, 0xdf, 0xdf, 0x3f, 0x3f, 0x6b, 0x6c, 0x24, 0xef, 0xd6, 0x41,
+	0x8a, 0x5a, 0x97, 0x49, 0xd1, 0x18, 0x8a, 0x3e, 0xc9, 0x62, 0x7b, 0x93, 0x73, 0x17, 0x88, 0xed,
+	0x4d, 0xde, 0x1c, 0xad, 0x35, 0x04, 0xf0, 0x0d, 0xb4, 0x48, 0x06, 0x55, 0x7e, 0x06, 0xe8, 0xfc,
+	0x56, 0x81, 0x37, 0x93, 0xb3, 0xa1, 0x87, 0x4e, 0xa5, 0x0f, 0x5a, 0x16, 0x42, 0x72, 0xb6, 0x8e,
+	0xa5, 0x24, 0x7f, 0x2e, 0xd5, 0x54, 0xe1, 0xc7, 0x16, 0x42, 0x17, 0x7e, 0xc8, 0x0b, 0xf8, 0x85,
+	0x23, 0x7f, 0x29, 0x42, 0x25, 0x3c, 0xf3, 0xd0, 0x28, 0x2a, 0x8c, 0xbd, 0x14, 0xe9, 0x93, 0xe7,
+	0xbe, 0xfa, 0x56, 0xde, 0x72, 0x12, 0x59, 0xab, 0x1a, 0xf2, 0xec, 0x89, 0x95, 0x01, 0x91, 0x65,
+	0xb0, 0x93, 0x20, 0x79, 0x0a, 0x60, 0x37, 0x7b, 0x31, 0x59, 0x6d, 0x48, 0x8d, 0xcc, 0x2f, 0xee,
+	0xe8, 0xaf, 0x22, 0xce, 0xef, 0xa5, 0xf8, 0x9c, 0x1b, 0x4b, 0xe6, 0xf0, 0xa5, 0xbd, 0x2b, 0xc0,
+	0xda, 0xaa, 0x16, 0x03, 0x7b, 0x25, 0xc3, 0xbf, 0x8e, 0x08, 0xbe, 0x97, 0x22, 0x6f, 0x2e, 0x7a,
+	0xf6, 0xe0, 0x65, 0x9c, 0x9f, 0x35, 0xaa, 0xd1, 0x5d, 0x21, 0x88, 0xbb, 0xb5, 0x2c, 0xee, 0xcf,
+	0x24, 0x8b, 0x76, 0x12, 0x0c, 0x49, 0xa1, 0xee, 0x65, 0x2d, 0x46, 0x33, 0x8f, 0xb6, 0x29, 0x70,
+	0xd6, 0xd1, 0xc5, 0xf6, 0x45, 0x7c, 0xf9, 0x5d, 0x11, 0x4a, 0xa2, 0xc3, 0x7a, 0xe8, 0x8b, 0x88,
+	0x2d, 0x3b, 0x29, 0x3a, 0xc4, 0x8f, 0xa2, 0xd8, 0x56, 0x66, 0x0c, 0x0c, 0x5a, 0x5d, 0x40, 0x21,
+	0xad, 0x6c, 0x4c, 0x84, 0xd5, 0x8b, 0x14, 0x0e, 0x24, 0x4f, 0x1a, 0x09, 0x2a, 0x24, 0x4c, 0xab,
+	0x59, 0x4b, 0xd2, 0x70, 0x53, 0x18, 0x56, 0x51, 0x5d, 0x1a, 0x5e, 0xcc, 0xd4, 0xcb, 0x88, 0x21,
+	0x3b, 0x29, 0x0a, 0xe4, 0xf8, 0x9f, 0x71, 0xf2, 0x6b, 0xb7, 0x05, 0xcc, 0x2d, 0xb5, 0x19, 0xc1,
+	0xbc, 0x92, 0x1b, 0x4e, 0xc4, 0x8d, 0x9d, 0xd4, 0xe6, 0xe7, 0xe0, 0x66, 0x9d, 0xfa, 0xb7, 0xce,
+	0xcf, 0x1a, 0x65, 0x39, 0x6d, 0x06, 0x91, 0xb6, 0xf2, 0x23, 0x7d, 0x22, 0x39, 0xd1, 0x48, 0x6c,
+	0x7b, 0x4e, 0x2a, 0x17, 0x0e, 0x5b, 0xed, 0x4d, 0x01, 0x50, 0x45, 0xe1, 0x1e, 0x85, 0x64, 0xe8,
+	0xfe, 0x5d, 0xf9, 0xe3, 0xbd, 0x3f, 0x29, 0xc8, 0x86, 0xca, 0x7d, 0x66, 0x73, 0x3c, 0xe2, 0x9e,
+	0xf6, 0x85, 0x7f, 0xda, 0xbe, 0xb0, 0x9b, 0x5d, 0x62, 0xe1, 0x29, 0x76, 0xe9, 0x08, 0x75, 0x5e,
+	0x70, 0xee, 0x78, 0x87, 0x86, 0x11, 0xfb, 0x1e, 0x9e, 0xf1, 0x35, 0x78, 0x24, 0x2d, 0xb4, 0xb1,
+	0xe3, 0xa8, 0xdb, 0x27, 0xc3, 0x50, 0xff, 0xa3, 0x68, 0x3e, 0x18, 0xb1, 0x69, 0x67, 0xed, 0xb6,
+	0x7e, 0xd0, 0x2a, 0x28, 0x85, 0x4e, 0x0d, 0x3b, 0x8e, 0x45, 0x47, 0x62, 0x54, 0x30, 0x4e, 0x3c,
+	0x66, 0x1f, 0x2e, 0xbc, 0xf9, 0x85, 0x7e, 0xb5, 0xff, 0x20, 0x0c, 0x4b, 0xe2, 0x7b, 0xf3, 0xbb,
+	0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xee, 0xa3, 0xe7, 0x87, 0x7a, 0x18, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1885,6 +1850,266 @@ var _ grpc.ClientConn
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
+
+// JournalEntriesClient is the client API for JournalEntries service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type JournalEntriesClient interface {
+	Create(ctx context.Context, in *CreateJournalEntryRequest, opts ...grpc.CallOption) (*CreateJournalEntryResponse, error)
+	Read(ctx context.Context, in *ReadJournalEntryRequest, opts ...grpc.CallOption) (*ReadJournalEntryResponse, error)
+	Update(ctx context.Context, in *UpdateJournalEntryRequest, opts ...grpc.CallOption) (*UpdateJournalEntryResponse, error)
+	Delete(ctx context.Context, in *DeleteJournalEntryRequest, opts ...grpc.CallOption) (*DeleteJournalEntryResponse, error)
+	List(ctx context.Context, in *ListJournalEntryRequest, opts ...grpc.CallOption) (*ListJournalEntryResponse, error)
+}
+
+type journalEntriesClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewJournalEntriesClient(cc *grpc.ClientConn) JournalEntriesClient {
+	return &journalEntriesClient{cc}
+}
+
+func (c *journalEntriesClient) Create(ctx context.Context, in *CreateJournalEntryRequest, opts ...grpc.CallOption) (*CreateJournalEntryResponse, error) {
+	out := new(CreateJournalEntryResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalEntries/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalEntriesClient) Read(ctx context.Context, in *ReadJournalEntryRequest, opts ...grpc.CallOption) (*ReadJournalEntryResponse, error) {
+	out := new(ReadJournalEntryResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalEntries/Read", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalEntriesClient) Update(ctx context.Context, in *UpdateJournalEntryRequest, opts ...grpc.CallOption) (*UpdateJournalEntryResponse, error) {
+	out := new(UpdateJournalEntryResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalEntries/Update", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalEntriesClient) Delete(ctx context.Context, in *DeleteJournalEntryRequest, opts ...grpc.CallOption) (*DeleteJournalEntryResponse, error) {
+	out := new(DeleteJournalEntryResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalEntries/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *journalEntriesClient) List(ctx context.Context, in *ListJournalEntryRequest, opts ...grpc.CallOption) (*ListJournalEntryResponse, error) {
+	out := new(ListJournalEntryResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalEntries/List", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// JournalEntriesServer is the server API for JournalEntries service.
+type JournalEntriesServer interface {
+	Create(context.Context, *CreateJournalEntryRequest) (*CreateJournalEntryResponse, error)
+	Read(context.Context, *ReadJournalEntryRequest) (*ReadJournalEntryResponse, error)
+	Update(context.Context, *UpdateJournalEntryRequest) (*UpdateJournalEntryResponse, error)
+	Delete(context.Context, *DeleteJournalEntryRequest) (*DeleteJournalEntryResponse, error)
+	List(context.Context, *ListJournalEntryRequest) (*ListJournalEntryResponse, error)
+}
+
+func RegisterJournalEntriesServer(s *grpc.Server, srv JournalEntriesServer) {
+	s.RegisterService(&_JournalEntries_serviceDesc, srv)
+}
+
+func _JournalEntries_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateJournalEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalEntriesServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalEntries/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalEntriesServer).Create(ctx, req.(*CreateJournalEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalEntries_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadJournalEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalEntriesServer).Read(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalEntries/Read",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalEntriesServer).Read(ctx, req.(*ReadJournalEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalEntries_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateJournalEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalEntriesServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalEntries/Update",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalEntriesServer).Update(ctx, req.(*UpdateJournalEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalEntries_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteJournalEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalEntriesServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalEntries/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalEntriesServer).Delete(ctx, req.(*DeleteJournalEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _JournalEntries_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListJournalEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalEntriesServer).List(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalEntries/List",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalEntriesServer).List(ctx, req.(*ListJournalEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _JournalEntries_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "service.JournalEntries",
+	HandlerType: (*JournalEntriesServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Create",
+			Handler:    _JournalEntries_Create_Handler,
+		},
+		{
+			MethodName: "Read",
+			Handler:    _JournalEntries_Read_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _JournalEntries_Update_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _JournalEntries_Delete_Handler,
+		},
+		{
+			MethodName: "List",
+			Handler:    _JournalEntries_List_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "github.com/kodesmil/go-patient-registry/pkg/pb/service.proto",
+}
+
+// JournalSubjectsClient is the client API for JournalSubjects service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type JournalSubjectsClient interface {
+	List(ctx context.Context, in *ListJournalSubjectRequest, opts ...grpc.CallOption) (*ListJournalSubjectResponse, error)
+}
+
+type journalSubjectsClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewJournalSubjectsClient(cc *grpc.ClientConn) JournalSubjectsClient {
+	return &journalSubjectsClient{cc}
+}
+
+func (c *journalSubjectsClient) List(ctx context.Context, in *ListJournalSubjectRequest, opts ...grpc.CallOption) (*ListJournalSubjectResponse, error) {
+	out := new(ListJournalSubjectResponse)
+	err := c.cc.Invoke(ctx, "/service.JournalSubjects/List", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// JournalSubjectsServer is the server API for JournalSubjects service.
+type JournalSubjectsServer interface {
+	List(context.Context, *ListJournalSubjectRequest) (*ListJournalSubjectResponse, error)
+}
+
+func RegisterJournalSubjectsServer(s *grpc.Server, srv JournalSubjectsServer) {
+	s.RegisterService(&_JournalSubjects_serviceDesc, srv)
+}
+
+func _JournalSubjects_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListJournalSubjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(JournalSubjectsServer).List(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.JournalSubjects/List",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(JournalSubjectsServer).List(ctx, req.(*ListJournalSubjectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _JournalSubjects_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "service.JournalSubjects",
+	HandlerType: (*JournalSubjectsServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "List",
+			Handler:    _JournalSubjects_List_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "github.com/kodesmil/go-patient-registry/pkg/pb/service.proto",
+}
 
 // ProfilesClient is the client API for Profiles service.
 //
@@ -2090,7 +2315,7 @@ type GroupsClient interface {
 	Read(ctx context.Context, in *ReadGroupRequest, opts ...grpc.CallOption) (*ReadGroupResponse, error)
 	Update(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
 	Delete(ctx context.Context, in *DeleteGroupRequest, opts ...grpc.CallOption) (*DeleteGroupResponse, error)
-	List(ctx context.Context, in *ListGroupRequest, opts ...grpc.CallOption) (*ListGroupsResponse, error)
+	List(ctx context.Context, in *ListGroupRequest, opts ...grpc.CallOption) (*ListGroupResponse, error)
 }
 
 type groupsClient struct {
@@ -2137,8 +2362,8 @@ func (c *groupsClient) Delete(ctx context.Context, in *DeleteGroupRequest, opts 
 	return out, nil
 }
 
-func (c *groupsClient) List(ctx context.Context, in *ListGroupRequest, opts ...grpc.CallOption) (*ListGroupsResponse, error) {
-	out := new(ListGroupsResponse)
+func (c *groupsClient) List(ctx context.Context, in *ListGroupRequest, opts ...grpc.CallOption) (*ListGroupResponse, error) {
+	out := new(ListGroupResponse)
 	err := c.cc.Invoke(ctx, "/service.Groups/List", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2152,7 +2377,7 @@ type GroupsServer interface {
 	Read(context.Context, *ReadGroupRequest) (*ReadGroupResponse, error)
 	Update(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
 	Delete(context.Context, *DeleteGroupRequest) (*DeleteGroupResponse, error)
-	List(context.Context, *ListGroupRequest) (*ListGroupsResponse, error)
+	List(context.Context, *ListGroupRequest) (*ListGroupResponse, error)
 }
 
 func RegisterGroupsServer(s *grpc.Server, srv GroupsServer) {
@@ -2272,235 +2497,6 @@ var _Groups_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _Groups_List_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "github.com/kodesmil/go-patient-registry/pkg/pb/service.proto",
-}
-
-// ContactsClient is the client API for Contacts service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ContactsClient interface {
-	Create(ctx context.Context, in *CreateContactRequest, opts ...grpc.CallOption) (*CreateContactResponse, error)
-	Read(ctx context.Context, in *ReadContactRequest, opts ...grpc.CallOption) (*ReadContactResponse, error)
-	Update(ctx context.Context, in *UpdateContactRequest, opts ...grpc.CallOption) (*UpdateContactResponse, error)
-	Delete(ctx context.Context, in *DeleteContactRequest, opts ...grpc.CallOption) (*DeleteContactResponse, error)
-	List(ctx context.Context, in *ListContactRequest, opts ...grpc.CallOption) (*ListContactsResponse, error)
-	SendSMS(ctx context.Context, in *SMSRequest, opts ...grpc.CallOption) (*SMSResponse, error)
-}
-
-type contactsClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewContactsClient(cc *grpc.ClientConn) ContactsClient {
-	return &contactsClient{cc}
-}
-
-func (c *contactsClient) Create(ctx context.Context, in *CreateContactRequest, opts ...grpc.CallOption) (*CreateContactResponse, error) {
-	out := new(CreateContactResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/Create", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contactsClient) Read(ctx context.Context, in *ReadContactRequest, opts ...grpc.CallOption) (*ReadContactResponse, error) {
-	out := new(ReadContactResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/Read", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contactsClient) Update(ctx context.Context, in *UpdateContactRequest, opts ...grpc.CallOption) (*UpdateContactResponse, error) {
-	out := new(UpdateContactResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/Update", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contactsClient) Delete(ctx context.Context, in *DeleteContactRequest, opts ...grpc.CallOption) (*DeleteContactResponse, error) {
-	out := new(DeleteContactResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/Delete", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contactsClient) List(ctx context.Context, in *ListContactRequest, opts ...grpc.CallOption) (*ListContactsResponse, error) {
-	out := new(ListContactsResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/List", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *contactsClient) SendSMS(ctx context.Context, in *SMSRequest, opts ...grpc.CallOption) (*SMSResponse, error) {
-	out := new(SMSResponse)
-	err := c.cc.Invoke(ctx, "/service.Contacts/SendSMS", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ContactsServer is the server API for Contacts service.
-type ContactsServer interface {
-	Create(context.Context, *CreateContactRequest) (*CreateContactResponse, error)
-	Read(context.Context, *ReadContactRequest) (*ReadContactResponse, error)
-	Update(context.Context, *UpdateContactRequest) (*UpdateContactResponse, error)
-	Delete(context.Context, *DeleteContactRequest) (*DeleteContactResponse, error)
-	List(context.Context, *ListContactRequest) (*ListContactsResponse, error)
-	SendSMS(context.Context, *SMSRequest) (*SMSResponse, error)
-}
-
-func RegisterContactsServer(s *grpc.Server, srv ContactsServer) {
-	s.RegisterService(&_Contacts_serviceDesc, srv)
-}
-
-func _Contacts_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateContactRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).Create(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/Create",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).Create(ctx, req.(*CreateContactRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Contacts_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadContactRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).Read(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/Read",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).Read(ctx, req.(*ReadContactRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Contacts_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateContactRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).Update(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/Update",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).Update(ctx, req.(*UpdateContactRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Contacts_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteContactRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).Delete(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/Delete",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).Delete(ctx, req.(*DeleteContactRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Contacts_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListContactRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).List(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/List",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).List(ctx, req.(*ListContactRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Contacts_SendSMS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SMSRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactsServer).SendSMS(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/service.Contacts/SendSMS",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactsServer).SendSMS(ctx, req.(*SMSRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Contacts_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "service.Contacts",
-	HandlerType: (*ContactsServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Create",
-			Handler:    _Contacts_Create_Handler,
-		},
-		{
-			MethodName: "Read",
-			Handler:    _Contacts_Read_Handler,
-		},
-		{
-			MethodName: "Update",
-			Handler:    _Contacts_Update_Handler,
-		},
-		{
-			MethodName: "Delete",
-			Handler:    _Contacts_Delete_Handler,
-		},
-		{
-			MethodName: "List",
-			Handler:    _Contacts_List_Handler,
-		},
-		{
-			MethodName: "SendSMS",
-			Handler:    _Contacts_SendSMS_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

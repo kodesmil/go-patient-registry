@@ -110,12 +110,17 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterGroupsServer(grpcServer, gs)
 
-	cs, err := svc.NewContactsServer(db)
+	jss, err := svc.NewJournalSubjectsServer(db)
 	if err != nil {
 		return nil, err
 	}
+	pb.JournalSubjectsServer(grpcServer, jss)
 
-	pb.RegisterContactsServer(grpcServer, cs)
+	jee, err := svc.NewJournalEntriesServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.JournalEntriesServer(grpcServer, jee)
 
 	return grpcServer, nil
 }
