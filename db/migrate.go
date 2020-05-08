@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 
 	"github.com/jinzhu/gorm"
@@ -19,6 +20,6 @@ func MigrateDB(dbSQL sql.DB) error {
 	// database schema. The atlas-app-toolkit team will come up with a better
 	// solution that uses database migration files.
 	return db.AutoMigrate(
-		&pb.ProfileORM{}, &pb.GroupORM{}, &pb.JournalEntryORM{}, &pb.JournalSubjectORM{},
+		&pb.ProfileORM{}, &pb.GroupORM{}, &pb.JournalSubjectORM{}, &pb.JournalEntryORM{},
 	).Error
 }

@@ -1,6 +1,10 @@
 package svc
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 )
@@ -8,6 +12,11 @@ import (
 // NewProfilesServer returns an instance of the default profiles server interface
 func NewProfilesServer(database *gorm.DB) (pb.ProfilesServer, error) {
 	return &profilesServer{&pb.ProfilesDefaultServer{DB: database}}, nil
+}
+
+func (s *profilesServer) Create(ctx context.Context, in *pb.CreateProfileRequest) (*pb.CreateProfileResponse, error) {
+	in.Payload.Id = &resource.Identifier{ResourceId: fmt.Sprintf("%v", ctx.Value("AccountID"))}
+	return s.ProfilesDefaultServer.Create(ctx, in)
 }
 
 type profilesServer struct {

@@ -460,21 +460,12 @@
         }
       }
     },
-    "/profiles/{id}": {
+    "/profiles/me": {
       "get": {
         "tags": [
           "Profiles"
         ],
         "operationId": "ProfilesRead",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "An application specific resource identity of a resource",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "GET operation response",
@@ -490,13 +481,6 @@
         ],
         "operationId": "ProfilesUpdate",
         "parameters": [
-          {
-            "type": "string",
-            "description": "An application specific resource identity of a resource",
-            "name": "id",
-            "in": "path",
-            "required": true
-          },
           {
             "name": "body",
             "in": "body",
@@ -520,15 +504,6 @@
           "Profiles"
         ],
         "operationId": "ProfilesDelete",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "An application specific resource identity of a resource",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "204": {
             "description": "No Content"
@@ -595,27 +570,24 @@
     "serviceJournalEntry": {
       "type": "object",
       "properties": {
-        "day": {
-          "$ref": "#/definitions/typeDate"
-        },
         "id": {
           "description": "The resource identifier.",
           "type": "string",
           "readOnly": true
         },
-        "journal_id": {
-          "description": "The resource identifier.",
-          "type": "string"
-        },
         "journal_subject_id": {
-          "description": "The resource identifier.",
-          "type": "string"
+          "type": "string",
+          "format": "int64"
         },
         "note": {
           "type": "string"
         },
         "severity": {
           "$ref": "#/definitions/JournalEntrySeverity"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -696,6 +668,12 @@
         "first_name": {
           "type": "string"
         },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/serviceGroup"
+          }
+        },
         "id": {
           "description": "The resource identifier.",
           "type": "string",
@@ -757,28 +735,6 @@
       "properties": {
         "result": {
           "$ref": "#/definitions/serviceProfile"
-        }
-      }
-    },
-    "typeDate": {
-      "description": "* A full date, with non-zero year, month and day values\n* A month and day value, with a zero year, e.g. an anniversary\n* A year on its own, with zero month and day values\n* A year and month value, with a zero day, e.g. a credit card expiration date\n\nRelated types are [google.type.TimeOfDay][google.type.TimeOfDay] and `google.protobuf.Timestamp`.",
-      "type": "object",
-      "title": "Represents a whole or partial calendar date, e.g. a birthday. The time of day\nand time zone are either specified elsewhere or are not significant. The date\nis relative to the Proleptic Gregorian Calendar. This can represent:",
-      "properties": {
-        "day": {
-          "description": "Day of month. Must be from 1 to 31 and valid for the year and month, or 0\nif specifying a year by itself or a year and month where the day is not\nsignificant.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "month": {
-          "description": "Month of year. Must be from 1 to 12, or 0 if specifying a year without a\nmonth and day.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "year": {
-          "description": "Year of date. Must be from 1 to 9999, or 0 if specifying a date without\na year.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     }

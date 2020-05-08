@@ -3,6 +3,9 @@ kind: Config
 metadata:
   name: go-patient-registry
 build:
+  local:
+#     useBuildkit: true
+    concurrency: 0
   artifacts:
     - image: go-patient-registry
 deploy:

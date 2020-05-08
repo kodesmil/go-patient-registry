@@ -214,30 +214,12 @@ func request_Profiles_Create_0(ctx context.Context, marshaler runtime.Marshaler,
 }
 
 var (
-	filter_Profiles_Read_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0, "resource_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
+	filter_Profiles_Read_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
 func request_Profiles_Read_0(ctx context.Context, marshaler runtime.Marshaler, client ProfilesClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq ReadProfileRequest
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id.resource_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id.resource_id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "id.resource_id", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id.resource_id", err)
-	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -263,54 +245,18 @@ func request_Profiles_Update_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["payload.id.resource_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payload.id.resource_id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "payload.id.resource_id", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload.id.resource_id", err)
-	}
-
 	msg, err := client.Update(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
 var (
-	filter_Profiles_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0, "resource_id": 1}, Base: []int{1, 1, 1, 0}, Check: []int{0, 1, 2, 3}}
+	filter_Profiles_Delete_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
 func request_Profiles_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client ProfilesClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq DeleteProfileRequest
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id.resource_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id.resource_id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "id.resource_id", val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id.resource_id", err)
-	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -870,11 +816,11 @@ func RegisterProfilesHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 var (
 	pattern_Profiles_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"profiles"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Profiles_Read_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"profiles", "id.resource_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Profiles_Read_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"profiles", "me"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Profiles_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"profiles", "payload.id.resource_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Profiles_Update_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"profiles", "me"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Profiles_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"profiles", "id.resource_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Profiles_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"profiles", "me"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Profiles_List_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"profiles"}, "", runtime.AssumeColonVerbOpt(true)))
 )

@@ -133,39 +133,21 @@ func (m *JournalEntry) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetJournalId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return JournalEntryValidationError{
-				field:  "JournalId",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	// no validation rules for Severity
 
 	// no validation rules for Note
 
-	if v, ok := interface{}(m.GetDay()).(interface{ Validate() error }); ok {
+	if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return JournalEntryValidationError{
-				field:  "Day",
+				field:  "Timestamp",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
 	}
 
-	if v, ok := interface{}(m.GetJournalSubjectId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return JournalEntryValidationError{
-				field:  "JournalSubjectId",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for JournalSubjectId
 
 	return nil
 }
@@ -1232,6 +1214,21 @@ func (m *Profile) Validate() error {
 	// no validation rules for LastName
 
 	// no validation rules for PrimaryEmail
+
+	for idx, item := range m.GetGroups() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ProfileValidationError{
+					field:  fmt.Sprintf("Groups[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	return nil
 }

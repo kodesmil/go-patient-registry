@@ -4,7 +4,6 @@ package service;
 
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
-import "google/type/date.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
 import "protoc-gen-swagger/options/annotations.proto";
@@ -23,7 +22,7 @@ message JournalSubject {
     option (gorm.opts) = {
         ormable: true,
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string key = 2;
     string name = 3;
     enum Type {
@@ -38,18 +37,17 @@ message JournalEntry {
         ormable: true,
         multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
-    atlas.rpc.Identifier journal_id = 2;
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     enum Severity {
         NONE = 0;
         LOW = 1;
         MID = 2;
         HIGH = 3;
     }
-    Severity severity = 3;
-    string note = 4;
-    google.type.Date day = 5;
-    atlas.rpc.Identifier journal_subject_id = 6;
+    Severity severity = 2;
+    string note = 3;
+    google.protobuf.Timestamp timestamp = 4;
+    int64 journal_subject_id = 5;
 }
 
 message CreateJournalEntryRequest {
@@ -159,11 +157,14 @@ message Profile {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    atlas.rpc.Identifier id = 1 [(gorm.field) = {
+        tag: {type: "text", primary_key: true, not_null: true}
+    }];
     string notes = 2;
     string first_name = 3;
     string last_name = 4;
-    string primary_email = 5 [(gorm.field).drop = true];
+    string primary_email = 5 [(gorm.field).tag = {unique: true}];
+    repeated Group groups = 6;
 }
 
 message CreateProfileRequest {
@@ -218,20 +219,20 @@ service Profiles {
 
     rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
         option (google.api.http) = {
-            get: "/profiles/{id.resource_id}"
+            get: "/profiles/me"
         };
     }
 
     rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
         option (google.api.http) = {
-            put: "/profiles/{payload.id.resource_id}"
+            put: "/profiles/me"
             body: "payload"
         };
     }
 
     rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
         option (google.api.http) = {
-            delete: "/profiles/{id.resource_id}"
+            delete: "/profiles/me"
         };
         option (gorm.method).object_type = "Profile";
     }
@@ -241,7 +242,6 @@ service Profiles {
             get: "/profiles"
         };
     }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ message Group {
       ormable: true,
       multi_account: true
     };
-    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+    atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
     string name = 2;
     string notes = 3;
     atlas.rpc.Identifier profile_id = 4;
