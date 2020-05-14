@@ -1,28 +1,14 @@
-apiVersion: skaffold/v2beta2
+apiVersion: skaffold/v2beta3
 kind: Config
 metadata:
   name: go-patient-registry
 build:
-  local:
-#     useBuildkit: true
-    concurrency: 0
   artifacts:
-    - image: go-patient-registry
+  - image: gcr.io/motim1/go-patient-registry
 deploy:
-  helm:
-    releases:
-      - name: go-patient-registry
-        chartPath: go-patient-registry
-        namespace: qa
-        version: 1.0.0
-        values:
-          image.repository: go-patient-registry
-portForward:
-- resourceType: deployment
-  resourceName: go-patient-registry
-  port: 5432
-  localPort: 5432
-profiles:
-- name: cloudbuild
-  build:
-    googleCloudBuild: {}
+  kubectl:
+    manifests:
+    - manifests/deployment.yaml
+    - manifests/ingress.yaml
+    - manifests/secret.yaml
+    - manifests/service.yaml

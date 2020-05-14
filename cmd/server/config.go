@@ -13,7 +13,7 @@ const (
 	defaultGatewayEnable      = true
 	defaultGatewayAddress     = "0.0.0.0"
 	defaultGatewayPort        = "8080"
-	defaultGatewayURL         = "/go-patient-registry/v1/"
+	defaultGatewayURL         = "/manifests/v1/"
 	defaultGatewaySwaggerFile = "pkg/pb/service.swagger.json"
 
 	// Database
@@ -63,7 +63,7 @@ const (
 	defaultConfigDirectory = "deploy/"
 	defaultConfigFile      = ""
 	defaultSecretFile      = ""
-	defaultApplicationID   = "go-patient-registry"
+	defaultApplicationID   = "manifests"
 
 	// Logging
 	defaultLoggingLevel = "info"

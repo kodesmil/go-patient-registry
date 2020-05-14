@@ -86,7 +86,7 @@ func ServeInternal(logger *logrus.Logger) error {
 		viper.GetString("internal.health"),
 		viper.GetString("internal.readiness"),
 	)
-	// healthChecker.AddReadiness("DB ready check", dbReady)
+	healthChecker.AddReadiness("DB ready check", dbReady)
 	healthChecker.AddLiveness("ping", health.HTTPGetCheck(
 		fmt.Sprint("http://", viper.GetString("internal.address"), ":", viper.GetString("internal.port"), "/ping"), time.Minute),
 	)
@@ -133,16 +133,19 @@ func ServeExternal(logger *logrus.Logger) error {
 		server.WithGateway(
 			gateway.WithGatewayOptions(
 				runtime.WithForwardResponseOption(forwardResponseOption),
-				runtime.WithIncomingHeaderMatcher(gateway.ExtendedDefaultHeaderMatcher(
-					requestid.DefaultRequestIDKey)),
+				runtime.WithIncomingHeaderMatcher(
+					gateway.ExtendedDefaultHeaderMatcher(requestid.DefaultRequestIDKey),
+				),
 			),
 			gateway.WithServerAddress(fmt.Sprintf("%s:%s", viper.GetString("server.address"), viper.GetString("server.port"))),
 			gateway.WithEndpointRegistration(
 				viper.GetString("gateway.endpoint"),
 				pb.RegisterProfilesHandlerFromEndpoint,
 				pb.RegisterGroupsHandlerFromEndpoint,
+				pb.RegisterFeedArticlesHandlerFromEndpoint,
+				pb.RegisterJournalSubjectsHandlerFromEndpoint,
 				pb.RegisterJournalEntriesHandlerFromEndpoint,
-				pb.RegisterJournalSubjectsHandlerFromEndpoint),
+			),
 		),
 		server.WithHandler("/swagger/", NewSwaggerHandler(viper.GetString("gateway.swaggerFile"))),
 	)

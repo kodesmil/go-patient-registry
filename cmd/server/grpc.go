@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
+	"fmt"
+	"github.com/qor/admin"
+	"net/http"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -82,20 +84,10 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		),
 	)
 
-	dbSQL, err := sql.Open("postgres", dbConnectionString)
-	if err != nil {
+	if err := migrate.MigrateDB(); err != nil {
 		return nil, err
 	}
-	// defer dbSQL.Close()
-	if err := migrate.MigrateDB(*dbSQL); err != nil {
-		return nil, err
-	}
-
-	db, err := gorm.Open("postgres", dbSQL)
-
-	if err != nil {
-		return nil, err
-	}
+	db, err := gorm.Open("postgres", dbConnectionString)
 	// defer db.Close()
 
 	ps, err := svc.NewProfilesServer(db)
@@ -116,11 +108,41 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterJournalSubjectsServer(grpcServer, jss)
 
-	jee, err := svc.NewJournalEntriesServer(db)
+	jse, err := svc.NewJournalEntriesServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterJournalEntriesServer(grpcServer, jee)
+	pb.RegisterJournalEntriesServer(grpcServer, jse)
+
+	fa, err := svc.NewFeedArticlesServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.RegisterFeedArticlesServer(grpcServer, fa)
+
+	go func() {
+		// Initialize
+		Admin := admin.New(&admin.AdminConfig{DB: db})
+
+		// Allow to use Admin to manage User, Product
+		Admin.AddResource(&pb.JournalEntryORM{})
+		Admin.AddResource(&pb.JournalSubjectORM{})
+		Admin.AddResource(&pb.FeedTagORM{})
+		article := Admin.AddResource(&pb.FeedArticleORM{})
+		Admin.AddResource(&pb.FeedAuthorORM{})
+		Admin.AddResource(&pb.ProfileORM{})
+		Admin.AddResource(&pb.GroupORM{})
+		article.Meta(&admin.Meta{Name: "Content", Type: "text"})
+		mux := http.NewServeMux()
+
+		Admin.MountTo("/admin", mux)
+
+		fmt.Println("Listening on: 9000")
+		err = http.ListenAndServe(":9000", mux)
+		if err != nil {
+			return
+		}
+	}()
 
 	return grpcServer, nil
 }

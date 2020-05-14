@@ -1,25 +1,26 @@
 package db
 
 import (
-	"database/sql"
-
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
+	"github.com/spf13/viper"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-// MigrateDB builds the contacts application database tables
-func MigrateDB(dbSQL sql.DB) error {
-	db, err := gorm.Open("postgres", &dbSQL)
+func MigrateDB() error {
+	db, err := gorm.Open("postgres", viper.GetString("database.dsn"))
 	if err != nil {
 		return err
 	}
 	defer db.Close()
-	// NOTE: Using db.AutoMigrate is a temporary measure to structure the contacts
-	// database schema. The atlas-app-toolkit team will come up with a better
-	// solution that uses database migration files.
 	return db.AutoMigrate(
-		&pb.ProfileORM{}, &pb.GroupORM{}, &pb.JournalSubjectORM{}, &pb.JournalEntryORM{},
+		&pb.ProfileORM{},
+		&pb.GroupORM{},
+		&pb.JournalSubjectORM{},
+		&pb.JournalEntryORM{},
+		&pb.FeedArticleORM{},
+		&pb.FeedAuthorORM{},
+		&pb.FeedTagORM{},
 	).Error
 }

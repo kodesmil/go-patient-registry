@@ -10,6 +10,7 @@ import (
 )
 
 // NewProfilesServer returns an instance of the default profiles server interface
+
 func NewProfilesServer(database *gorm.DB) (pb.ProfilesServer, error) {
 	return &profilesServer{&pb.ProfilesDefaultServer{DB: database}}, nil
 }
@@ -24,6 +25,7 @@ type profilesServer struct {
 }
 
 // NewGroupsServer returns an instance of the default groups server interface
+
 func NewGroupsServer(database *gorm.DB) (pb.GroupsServer, error) {
 	return &groupsServer{&pb.GroupsDefaultServer{DB: database}}, nil
 }
@@ -32,7 +34,18 @@ type groupsServer struct {
 	*pb.GroupsDefaultServer
 }
 
+// NewFeedArticlesServer returns an instance of the default feed articles server interface
+
+func NewFeedArticlesServer(database *gorm.DB) (pb.FeedArticlesServer, error) {
+	return &feedArticlesServer{&pb.FeedArticlesDefaultServer{DB: database}}, nil
+}
+
+type feedArticlesServer struct {
+	*pb.FeedArticlesDefaultServer
+}
+
 // NewJournalEntriesServer returns an instance of the default journal server interface
+
 func NewJournalEntriesServer(database *gorm.DB) (pb.JournalEntriesServer, error) {
 	return &journalEntriesServer{&pb.JournalEntriesDefaultServer{DB: database}}, nil
 }
@@ -42,6 +55,7 @@ type journalEntriesServer struct {
 }
 
 // NewJournalSubjectsServer returns an instance of the default journal server interface
+
 func NewJournalSubjectsServer(database *gorm.DB) (pb.JournalSubjectsServer, error) {
 	return &journalSubjectsServer{&pb.JournalSubjectsDefaultServer{DB: database}}, nil
 }

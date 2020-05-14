@@ -20,6 +20,60 @@
     "version": "1.0"
   },
   "paths": {
+    "/feed/articles": {
+      "get": {
+        "tags": [
+          "FeedArticles"
+        ],
+        "operationId": "FeedArticlesList",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "\n\nA collection of response resources can be filtered by a logical expression string that includes JSON tag references to values in each resource, literal values, and logical operators. If a resource does not have the specified tag, its value is assumed to be null.\n\nLiteral values include numbers (integer and floating-point), and quoted (both single- or double-quoted) literal strings, and 'null'. The following operators are commonly used in filter expressions:\n\n|  Op   |  Description               | \n|  --   |  -----------               | \n|  ==   |  Equal                     | \n|  !=   |  Not Equal                 | \n|  \u003e    |  Greater Than              | \n|   \u003e=  |  Greater Than or Equal To  | \n|  \u003c    |  Less Than                 | \n|  \u003c=   |  Less Than or Equal To     | \n|  and  |  Logical AND               | \n|  ~    |  Matches Regex             | \n|  !~   |  Does Not Match Regex      | \n|  or   |  Logical OR                | \n|  not  |  Logical NOT               | \n|  ()   |  Groupping Operators       |\n\n\t\t\t\t\t\t",
+            "name": "_filter",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "\n\nA collection of response resources can be sorted by their JSON tags. For a 'flat' resource, the tag name is straightforward. If sorting is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, its value is assumed to be null.)\n\nSpecify this parameter as a comma-separated list of JSON tag names. The sort direction can be specified by a suffix separated by whitespace before the tag name. The suffix 'asc' sorts the data in ascending order. The suffix 'desc' sorts the data in descending order. If no suffix is specified the data is sorted in ascending order.\n\n\t\t\t\t\t\t",
+            "name": "_order_by",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "\n\nA collection of response resources can be transformed by specifying a set of JSON tags to be returned. For a “flat” resource, the tag name is straightforward. If field selection is allowed on non-flat hierarchical resources, the service should implement a qualified naming scheme such as dot-qualification to reference data down the hierarchy. If a resource does not have the specified tag, the tag does not appear in the output resource.\n\nSpecify this parameter as a comma-separated list of JSON tag names.\n\n\t\t\t\t\t\t",
+            "name": "_fields",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "\n\nThe integer index (zero-origin) of the offset into a collection of resources. If omitted or null the value is assumed to be '0'.\n\n\t\t\t\t\t\t\t",
+            "name": "_offset",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "\n\nThe integer number of resources to be returned in the response. The service may impose maximum value. If omitted the service may impose a default value.\n\n\t\t\t\t\t\t\t",
+            "name": "_limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "\n\nThe service-defined string used to identify a page of resources. A null value indicates the first page.\n\n\t\t\t\t\t\t\t",
+            "name": "_page_token",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GET operation response",
+            "schema": {
+              "$ref": "#/definitions/serviceListFeedArticleResponse"
+            }
+          }
+        }
+      }
+    },
     "/groups": {
       "get": {
         "tags": [
@@ -547,6 +601,73 @@
         }
       }
     },
+    "serviceFeedArticle": {
+      "properties": {
+        "content": {
+          "type": "string"
+        },
+        "cover_picture_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "feed_author": {
+          "$ref": "#/definitions/serviceFeedAuthor_In_serviceFeedArticle"
+        },
+        "feed_tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/serviceFeedTag_In_serviceFeedArticle"
+          }
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceFeedAuthor_In_serviceFeedArticle": {
+      "properties": {
+        "bio": {
+          "type": "string"
+        },
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string"
+        },
+        "profile_photo_url": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceFeedTag_In_serviceFeedArticle": {
+      "properties": {
+        "id": {
+          "description": "The resource identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "serviceGroup": {
       "type": "object",
       "properties": {
@@ -570,6 +691,10 @@
     "serviceJournalEntry": {
       "type": "object",
       "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "id": {
           "description": "The resource identifier.",
           "type": "string",
@@ -584,10 +709,6 @@
         },
         "severity": {
           "$ref": "#/definitions/JournalEntrySeverity"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },
@@ -617,6 +738,17 @@
         "ACTIVITY",
         "SYMPTOM"
       ]
+    },
+    "serviceListFeedArticleResponse": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/serviceFeedArticle"
+          }
+        }
+      }
     },
     "serviceListGroupResponse": {
       "type": "object",
