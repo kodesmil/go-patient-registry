@@ -168,7 +168,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}()
 
 	type NotificationResult struct {
-		DeviceId            string
+		DeviceToken         string
 		CronJournalReminder string
 	}
 
@@ -177,7 +177,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		id, err := c.AddFunc("*/1 * * * *", func() {
 
 			rows, err := db.Table("notification_settings ns").
-				Select("nd.id as device_id, ns.cron_journal_reminder").
+				Select("nd.device_token, ns.cron_journal_reminder").
 				Joins("left join notification_devices nd on nd.account_id = ns.account_id").
 				Rows()
 			if err != nil {

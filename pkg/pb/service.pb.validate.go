@@ -2876,6 +2876,8 @@ func (m *NotificationDevice) Validate() error {
 		}
 	}
 
+	// no validation rules for DeviceToken
+
 	return nil
 }
 

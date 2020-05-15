@@ -271,10 +271,11 @@ message NotificationDevice {
     multi_account: true
   };
   atlas.rpc.Identifier id = 1 [(gorm.field) = {
-    tag: {type: "text", primary_key: true, not_null: true}
+    tag: {type: "serial", primary_key: true, not_null: true}
   }];
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
+  string device_token = 4 [(gorm.field).tag = {unique: true}];
 }
 
 message CreateNotificationDeviceRequest {
