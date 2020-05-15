@@ -3,6 +3,8 @@ kind: Config
 metadata:
   name: go-patient-registry
 build:
+  local:
+    # useBuildkit: true
   artifacts:
   - image: gcr.io/motim1/go-patient-registry
 deploy:

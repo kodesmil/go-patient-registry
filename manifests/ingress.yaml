@@ -14,13 +14,6 @@ spec:
         - "*.qa.api.kodesmil.com"
       secretName: letsencrypt-cert
   rules:
-    - host: rest-clinic.qa.api.kodesmil.com
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: go-patient-registry
-              servicePort: http
     - host: admin.qa.api.kodesmil.com
       http:
         paths:

@@ -6,13 +6,12 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "github.com/lyft/protoc-gen-validate/validate/validate.proto";
-import "protoc-gen-swagger/options/annotations.proto";
 import "infobloxopen/protoc-gen-gorm/options/gorm.proto";
 import "infobloxopen/protoc-gen-gorm/types/types.proto";
 import "infobloxopen/atlas-app-toolkit/query/collection_operators.proto";
 import "infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
-option go_package = "github.com/kodesmil/manifests/pkg/pb";
+option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb";
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,49 +103,18 @@ message ListJournalSubjectResponse {
 
 service JournalEntries {
   option (gorm.server).autogen = true;
-
-  rpc Create (CreateJournalEntryRequest) returns (CreateJournalEntryResponse) {
-    option (google.api.http) = {
-      post: "/journals/entries"
-      body: "payload"
-    };
-  }
-
-  rpc Read (ReadJournalEntryRequest) returns (ReadJournalEntryResponse) {
-    option (google.api.http) = {
-      get: "/journals/entries/{id.resource_id}"
-    };
-  }
-
-  rpc Update (UpdateJournalEntryRequest) returns (UpdateJournalEntryResponse) {
-    option (google.api.http) = {
-      put: "/journals/entries/{payload.id.resource_id}"
-      body: "payload"
-    };
-  }
-
+  rpc Create (CreateJournalEntryRequest) returns (CreateJournalEntryResponse);
+  rpc Read (ReadJournalEntryRequest) returns (ReadJournalEntryResponse);
+  rpc Update (UpdateJournalEntryRequest) returns (UpdateJournalEntryResponse);
   rpc Delete (DeleteJournalEntryRequest) returns (DeleteJournalEntryResponse) {
-    option (google.api.http) = {
-      delete: "/journals/entries/{id.resource_id}"
-    };
     option (gorm.method).object_type = "JournalEntry";
   }
-
-  rpc List (ListJournalEntryRequest) returns (ListJournalEntryResponse) {
-    option (google.api.http) = {
-      get: "/journals/entries"
-    };
-  }
+  rpc List (ListJournalEntryRequest) returns (ListJournalEntryResponse);
 }
 
 service JournalSubjects {
   option (gorm.server).autogen = true;
-
-  rpc List (ListJournalSubjectRequest) returns (ListJournalSubjectResponse) {
-    option (google.api.http) = {
-      get: "/journals/subjects"
-    };
-  }
+  rpc List (ListJournalSubjectRequest) returns (ListJournalSubjectResponse);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,6 +139,23 @@ message FeedAuthor {
   string profile_photo_url = 3;
   string bio = 4;
   repeated FeedArticle feed_articles = 5;
+}
+
+message FeedArticleDetail {
+  option (gorm.opts) = {
+    ormable: true,
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+  string content = 2;
+  FeedArticle feed_article = 3 [(gorm.field).has_one.preload = false];
+}
+
+message ReadFeedArticleDetailsRequest {
+  atlas.rpc.Identifier id = 1;
+}
+
+message ReadFeedArticleDetailsResponse {
+  FeedArticleDetail result = 1;
 }
 
 message FeedArticle {
@@ -200,12 +185,109 @@ message ListFeedArticleResponse {
 
 service FeedArticles {
   option (gorm.server).autogen = true;
+  rpc List (ListFeedArticleRequest) returns (ListFeedArticleResponse);
+}
 
-  rpc List (ListFeedArticleRequest) returns (ListFeedArticleResponse) {
-    option (google.api.http) = {
-      get: "/feed/articles"
-    };
+service FeedArticleDetails {
+  option (gorm.server).autogen = true;
+  rpc Read (ReadFeedArticleDetailsRequest) returns (ReadFeedArticleDetailsResponse);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Notification Setting
+
+message NotificationSetting {
+  option (gorm.opts) = {
+    ormable: true,
+    multi_account: true
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  bool enable_notifications = 4;
+  bool enable_journal_reminder = 5;
+  string cron_journal_reminder = 6;
+}
+
+message CreateNotificationSettingRequest {
+  NotificationSetting payload = 1;
+}
+
+message CreateNotificationSettingResponse {
+  NotificationSetting result = 1;
+}
+
+message ReadNotificationSettingRequest {
+  atlas.rpc.Identifier id = 1;
+}
+
+message ReadNotificationSettingResponse {
+  NotificationSetting result = 1;
+}
+
+message UpdateNotificationSettingRequest {
+  NotificationSetting payload = 1;
+}
+
+message UpdateNotificationSettingResponse {
+  NotificationSetting result = 1;
+}
+
+message DeleteNotificationSettingRequest {
+  atlas.rpc.Identifier id = 1;
+}
+
+message DeleteNotificationSettingResponse{}
+
+message ListNotificationSettingRequest {
+  infoblox.api.Filtering filter = 1;
+  infoblox.api.Sorting order_by = 2;
+  infoblox.api.FieldSelection fields = 3;
+  infoblox.api.Pagination paging = 4;
+}
+
+message ListNotificationSettingResponse {
+  repeated NotificationSetting results = 1;
+}
+
+service NotificationSettings {
+  option (gorm.server).autogen = true;
+  rpc Create (CreateNotificationSettingRequest) returns (CreateNotificationSettingResponse);
+  rpc Read (ReadNotificationSettingRequest) returns (ReadNotificationSettingResponse);
+  rpc Update (UpdateNotificationSettingRequest) returns (UpdateNotificationSettingResponse);
+  rpc Delete (DeleteNotificationSettingRequest) returns (DeleteNotificationSettingResponse) {
+    option (gorm.method).object_type = "NotificationSetting";
   }
+  rpc List (ListNotificationSettingRequest) returns (ListNotificationSettingResponse);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Notification Device
+
+message NotificationDevice {
+  option (gorm.opts) = {
+    ormable: true,
+    multi_account: true
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field) = {
+    tag: {type: "text", primary_key: true, not_null: true}
+  }];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message CreateNotificationDeviceRequest {
+  NotificationDevice payload = 1;
+}
+
+message CreateNotificationDeviceResponse {
+  NotificationDevice result = 1;
+}
+
+service NotificationDevices {
+  option (gorm.server).autogen = true;
+  rpc Create (CreateNotificationDeviceRequest) returns (CreateNotificationDeviceResponse);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,44 +345,19 @@ message ListProfileRequest {
   infoblox.api.Pagination paging = 4;
 }
 
-message ListProfilesResponse {
+message ListProfileResponse {
   repeated Profile results = 1;
 }
 
 service Profiles {
   option (gorm.server).autogen = true;
-  rpc Create (CreateProfileRequest) returns (CreateProfileResponse) {
-    option (google.api.http) = {
-      post: "/profiles"
-      body: "payload"
-    };
-  }
-
-  rpc Read (ReadProfileRequest) returns (ReadProfileResponse) {
-    option (google.api.http) = {
-      get: "/profiles/me"
-    };
-  }
-
-  rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse) {
-    option (google.api.http) = {
-      put: "/profiles/me"
-      body: "payload"
-    };
-  }
-
+  rpc Create (CreateProfileRequest) returns (CreateProfileResponse);
+  rpc Read (ReadProfileRequest) returns (ReadProfileResponse);
+  rpc Update (UpdateProfileRequest) returns (UpdateProfileResponse);
   rpc Delete (DeleteProfileRequest) returns (DeleteProfileResponse) {
-    option (google.api.http) = {
-      delete: "/profiles/me"
-    };
     option (gorm.method).object_type = "Profile";
   }
-
-  rpc List (ListProfileRequest) returns (ListProfilesResponse) {
-    option (google.api.http) = {
-      get: "/profiles"
-    };
-  }
+  rpc List (ListProfileRequest) returns (ListProfileResponse);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -360,54 +417,11 @@ message ListGroupResponse {
 
 service Groups {
   option (gorm.server).autogen = true;
-  rpc Create (CreateGroupRequest) returns (CreateGroupResponse) {
-    option (google.api.http) = {
-      post: "/groups"
-      body: "payload"
-    };
-  }
-
-  rpc Read (ReadGroupRequest) returns (ReadGroupResponse) {
-    option (google.api.http) = {
-      get: "/groups/{id.resource_id}"
-    };
-  }
-
-  rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse) {
-    option (google.api.http) = {
-      put: "/groups/{payload.id.resource_id}"
-      body: "payload"
-    };
-  }
-
+  rpc Create (CreateGroupRequest) returns (CreateGroupResponse);
+  rpc Read (ReadGroupRequest) returns (ReadGroupResponse);
+  rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse);
   rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse) {
-    option (google.api.http) = {
-      delete: "/groups/{id.resource_id}"
-    };
     option (gorm.method).object_type = "Group";
   }
-
-  rpc List (ListGroupRequest) returns (ListGroupResponse) {
-    option (google.api.http) = {
-      get: "/groups"
-    };
-  }
+  rpc List (ListGroupRequest) returns (ListGroupResponse);
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Swagger
-
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-  info: {
-    title: "Contacts";
-    version: "1.0";
-    contact: {
-      name: "John Belamaric";
-      url: "https://github.com/infobloxopen/atlas-contacts-app";
-      email: "jbelamaric@infoblox.com";
-    };
-  };
-  schemes: HTTP;
-  schemes: HTTPS;
-  consumes: "application/json";
-  produces: "application/json";
-};

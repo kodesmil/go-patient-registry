@@ -44,6 +44,16 @@ type feedArticlesServer struct {
 	*pb.FeedArticlesDefaultServer
 }
 
+// NewFeedArticleDetailsServer returns an instance of the default feed articles server interface
+
+func NewFeedArticleDetailsServer(database *gorm.DB) (pb.FeedArticleDetailsServer, error) {
+	return &feedArticleDetailsServer{&pb.FeedArticleDetailsDefaultServer{DB: database}}, nil
+}
+
+type feedArticleDetailsServer struct {
+	*pb.FeedArticleDetailsDefaultServer
+}
+
 // NewJournalEntriesServer returns an instance of the default journal server interface
 
 func NewJournalEntriesServer(database *gorm.DB) (pb.JournalEntriesServer, error) {
@@ -62,4 +72,24 @@ func NewJournalSubjectsServer(database *gorm.DB) (pb.JournalSubjectsServer, erro
 
 type journalSubjectsServer struct {
 	*pb.JournalSubjectsDefaultServer
+}
+
+// NewNotificationDevicesServer returns an instance of the default feed articles server interface
+
+func NewNotificationDevicesServer(database *gorm.DB) (pb.NotificationDevicesServer, error) {
+	return &notificationDevicesServer{&pb.NotificationDevicesDefaultServer{DB: database}}, nil
+}
+
+type notificationDevicesServer struct {
+	*pb.NotificationDevicesDefaultServer
+}
+
+// NewNotificationSettingsServer returns an instance of the default feed articles server interface
+
+func NewNotificationSettingsServer(database *gorm.DB) (pb.NotificationSettingsServer, error) {
+	return &notificationSettingsServer{&pb.NotificationSettingsDefaultServer{DB: database}}, nil
+}
+
+type notificationSettingsServer struct {
+	*pb.NotificationSettingsDefaultServer
 }

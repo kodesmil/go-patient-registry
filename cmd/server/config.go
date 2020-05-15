@@ -9,13 +9,6 @@ const (
 	defaultServerAddress = "0.0.0.0"
 	defaultServerPort    = "9090"
 
-	// Gateway
-	defaultGatewayEnable      = true
-	defaultGatewayAddress     = "0.0.0.0"
-	defaultGatewayPort        = "8080"
-	defaultGatewayURL         = "/manifests/v1/"
-	defaultGatewaySwaggerFile = "pkg/pb/service.swagger.json"
-
 	// Database
 	defaultDatabaseEnable = true
 	// DSN example: "postgres://postgres:D6AQjmbzUC@postgresql-1586518706.default.svc.cluster.local:5432/go_patient_registry?sslmode=disable"
@@ -78,12 +71,6 @@ var (
 	// define flag overrides
 	flagServerAddress = pflag.String("server.address", defaultServerAddress, "adress of gRPC server")
 	flagServerPort    = pflag.String("server.port", defaultServerPort, "port of gRPC server")
-
-	flagGatewayEnable      = pflag.Bool("gateway.enable", defaultGatewayEnable, "enable gatway")
-	flagGatewayAddress     = pflag.String("gateway.address", defaultGatewayAddress, "address of gateway server")
-	flagGatewayPort        = pflag.String("gateway.port", defaultGatewayPort, "port of gateway server")
-	flagGatewayURL         = pflag.String("gateway.endpoint", defaultGatewayURL, "endpoint of gateway server")
-	flagGatewaySwaggerFile = pflag.String("gateway.swaggerFile", defaultGatewaySwaggerFile, "directory of swagger.json file")
 
 	flagDatabaseEnable   = pflag.Bool("database.enable", defaultDatabaseEnable, "enable database")
 	flagDatabaseDSN      = pflag.String("database.dsn", defaultDatabaseDSN, "DSN of the database")

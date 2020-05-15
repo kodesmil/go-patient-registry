@@ -20,7 +20,10 @@ func MigrateDB() error {
 		&pb.JournalSubjectORM{},
 		&pb.JournalEntryORM{},
 		&pb.FeedArticleORM{},
+		&pb.FeedArticleDetailORM{},
 		&pb.FeedAuthorORM{},
 		&pb.FeedTagORM{},
+		&pb.NotificationDeviceORM{},
+		&pb.NotificationSettingORM{},
 	).Error
 }

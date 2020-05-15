@@ -10,29 +10,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/kodesmil/go-patient-registry/pkg/pb"
+	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+	"github.com/infobloxopen/atlas-app-toolkit/health"
+	"github.com/infobloxopen/atlas-app-toolkit/server"
+	pubsubgrpc "github.com/infobloxopen/atlas-pubsub/grpc"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	"github.com/infobloxopen/atlas-app-toolkit/gateway"
-	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
-	"github.com/infobloxopen/atlas-app-toolkit/health"
-	"github.com/infobloxopen/atlas-app-toolkit/requestid"
-	"github.com/infobloxopen/atlas-app-toolkit/server"
-	pubsubgrpc "github.com/infobloxopen/atlas-pubsub/grpc"
 )
 
 func main() {
 	doneC := make(chan error)
 	logger := NewLogger()
-
 	if viper.GetBool("internal.enable") {
 		go func() { doneC <- ServeInternal(logger) }()
 	}
@@ -130,24 +123,6 @@ func ServeExternal(logger *logrus.Logger) error {
 	reflection.Register(grpcServer)
 	s, err := server.NewServer(
 		server.WithGrpcServer(grpcServer),
-		server.WithGateway(
-			gateway.WithGatewayOptions(
-				runtime.WithForwardResponseOption(forwardResponseOption),
-				runtime.WithIncomingHeaderMatcher(
-					gateway.ExtendedDefaultHeaderMatcher(requestid.DefaultRequestIDKey),
-				),
-			),
-			gateway.WithServerAddress(fmt.Sprintf("%s:%s", viper.GetString("server.address"), viper.GetString("server.port"))),
-			gateway.WithEndpointRegistration(
-				viper.GetString("gateway.endpoint"),
-				pb.RegisterProfilesHandlerFromEndpoint,
-				pb.RegisterGroupsHandlerFromEndpoint,
-				pb.RegisterFeedArticlesHandlerFromEndpoint,
-				pb.RegisterJournalSubjectsHandlerFromEndpoint,
-				pb.RegisterJournalEntriesHandlerFromEndpoint,
-			),
-		),
-		server.WithHandler("/swagger/", NewSwaggerHandler(viper.GetString("gateway.swaggerFile"))),
 	)
 	if err != nil {
 		logger.Fatalln(err)
@@ -186,11 +161,6 @@ func init() {
 	}
 	resource.RegisterApplication(viper.GetString("app.id"))
 	resource.SetPlural()
-}
-
-func forwardResponseOption(ctx context.Context, w http.ResponseWriter, resp proto.Message) error {
-	w.Header().Set("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate")
-	return nil
 }
 
 func dbReady() error {

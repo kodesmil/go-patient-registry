@@ -37,17 +37,12 @@ spec:
           image: gcr.io/motim1/go-patient-registry
           imagePullPolicy: Always
           ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
             - name: admin
               containerPort: 9000
               protocol: TCP
             - name: grpc
               containerPort: 9090
               protocol: TCP
-            - name: debug
-              containerPort: 3000
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/etc/secrets/firebase-service-config.json"

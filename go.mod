@@ -5,8 +5,8 @@ go 1.14
 require (
 	cloud.google.com/go v0.56.0 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
-	github.com/GoAdminGroup/go-admin v1.2.10
-	github.com/GoAdminGroup/themes v0.0.32
+	github.com/GoAdminGroup/go-admin v1.2.10 // indirect
+	github.com/GoAdminGroup/themes v0.0.32 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/aws/aws-sdk-go v1.30.27 // indirect
@@ -14,7 +14,7 @@ require (
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.0 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.1
@@ -43,7 +43,7 @@ require (
 	github.com/prometheus/procfs v0.0.11 // indirect
 	github.com/qor/admin v0.0.0-20200315024928-877b98a68a6f
 	github.com/qor/assetfs v0.0.0-20170713023933-ff57fdc13a14 // indirect
-	github.com/qor/media v0.0.0-20191022071353-19cf289e17d4
+	github.com/qor/media v0.0.0-20191022071353-19cf289e17d4 // indirect
 	github.com/qor/middlewares v0.0.0-20170822143614-781378b69454 // indirect
 	github.com/qor/oss v0.0.0-20191031055114-aef9ba66bf76 // indirect
 	github.com/qor/qor v0.0.0-20200224122013-457d2e3f50e1 // indirect
@@ -68,7 +68,9 @@ require (
 	golang.org/x/sys v0.0.0-20200501145240-bc7a7d42d5c3 // indirect
 	google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84
 	google.golang.org/grpc v1.29.1
+	google.golang.org/protobuf v1.22.0
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
+	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
 )
