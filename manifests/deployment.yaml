@@ -19,9 +19,11 @@ spec:
       containers:
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.14
-          command: ["/cloud_sql_proxy",
-                    "-instances=motim1:europe-west1:kodesmil=tcp:5432",
-                    "-credential_file=/secrets/cloudsql/credentials.json"]
+          command: [
+            "/cloud_sql_proxy",
+            "-instances=motim1:europe-west1:kodesmil=tcp:5432",
+            "-credential_file=/secrets/cloudsql/credentials.json",
+          ]
           securityContext:
             runAsUser: 2  # non-root user
             allowPrivilegeEscalation: false

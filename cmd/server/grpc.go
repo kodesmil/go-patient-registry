@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"errors"
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/messaging"
 	"fmt"
 	"github.com/qor/admin"
-	"gopkg.in/robfig/cron.v2"
+	"github.com/robfig/cron/v3"
 	"net/http"
 	"time"
 
@@ -31,6 +33,11 @@ import (
 )
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
+
+	app, err := firebase.NewApp(context.Background(), nil)
+	if err != nil {
+		logrus.Fatalf("error initializing app: %v\n", err)
+	}
 
 	firebaseAuth := func(ctx context.Context) (context.Context, error) {
 		rawToken, err := grpc_auth.AuthFromMD(ctx, "Bearer")
@@ -160,7 +167,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 
 		Admin.MountTo("/admin", mux)
 
-		fmt.Println("Listening on: 9000")
+		logrus.Println("Listening on: 9000")
 		err = http.ListenAndServe(":9000", mux)
 		if err != nil {
 			return
@@ -168,27 +175,58 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}()
 
 	type NotificationResult struct {
-		DeviceToken         string
-		CronJournalReminder string
+		DeviceToken string
 	}
 
 	go func() {
+
 		c := cron.New()
 		id, err := c.AddFunc("*/1 * * * *", func() {
 
+			hours, minutes, _ := time.Now().Clock()
+			pattern := fmt.Sprintf(
+				"(\\*|%d) (\\*|%d) \\* \\* \\* \\*",
+				hours,
+				minutes,
+			)
+
+			ctx := context.Background()
 			rows, err := db.Table("notification_settings ns").
-				Select("nd.device_token, ns.cron_journal_reminder").
+				Select("nd.device_token").
 				Joins("left join notification_devices nd on nd.account_id = ns.account_id").
+				Where("ns.enable_notifications = ?", true).
+				Where("ns.enable_journal_reminder = ?", true).
+				Where("ns.cron_journal_reminder ~ ?", pattern).
 				Rows()
 			if err != nil {
-				fmt.Println(err)
+				logrus.Println(err)
 			}
 			defer rows.Close()
 
 			for rows.Next() {
 				var result NotificationResult
 				db.ScanRows(rows, &result)
-				fmt.Println(result)
+
+				client, err := app.Messaging(ctx)
+				if err != nil {
+					logrus.Fatalf("error getting Messaging client: %v\n", err)
+				}
+				message := &messaging.Message{
+					Notification: &messaging.Notification{
+						Title: "Hello!",
+						Body:  "I love you!",
+					},
+					Token: result.DeviceToken,
+				}
+
+				// Send a message to the device corresponding to the provided
+				// registration token.
+				response, err := client.Send(ctx, message)
+				if err != nil {
+					logrus.Fatalln(err)
+				}
+				// Response is a message ID string.
+				logrus.Println("Successfully sent message:", response)
 			}
 
 		})

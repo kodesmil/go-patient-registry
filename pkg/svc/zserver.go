@@ -3,7 +3,6 @@ package svc
 import (
 	"context"
 	"fmt"
-
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
@@ -88,6 +87,14 @@ type notificationDevicesServer struct {
 
 func NewNotificationSettingsServer(database *gorm.DB) (pb.NotificationSettingsServer, error) {
 	return &notificationSettingsServer{&pb.NotificationSettingsDefaultServer{DB: database}}, nil
+}
+
+func (s *notificationSettingsServer) Create(ctx context.Context, in *pb.CreateNotificationSettingRequest) (*pb.CreateNotificationSettingResponse, error) {
+	return s.NotificationSettingsDefaultServer.Create(ctx, in)
+}
+
+type NotificationResult struct {
+	DeviceToken string
 }
 
 type notificationSettingsServer struct {

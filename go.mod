@@ -4,8 +4,10 @@ go 1.14
 
 require (
 	cloud.google.com/go v0.56.0 // indirect
+	cloud.google.com/go/firestore v1.2.0 // indirect
+	firebase.google.com/go v3.12.1+incompatible
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
-	github.com/GoAdminGroup/go-admin v1.2.10 // indirect
+	github.com/GoAdminGroup/go-admin v1.2.10
 	github.com/GoAdminGroup/themes v0.0.32 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
@@ -52,6 +54,7 @@ require (
 	github.com/qor/serializable_meta v0.0.0-20180510060738-5fd8542db417 // indirect
 	github.com/qor/session v0.0.0-20170907035918-8206b0adab70 // indirect
 	github.com/qor/validations v0.0.0-20171228122639-f364bca61b46 // indirect
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.5.0
 	github.com/smartystreets/assertions v1.0.1 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
@@ -66,6 +69,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904 // indirect
 	golang.org/x/net v0.0.0-20200505041828-1ed23360d12c // indirect
 	golang.org/x/sys v0.0.0-20200501145240-bc7a7d42d5c3 // indirect
+	google.golang.org/api v0.20.0
 	google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.22.0
