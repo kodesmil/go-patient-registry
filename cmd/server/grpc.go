@@ -146,6 +146,12 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterNotificationSettingsServer(grpcServer, ns)
 
+	cm, err := svc.NewChatMessagesServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.RegisterChatMessagesServer(grpcServer, cm)
+
 	go func() {
 		// Initialize
 		Admin := admin.New(&admin.AdminConfig{DB: db})
@@ -163,6 +169,8 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		Admin.AddResource(&pb.GroupORM{})
 		Admin.AddResource(&pb.NotificationSettingORM{})
 		Admin.AddResource(&pb.NotificationDeviceORM{})
+		Admin.AddResource(&pb.ChatMessageORM{})
+		Admin.AddResource(&pb.LogActivityORM{})
 		mux := http.NewServeMux()
 
 		Admin.MountTo("/admin", mux)
@@ -214,7 +222,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 				message := &messaging.Message{
 					Notification: &messaging.Notification{
 						Title: "Hello!",
-						Body:  "I love you!",
+						Body:  "I love you 💖",
 					},
 					Token: result.DeviceToken,
 				}

@@ -13,6 +13,87 @@ import "infobloxopen/atlas-app-toolkit/rpc/resource/resource.proto";
 
 option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb";
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Chat
+
+message ChatMessage {
+  option (gorm.opts) = {
+    ormable: true,
+    multi_account: true
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  string text = 4;
+  Profile author = 5;
+}
+
+message CreateChatMessageRequest {
+  ChatMessage payload = 1;
+}
+
+message CreateChatMessageResponse {
+  ChatMessage result = 1;
+}
+
+message ListChatMessageRequest {
+  infoblox.api.Filtering filter = 1;
+  infoblox.api.Sorting order_by = 2;
+  infoblox.api.FieldSelection fields = 3;
+  infoblox.api.Pagination paging = 4;
+}
+
+message ListChatMessageResponse {
+  repeated ChatMessage results = 1;
+}
+
+message StreamConnectRequest {
+  string account_id = 1;
+}
+
+message StreamChatEvent {
+  oneof event {
+    EventNone none = 1;
+    EventJoin join = 2;
+    EventLeave leave = 3;
+    EventLog log = 4;
+  }
+}
+
+message EventNone {}
+
+message EventJoin {
+  Profile user = 1;
+}
+
+message EventLeave {
+  Profile user = 1;
+}
+
+message EventLog {
+  ChatMessage payload = 1;
+}
+
+service ChatMessages {
+  option (gorm.server).autogen = true;
+  rpc Create (CreateChatMessageRequest) returns (CreateChatMessageResponse);
+  rpc List (ListChatMessageRequest) returns (ListChatMessageResponse);
+  rpc Stream (StreamConnectRequest) returns (stream StreamChatEvent);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Log
+
+message LogActivity {
+  option (gorm.opts) = {
+    ormable: true,
+    multi_account: true
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "serial" primary_key: true}];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  string ip = 4;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Journal

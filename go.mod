@@ -67,7 +67,7 @@ require (
 	github.com/theplant/testingutils v0.0.0-20190603093022-26d8b4d95c61 // indirect
 	github.com/yosssi/gohtml v0.0.0-20200512035251-dd92a3e0d30d // indirect
 	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904 // indirect
-	golang.org/x/net v0.0.0-20200505041828-1ed23360d12c // indirect
+	golang.org/x/net v0.0.0-20200505041828-1ed23360d12c
 	golang.org/x/sys v0.0.0-20200501145240-bc7a7d42d5c3 // indirect
 	google.golang.org/api v0.20.0
 	google.golang.org/genproto v0.0.0-20200430143042-b979b6f78d84
