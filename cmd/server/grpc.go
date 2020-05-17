@@ -146,11 +146,11 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterNotificationSettingsServer(grpcServer, ns)
 
-	cm, err := svc.NewChatMessagesServer(db)
+	cm := svc.NewChatServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterChatMessagesServer(grpcServer, cm)
+	pb.RegisterChatServer(grpcServer, cm)
 
 	go func() {
 		// Initialize
@@ -221,8 +221,8 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 				}
 				message := &messaging.Message{
 					Notification: &messaging.Notification{
-						Title: "Hello!",
-						Body:  "I love you 💖",
+						Title: "Wake up! Wake up! Wake up!",
+						Body:  "Have a great day  💖",
 					},
 					Token: result.DeviceToken,
 				}
@@ -233,6 +233,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 				if err != nil {
 					logrus.Fatalln(err)
 				}
+
 				// Response is a message ID string.
 				logrus.Println("Successfully sent message:", response)
 			}

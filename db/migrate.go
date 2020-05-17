@@ -25,5 +25,7 @@ func MigrateDB() error {
 		&pb.FeedTagORM{},
 		&pb.NotificationDeviceORM{},
 		&pb.NotificationSettingORM{},
+		&pb.ChatMessageORM{},
+		&pb.LogActivityORM{},
 	).Error
 }

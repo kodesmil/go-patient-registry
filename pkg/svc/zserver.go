@@ -2,13 +2,11 @@ package svc
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
 	"github.com/sirupsen/logrus"
-	"math/rand"
 	"sync"
 	"time"
 
@@ -100,20 +98,19 @@ type notificationSettingsServer struct {
 	*pb.NotificationSettingsDefaultServer
 }
 
-// NewChatMessagesServer returns an instance of the default feed articles server interface
+// NewChatServer returns an instance of the default feed articles server interface
 
-func NewChatMessagesServer(database *gorm.DB) (pb.ChatMessagesServer, error) {
-	return &chatMessagesServer{
-		ChatMessagesDefaultServer: &pb.ChatMessagesDefaultServer{DB: database},
-		profile:                   make(map[string]pb.Profile),
-		buf:                       make(map[string]chan *pb.StreamChatEvent),
-
-		last: time.Now(),
-	}, nil
+func NewChatServer(database *gorm.DB) *chatServer {
+	return &chatServer{
+		database: database,
+		profile:  make(map[string]pb.Profile),
+		buf:      make(map[string]chan *pb.StreamChatEvent),
+		last:     time.Now(),
+	}
 }
 
-type chatMessagesServer struct {
-	*pb.ChatMessagesDefaultServer
+type chatServer struct {
+	database *gorm.DB
 
 	mu      sync.RWMutex
 	profile map[string]pb.Profile
@@ -124,15 +121,76 @@ type chatMessagesServer struct {
 	out  int64
 }
 
-func (s *chatMessagesServer) Stream(ctx context.Context, in *pb.StreamConnectRequest) (*pb.StreamChatEvent, error) {
+/*
+
+// RouteChat receives a stream of message/location pairs, and responds with a stream of all
+// previous messages at each of those locations.
+func (s *routeGuideServer) RouteChat(stream pb.RouteGuide_RouteChatServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		key := serialize(in.Location)
+
+		s.mu.Lock()
+		s.routeNotes[key] = append(s.routeNotes[key], in)
+		// Note: this copy prevents blocking other clients while serving this one.
+		// We don't need to do a deep copy, because elements in the slice are
+		// insert-only and never modified.
+		rn := make([]*pb.RouteNote, len(s.routeNotes[key]))
+		copy(rn, s.routeNotes[key])
+		s.mu.Unlock()
+
+		for _, note := range rn {
+			if err := stream.Send(note); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+*/
+
+func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 	s.in++
 
-	var (
-		buf  = make(chan *pb.StreamChatEvent, 1000)
-		sid  = fmt.Sprintf("%v", ctx.Value("AccountID"))
-		err  error
-		name string
-	)
+	var sid = fmt.Sprintf("%v", stream.Context().Value("AccountID"))
+	var buf = make(chan *pb.StreamChatEvent, 1000)
+	var err error
+	var name = "Replace"
+
+	s.withReadLock(func() {
+		var ok bool
+		_, ok = s.profile[sid]
+		if !ok {
+			err = errors.New("not authorized")
+			return
+		}
+		if _, ok := s.buf[sid]; !ok {
+			err = errors.New("not authorized")
+			return
+		}
+	})
+	if err != nil {
+		return err
+	}
+
+	go s.withReadLock(func() {
+		// logrus.Debugf("Log message=%s", in.Payload.Text)
+		for _, buf := range s.buf {
+			buf <- &pb.StreamChatEvent{
+				Event: &pb.StreamChatEvent_Message{
+					Message: &pb.EventMessage{
+						// Payload: out.Result,
+					},
+				},
+			}
+		}
+	})
 
 	go func() {
 		time.Sleep(5 * time.Second)
@@ -159,7 +217,7 @@ func (s *chatMessagesServer) Stream(ctx context.Context, in *pb.StreamConnectReq
 	})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	go s.withReadLock(func() {
@@ -198,78 +256,32 @@ func (s *chatMessagesServer) Stream(ctx context.Context, in *pb.StreamConnectReq
 			}
 			s.out++
 		case <-tick:
-			if err := stream.Send(&pb.Event{None: &pb.EventNone{}}); err != nil {
+			if err := stream.Send(
+				&pb.StreamChatEvent{
+					Event: &pb.StreamChatEvent_None{
+						None: &pb.EventNone{},
+					},
+				}); err != nil {
 				return err
 			}
 			s.out++
 		}
 	}
-
-	out, err := s.ChatMessagesDefaultServer.Stream(ctx, in)
-
-	return out, err
 }
 
-func (s *chatMessagesServer) Create(ctx context.Context, in *pb.CreateChatMessageRequest) (*pb.CreateChatMessageResponse, error) {
-	s.in++
-
-	accountId := fmt.Sprintf("%v", ctx.Value("AccountID"))
-	var err error
-
-	s.withReadLock(func() {
-		var ok bool
-		_, ok = s.profile[accountId]
-		if !ok {
-			err = errors.New("not authorized")
-			return
-		}
-		if _, ok := s.buf[accountId]; !ok {
-			err = errors.New("not authorized")
-			return
-		}
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if len(in.Payload.Text) == 0 {
-		return nil, errors.New("message must be not empty")
-	}
-	if len(in.Payload.Text) > 140 {
-		return nil, errors.New("message must be less than or equal 140 characters")
-	}
-
-	out, err := s.ChatMessagesDefaultServer.Create(ctx, in)
-
-	go s.withReadLock(func() {
-		logrus.Debugf("Log message=%s", in.Payload.Text)
-		for _, buf := range s.buf {
-			buf <- &pb.StreamChatEvent{
-				Event: &pb.StreamChatEvent_Log{
-					Log: &pb.EventLog{
-						Payload: out.Result,
-					},
-				},
-			}
-		}
-	})
-
-	return out, err
-}
-
-func (s *chatMessagesServer) withReadLock(f func()) {
+func (s *chatServer) withReadLock(f func()) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	f()
 }
 
-func (s *chatMessagesServer) withWriteLock(f func()) {
+func (s *chatServer) withWriteLock(f func()) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	f()
 }
 
-func (s *chatMessagesServer) unsafeExpire(sid string) {
+func (s *chatServer) unsafeExpire(sid string) {
 	if buf, ok := s.buf[sid]; ok {
 		close(buf)
 	}

@@ -28,35 +28,12 @@ message ChatMessage {
   Profile author = 5;
 }
 
-message CreateChatMessageRequest {
-  ChatMessage payload = 1;
-}
-
-message CreateChatMessageResponse {
-  ChatMessage result = 1;
-}
-
-message ListChatMessageRequest {
-  infoblox.api.Filtering filter = 1;
-  infoblox.api.Sorting order_by = 2;
-  infoblox.api.FieldSelection fields = 3;
-  infoblox.api.Pagination paging = 4;
-}
-
-message ListChatMessageResponse {
-  repeated ChatMessage results = 1;
-}
-
-message StreamConnectRequest {
-  string account_id = 1;
-}
-
 message StreamChatEvent {
   oneof event {
     EventNone none = 1;
     EventJoin join = 2;
     EventLeave leave = 3;
-    EventLog log = 4;
+    EventMessage message = 4;
   }
 }
 
@@ -70,15 +47,12 @@ message EventLeave {
   Profile user = 1;
 }
 
-message EventLog {
+message EventMessage {
   ChatMessage payload = 1;
 }
 
-service ChatMessages {
-  option (gorm.server).autogen = true;
-  rpc Create (CreateChatMessageRequest) returns (CreateChatMessageResponse);
-  rpc List (ListChatMessageRequest) returns (ListChatMessageResponse);
-  rpc Stream (StreamConnectRequest) returns (stream StreamChatEvent);
+service Chat {
+  rpc Stream (stream StreamChatEvent) returns (stream StreamChatEvent);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

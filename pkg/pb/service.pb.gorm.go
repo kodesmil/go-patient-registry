@@ -12,16 +12,11 @@ It is generated from these files:
 
 It has these top-level messages:
 	ChatMessage
-	CreateChatMessageRequest
-	CreateChatMessageResponse
-	ListChatMessageRequest
-	ListChatMessageResponse
-	StreamConnectRequest
 	StreamChatEvent
 	EventNone
 	EventJoin
 	EventLeave
-	EventLog
+	EventMessage
 	LogActivity
 	JournalSubject
 	JournalEntry
@@ -1755,23 +1750,23 @@ func DefaultApplyFieldMaskChatMessage(ctx context.Context, patchee *ChatMessage,
 }
 
 // DefaultListChatMessage executes a gorm list call
-func DefaultListChatMessage(ctx context.Context, db *gorm1.DB, f *query1.Filtering, s *query1.Sorting, p *query1.Pagination, fs *query1.FieldSelection) ([]*ChatMessage, error) {
+func DefaultListChatMessage(ctx context.Context, db *gorm1.DB) ([]*ChatMessage, error) {
 	in := ChatMessage{}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ChatMessageORMWithBeforeListApplyQuery); ok {
-		if db, err = hook.BeforeListApplyQuery(ctx, db, f, s, p, fs); err != nil {
+		if db, err = hook.BeforeListApplyQuery(ctx, db); err != nil {
 			return nil, err
 		}
 	}
-	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ChatMessageORM{}, &ChatMessage{}, f, s, p, fs)
+	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ChatMessageORM{}, &ChatMessage{}, nil, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ChatMessageORMWithBeforeListFind); ok {
-		if db, err = hook.BeforeListFind(ctx, db, f, s, p, fs); err != nil {
+		if db, err = hook.BeforeListFind(ctx, db); err != nil {
 			return nil, err
 		}
 	}
@@ -1782,7 +1777,7 @@ func DefaultListChatMessage(ctx context.Context, db *gorm1.DB, f *query1.Filteri
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ChatMessageORMWithAfterListFind); ok {
-		if err = hook.AfterListFind(ctx, db, &ormResponse, f, s, p, fs); err != nil {
+		if err = hook.AfterListFind(ctx, db, &ormResponse); err != nil {
 			return nil, err
 		}
 	}
@@ -1798,13 +1793,13 @@ func DefaultListChatMessage(ctx context.Context, db *gorm1.DB, f *query1.Filteri
 }
 
 type ChatMessageORMWithBeforeListApplyQuery interface {
-	BeforeListApplyQuery(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
+	BeforeListApplyQuery(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 type ChatMessageORMWithBeforeListFind interface {
-	BeforeListFind(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
+	BeforeListFind(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 type ChatMessageORMWithAfterListFind interface {
-	AfterListFind(context.Context, *gorm1.DB, *[]ChatMessageORM, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) error
+	AfterListFind(context.Context, *gorm1.DB, *[]ChatMessageORM) error
 }
 
 // DefaultCreateLogActivity executes a basic gorm create call
@@ -5886,82 +5881,6 @@ type GroupORMWithBeforeListFind interface {
 type GroupORMWithAfterListFind interface {
 	AfterListFind(context.Context, *gorm1.DB, *[]GroupORM, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) error
 }
-type ChatMessagesDefaultServer struct {
-	DB *gorm1.DB
-}
-
-// Create ...
-func (m *ChatMessagesDefaultServer) Create(ctx context.Context, in *CreateChatMessageRequest) (*CreateChatMessageResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithBeforeCreate); ok {
-		var err error
-		if db, err = custom.BeforeCreate(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err := DefaultCreateChatMessage(ctx, in.GetPayload(), db)
-	if err != nil {
-		return nil, err
-	}
-	out := &CreateChatMessageResponse{Result: res}
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithAfterCreate); ok {
-		var err error
-		if err = custom.AfterCreate(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// ChatMessagesChatMessageWithBeforeCreate called before DefaultCreateChatMessage in the default Create handler
-type ChatMessagesChatMessageWithBeforeCreate interface {
-	BeforeCreate(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// ChatMessagesChatMessageWithAfterCreate called before DefaultCreateChatMessage in the default Create handler
-type ChatMessagesChatMessageWithAfterCreate interface {
-	AfterCreate(context.Context, *CreateChatMessageResponse, *gorm1.DB) error
-}
-
-// List ...
-func (m *ChatMessagesDefaultServer) List(ctx context.Context, in *ListChatMessageRequest) (*ListChatMessageResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithBeforeList); ok {
-		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err := DefaultListChatMessage(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
-	if err != nil {
-		return nil, err
-	}
-	out := &ListChatMessageResponse{Results: res}
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithAfterList); ok {
-		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// ChatMessagesChatMessageWithBeforeList called before DefaultListChatMessage in the default List handler
-type ChatMessagesChatMessageWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// ChatMessagesChatMessageWithAfterList called before DefaultListChatMessage in the default List handler
-type ChatMessagesChatMessageWithAfterList interface {
-	AfterList(context.Context, *ListChatMessageResponse, *gorm1.DB) error
-}
-
-// Stream ...
-func (m *ChatMessagesDefaultServer) Stream(ctx context.Context, in *StreamConnectRequest) (*StreamChatEvent, error) {
-	out := &StreamChatEvent{}
-	return out, nil
-}
-
 type JournalEntriesDefaultServer struct {
 	DB *gorm1.DB
 }
