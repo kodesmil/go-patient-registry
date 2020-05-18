@@ -84,6 +84,16 @@ func (m *ChatMessage) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetAuthorId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatMessageValidationError{
+				field:  "AuthorId",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 

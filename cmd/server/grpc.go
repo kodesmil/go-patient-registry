@@ -230,8 +230,8 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 				}
 				message := &messaging.Message{
 					Notification: &messaging.Notification{
-						Title: "Wake up! Wake up! Wake up!",
-						Body:  "Have a great day  💖",
+						Title: "Goooooooooooooooooooooood",
+						Body:  "Mooooooooooooooooooooooorning  💖",
 					},
 					Token: result.DeviceToken,
 				}

@@ -158,6 +158,14 @@ func (m *ChatMessage) ToORM(ctx context.Context) (ChatMessageORM, error) {
 		}
 		to.Author = &tempAuthor
 	}
+	if m.AuthorId != nil {
+		if v, err := resource1.Decode(&Profile{}, m.AuthorId); err != nil {
+			return to, err
+		} else if v != nil {
+			vv := v.(string)
+			to.AuthorId = &vv
+		}
+	}
 	if posthook, ok := interface{}(m).(ChatMessageWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -196,6 +204,13 @@ func (m *ChatMessageORM) ToPB(ctx context.Context) (ChatMessage, error) {
 			return to, err
 		}
 		to.Author = &tempAuthor
+	}
+	if m.AuthorId != nil {
+		if v, err := resource1.Encode(&Profile{}, *m.AuthorId); err != nil {
+			return to, err
+		} else {
+			to.AuthorId = v
+		}
 	}
 	if posthook, ok := interface{}(m).(ChatMessageWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -1718,6 +1733,10 @@ func DefaultApplyFieldMaskChatMessage(ctx context.Context, patchee *ChatMessage,
 		if f == prefix+"Author" {
 			updatedAuthor = true
 			patchee.Author = patcher.Author
+			continue
+		}
+		if f == prefix+"AuthorId" {
+			patchee.AuthorId = patcher.AuthorId
 			continue
 		}
 	}

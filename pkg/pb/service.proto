@@ -25,6 +25,7 @@ message ChatMessage {
   google.protobuf.Timestamp updated_at = 3;
   string text = 4;
   Profile author = 5 [(gorm.field).belongs_to = {foreignkey: "author_id"}];
+  atlas.rpc.Identifier author_id = 6;
 }
 
 message StreamChatEvent {
