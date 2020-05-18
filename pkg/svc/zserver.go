@@ -1,12 +1,11 @@
 package svc
 
 import (
-	"errors"
 	"fmt"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
-	"github.com/sirupsen/logrus"
+	"io"
 	"sync"
 	"time"
 
@@ -156,135 +155,54 @@ func (s *routeGuideServer) RouteChat(stream pb.RouteGuide_RouteChatServer) error
 */
 
 func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
-	s.in++
-
-	var sid = fmt.Sprintf("%v", stream.Context().Value("AccountID"))
-	var buf = make(chan *pb.StreamChatEvent, 1000)
-	var err error
-	var name = "Replace"
-
-	s.withReadLock(func() {
-		var ok bool
-		_, ok = s.profile[sid]
-		if !ok {
-			err = errors.New("not authorized")
-			return
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
 		}
-		if _, ok := s.buf[sid]; !ok {
-			err = errors.New("not authorized")
-			return
+		if err != nil {
+			return err
 		}
-	})
-	if err != nil {
-		return err
-	}
-
-	go s.withReadLock(func() {
-		// logrus.Debugf("Log message=%s", in.Payload.Text)
-		for _, buf := range s.buf {
-			buf <- &pb.StreamChatEvent{
+		if in.GetJoin() != nil {
+			out, err := pb.DefaultListChatMessage(stream.Context(), s.database)
+			if err != nil {
+				return err
+			}
+			if err := stream.Send(&pb.StreamChatEvent{
+				Event: &pb.StreamChatEvent_Messages{
+					Messages: &pb.EventMessages{
+						Payload: out,
+					},
+				},
+			}); err != nil {
+				return err
+			}
+		}
+		if in.GetMessage() != nil {
+			message := in.GetMessage().Payload
+			out, err := pb.DefaultCreateChatMessage(stream.Context(), message, s.database)
+			if err != nil {
+				return err
+			}
+			if err := stream.Send(&pb.StreamChatEvent{
 				Event: &pb.StreamChatEvent_Message{
 					Message: &pb.EventMessage{
-						// Payload: out.Result,
+						Payload: out,
 					},
 				},
-			}
-		}
-	})
-
-	go func() {
-		time.Sleep(5 * time.Second)
-		s.withWriteLock(func() {
-			if _, ok := s.buf[sid]; ok {
-				return
-			}
-			s.unsafeExpire(sid)
-		})
-	}()
-
-	s.withWriteLock(func() {
-		var ok bool
-		_, ok = s.profile[sid]
-		if !ok {
-			err = errors.New("not authorized")
-			return
-		}
-		if _, ok := s.buf[sid]; ok {
-			err = errors.New("already connected")
-			return
-		}
-		s.buf[sid] = buf
-	})
-
-	if err != nil {
-		return err
-	}
-
-	go s.withReadLock(func() {
-		logrus.Debugf("Join name=%s", name)
-		for _, buf := range s.buf {
-			buf <- &pb.StreamChatEvent{
-				Event: &pb.StreamChatEvent_Join{
-					Join: &pb.EventJoin{},
-				},
-			}
-		}
-	})
-
-	defer s.withReadLock(func() {
-		logrus.Debugf("Leave name=%s", name)
-		for _, buf := range s.buf {
-			buf <- &pb.StreamChatEvent{
-				Event: &pb.StreamChatEvent_Leave{
-					Leave: &pb.EventLeave{},
-				},
-			}
-		}
-	})
-
-	defer s.withWriteLock(func() { s.unsafeExpire(sid) })
-
-	tick := time.Tick(time.Second)
-
-	for {
-		select {
-		case <-stream.Context().Done():
-			return stream.Context().Err()
-		case event := <-buf:
-			if err := stream.Send(event); err != nil {
+			}); err != nil {
 				return err
 			}
-			s.out++
-		case <-tick:
-			if err := stream.Send(
-				&pb.StreamChatEvent{
-					Event: &pb.StreamChatEvent_None{
-						None: &pb.EventNone{},
-					},
-				}); err != nil {
-				return err
-			}
-			s.out++
 		}
 	}
-}
 
-func (s *chatServer) withReadLock(f func()) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	f()
-}
-
-func (s *chatServer) withWriteLock(f func()) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	f()
-}
-
-func (s *chatServer) unsafeExpire(sid string) {
-	if buf, ok := s.buf[sid]; ok {
-		close(buf)
+	for _, buf := range s.buf {
+		buf <- &pb.StreamChatEvent{
+			Event: &pb.StreamChatEvent_Leave{
+				Leave: &pb.EventLeave{},
+			},
+		}
 	}
-	delete(s.profile, sid)
-	delete(s.buf, sid)
+
+	return nil
 }

@@ -199,6 +199,30 @@ func (m *StreamChatEvent) Validate() error {
 			}
 		}
 
+	case *StreamChatEvent_Messages:
+
+		if v, ok := interface{}(m.GetMessages()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return StreamChatEventValidationError{
+					field:  "Messages",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *StreamChatEvent_ForceClose:
+
+		if v, ok := interface{}(m.GetForceClose()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return StreamChatEventValidationError{
+					field:  "ForceClose",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	}
 
 	return nil
@@ -544,6 +568,151 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = EventMessageValidationError{}
+
+// Validate checks the field values on EventMessages with the rules defined in
+// the proto definition for this message. If any rules are violated, an error
+// is returned.
+func (m *EventMessages) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetPayload() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return EventMessagesValidationError{
+					field:  fmt.Sprintf("Payload[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// EventMessagesValidationError is the validation error returned by
+// EventMessages.Validate if the designated constraints aren't met.
+type EventMessagesValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e EventMessagesValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e EventMessagesValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e EventMessagesValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e EventMessagesValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e EventMessagesValidationError) ErrorName() string { return "EventMessagesValidationError" }
+
+// Error satisfies the builtin error interface
+func (e EventMessagesValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sEventMessages.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = EventMessagesValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = EventMessagesValidationError{}
+
+// Validate checks the field values on EventForceClose with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *EventForceClose) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// EventForceCloseValidationError is the validation error returned by
+// EventForceClose.Validate if the designated constraints aren't met.
+type EventForceCloseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e EventForceCloseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e EventForceCloseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e EventForceCloseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e EventForceCloseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e EventForceCloseValidationError) ErrorName() string { return "EventForceCloseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e EventForceCloseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sEventForceClose.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = EventForceCloseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = EventForceCloseValidationError{}
 
 // Validate checks the field values on LogActivity with the rules defined in
 // the proto definition for this message. If any rules are violated, an error

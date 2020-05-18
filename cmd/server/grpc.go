@@ -73,21 +73,30 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 			grpc_middleware.ChainUnaryServer(
 				// authenticate
 				grpc_auth.UnaryServerInterceptor(firebaseAuth),
-
 				// logging middleware
 				grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)),
-
 				// Request-Id interceptor
 				requestid.UnaryServerInterceptor(),
-
 				// Metrics middleware
 				grpc_prometheus.UnaryServerInterceptor,
-
 				// validation middleware
 				grpc_validator.UnaryServerInterceptor(),
-
 				// collection operators middleware
 				gateway.UnaryServerInterceptor(),
+			),
+		),
+		grpc.ChainStreamInterceptor(
+			grpc_middleware.ChainStreamServer(
+				// authenticate
+				grpc_auth.StreamServerInterceptor(firebaseAuth),
+				// logging middleware
+				grpc_logrus.StreamServerInterceptor(logrus.NewEntry(logger)),
+				// Request-Id interceptor
+				requestid.StreamServerInterceptor(),
+				// Metrics middleware
+				grpc_prometheus.StreamServerInterceptor,
+				// validation middleware
+				grpc_validator.StreamServerInterceptor(),
 			),
 		),
 	)

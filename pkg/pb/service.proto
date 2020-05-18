@@ -19,13 +19,12 @@ option go_package = "github.com/kodesmil/go-patient-registry/pkg/pb";
 message ChatMessage {
   option (gorm.opts) = {
     ormable: true,
-    multi_account: true
   };
   atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
   string text = 4;
-  Profile author = 5;
+  Profile author = 5 [(gorm.field).belongs_to = {foreignkey: "author_id"}];
 }
 
 message StreamChatEvent {
@@ -34,6 +33,8 @@ message StreamChatEvent {
     EventJoin join = 2;
     EventLeave leave = 3;
     EventMessage message = 4;
+    EventMessages messages = 5;
+    EventForceClose force_close = 6;
   }
 }
 
@@ -50,6 +51,12 @@ message EventLeave {
 message EventMessage {
   ChatMessage payload = 1;
 }
+
+message EventMessages {
+  repeated ChatMessage payload = 1;
+}
+
+message EventForceClose {}
 
 service Chat {
   rpc Stream (stream StreamChatEvent) returns (stream StreamChatEvent);
