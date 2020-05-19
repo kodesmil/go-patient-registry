@@ -179,6 +179,7 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		Admin.AddResource(&pb.NotificationSettingORM{})
 		Admin.AddResource(&pb.NotificationDeviceORM{})
 		Admin.AddResource(&pb.ChatMessageORM{})
+		Admin.AddResource(&pb.ChatRoomORM{})
 		Admin.AddResource(&pb.LogActivityORM{})
 		mux := http.NewServeMux()
 

@@ -56,7 +56,7 @@ const (
 	defaultConfigDirectory = "deploy/"
 	defaultConfigFile      = ""
 	defaultSecretFile      = ""
-	defaultApplicationID   = "manifests"
+	defaultApplicationID   = "kodesmil"
 
 	// Logging
 	defaultLoggingLevel = "info"

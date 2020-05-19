@@ -26,38 +26,100 @@ message ChatMessage {
   string text = 4;
   Profile author = 5 [(gorm.field).belongs_to = {foreignkey: "author_id"}];
   atlas.rpc.Identifier author_id = 6;
+  ChatRoom chat_room = 7 [(gorm.field).belongs_to = {}];
+  atlas.rpc.Identifier chat_room_id = 8;
+}
+
+message ChatRoom {
+  option (gorm.opts) = {
+    ormable: true,
+  };
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+  google.protobuf.Timestamp created_at = 2;
+  google.protobuf.Timestamp updated_at = 3;
+  repeated Profile participants = 4 [(gorm.field).many_to_many = {}];
 }
 
 message StreamChatEvent {
   oneof event {
     EventNone none = 1;
-    EventJoin join = 2;
-    EventLeave leave = 3;
-    EventMessage message = 4;
-    EventMessages messages = 5;
-    EventForceClose force_close = 6;
+    EventLoadRoom load_room = 2;
+    EventLoadRooms load_rooms = 3;
+    EventLeaveRoom leave_room = 4;
+    EventLeaveRooms leave_rooms = 5;
+    EventSendRooms send_rooms = 6;
+    EventSendMessage send_message = 7;
+    EventSendMessages send_messages = 8;
+    EventForceClose force_close = 9;
+    EventInviteProfile invite_profile = 10;
   }
 }
 
 message EventNone {}
 
-message EventJoin {
-  Profile user = 1;
+message EventLoadRoom {
+  ChatRoom room = 1;
 }
 
-message EventLeave {
-  Profile user = 1;
+message EventLoadRooms {
 }
 
-message EventMessage {
+message EventLeaveRoom {
+  ChatRoom room = 1;
+}
+
+message EventLeaveRooms {
+}
+
+message EventSendMessage {
   ChatMessage payload = 1;
 }
 
-message EventMessages {
+message EventSendMessages {
   repeated ChatMessage payload = 1;
 }
 
+message EventSendRooms {
+  repeated ChatRoom rooms = 1;
+}
+
+message EventInviteProfile {
+  Profile participant = 1;
+}
+
 message EventForceClose {}
+
+message ListChatMessageRequest {
+  infoblox.api.Filtering filter = 1;
+  infoblox.api.Sorting order_by = 2;
+  infoblox.api.FieldSelection fields = 3;
+  infoblox.api.Pagination paging = 4;
+}
+
+message ListChatMessageResponse {
+  repeated ChatMessage results = 1;
+}
+
+message ListChatRoomRequest {
+  infoblox.api.Filtering filter = 1;
+  infoblox.api.Sorting order_by = 2;
+  infoblox.api.FieldSelection fields = 3;
+  infoblox.api.Pagination paging = 4;
+}
+
+message ListChatRoomResponse {
+  repeated ChatRoom results = 1;
+}
+
+service ChatMessages {
+  option (gorm.server).autogen = true;
+  rpc List (ListChatMessageRequest) returns (ListChatMessageResponse);
+}
+
+service ChatRooms {
+  option (gorm.server).autogen = true;
+  rpc List (ListChatRoomRequest) returns (ListChatRoomResponse);
+}
 
 service Chat {
   rpc Stream (stream StreamChatEvent) returns (stream StreamChatEvent);

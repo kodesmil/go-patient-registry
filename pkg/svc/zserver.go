@@ -2,9 +2,11 @@ package svc
 
 import (
 	"fmt"
+	"github.com/infobloxopen/atlas-app-toolkit/query"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/go-patient-registry/pkg/pb"
+	"github.com/sirupsen/logrus"
 	"io"
 	"sync"
 	"time"
@@ -163,14 +165,44 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		if err != nil {
 			return err
 		}
-		if in.GetJoin() != nil {
-			out, err := pb.DefaultListChatMessage(stream.Context(), s.database)
+		accountID := &resource.Identifier{ResourceId: fmt.Sprintf(
+			"%v",
+			stream.Context().Value("AccountID"),
+		)}
+		logrus.Info(accountID)
+		if in.GetLoadRooms() != nil {
+			filtering := &query.Filtering{
+				Root: &query.Filtering_StringCondition{
+					StringCondition: &query.StringCondition{
+						FieldPath: []string{"chat_room_profiles", "profile_id"},
+						Value:     accountID.ResourceId,
+						Type:      query.StringCondition_EQ,
+					},
+				},
+			}
+			db := s.database.Joins("left join chat_room_profiles on chat_room_profiles.chat_room_id = chat_rooms.id")
+			out, err := pb.DefaultListChatRoom(stream.Context(), db, filtering, nil, nil, nil)
 			if err != nil {
 				return err
 			}
 			if err := stream.Send(&pb.StreamChatEvent{
-				Event: &pb.StreamChatEvent_Messages{
-					Messages: &pb.EventMessages{
+				Event: &pb.StreamChatEvent_SendRooms{
+					SendRooms: &pb.EventSendRooms{
+						Rooms: out,
+					},
+				},
+			}); err != nil {
+				return err
+			}
+		}
+		if in.GetLoadRoom() != nil {
+			out, err := pb.DefaultListChatMessage(stream.Context(), s.database, nil, nil, nil, nil)
+			if err != nil {
+				return err
+			}
+			if err := stream.Send(&pb.StreamChatEvent{
+				Event: &pb.StreamChatEvent_SendMessages{
+					SendMessages: &pb.EventSendMessages{
 						Payload: out,
 					},
 				},
@@ -178,15 +210,15 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 				return err
 			}
 		}
-		if in.GetMessage() != nil {
-			message := in.GetMessage().Payload
+		if in.GetSendMessage() != nil {
+			message := in.GetSendMessage().Payload
 			out, err := pb.DefaultCreateChatMessage(stream.Context(), message, s.database)
 			if err != nil {
 				return err
 			}
 			if err := stream.Send(&pb.StreamChatEvent{
-				Event: &pb.StreamChatEvent_Message{
-					Message: &pb.EventMessage{
+				Event: &pb.StreamChatEvent_SendMessage{
+					SendMessage: &pb.EventSendMessage{
 						Payload: out,
 					},
 				},
@@ -198,8 +230,8 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 
 	for _, buf := range s.buf {
 		buf <- &pb.StreamChatEvent{
-			Event: &pb.StreamChatEvent_Leave{
-				Leave: &pb.EventLeave{},
+			Event: &pb.StreamChatEvent_LeaveRooms{
+				LeaveRooms: &pb.EventLeaveRooms{},
 			},
 		}
 	}
