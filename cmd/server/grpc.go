@@ -209,49 +209,52 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 			)
 
 			ctx := context.Background()
-			rows, err := db.Table("notification_settings ns").
-				Select("nd.device_token").
-				Joins("left join notification_devices nd on nd.account_id = ns.account_id").
+
+			var notificationDevices []pb.NotificationDeviceORM
+
+			err = db.
+				Joins("left join notification_settings ns on ns.account_id = notification_devices.account_id").
 				Where("ns.enable_notifications = ?", true).
 				Where("ns.enable_journal_reminder = ?", true).
 				Where("ns.cron_journal_reminder ~ ?", pattern).
-				Rows()
+				Find(&notificationDevices).
+				Error
+
 			if err != nil {
-				logrus.Println(err)
+				logrus.Fatal(err)
 			}
-			defer rows.Close()
 
-			for rows.Next() {
-				var result NotificationResult
-				db.ScanRows(rows, &result)
-
-				client, err := app.Messaging(ctx)
-				if err != nil {
-					logrus.Fatalf("error getting Messaging client: %v\n", err)
-				}
-				message := &messaging.Message{
-					Notification: &messaging.Notification{
-						Title: "Goooooooooooooooooooooood",
-						Body:  "Mooooooooooooooooooooooorning  💖",
-					},
-					Token: result.DeviceToken,
-				}
-
-				// Send a message to the device corresponding to the provided
-				// registration token.
-				response, err := client.Send(ctx, message)
-				if err != nil {
-					logrus.Fatalln(err)
-				}
-
-				// Response is a message ID string.
-				logrus.Println("Successfully sent message:", response)
+			if len(notificationDevices) == 0 {
+				logrus.Infof("No notifications are about to be sent")
+				return
 			}
+
+			client, err := app.Messaging(ctx)
+			if err != nil {
+				logrus.Fatalf("error getting messaging client: %v\n", err)
+			}
+
+			message := &messaging.MulticastMessage{
+				Notification: &messaging.Notification{
+					Title: "Goooooooooooooooooooooood",
+					Body:  "Mooooooooooooooooooooooorning  💖",
+				},
+				Tokens: pb.MapToDeviceTokens(notificationDevices),
+			}
+
+			// Send a message to the device corresponding to the provided
+			// registration token.
+			response, err := client.SendMulticast(ctx, message)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+
+			// Response is a message ID string.
+			logrus.Println("Successfully sent message:", response)
 
 		})
 		if err != nil {
-			fmt.Println(err)
-			return
+			logrus.Fatal(err)
 		}
 		fmt.Println("Started job with id: ", id)
 		c.Start()

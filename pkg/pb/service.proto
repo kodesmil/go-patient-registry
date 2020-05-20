@@ -20,21 +20,26 @@ message ChatMessage {
   option (gorm.opts) = {
     ormable: true,
   };
-  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {
+    type: "uuid",
+    primary_key: true,
+  }];
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
   string text = 4;
-  Profile author = 5 [(gorm.field).belongs_to = {foreignkey: "author_id"}];
+  Profile author = 5 [(gorm.field).belongs_to = {
+    foreignkey: "author_id",
+  }];
   atlas.rpc.Identifier author_id = 6;
   ChatRoom chat_room = 7 [(gorm.field).belongs_to = {}];
-  atlas.rpc.Identifier chat_room_id = 8;
+  atlas.rpc.Identifier chat_room_id = 8 [(gorm.field).tag = {type: "uuid"}];
 }
 
 message ChatRoom {
   option (gorm.opts) = {
     ormable: true,
   };
-  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid" primary_key: true}];
+  atlas.rpc.Identifier id = 1 [(gorm.field).tag = {type: "uuid", primary_key: true}];
   google.protobuf.Timestamp created_at = 2;
   google.protobuf.Timestamp updated_at = 3;
   repeated Profile participants = 4 [(gorm.field).many_to_many = {}];
@@ -432,6 +437,7 @@ message Profile {
   string last_name = 4;
   string primary_email = 5 [(gorm.field).tag = {unique: true}];
   repeated Group groups = 6;
+  string profile_picture_url = 7;
 }
 
 message CreateProfileRequest {

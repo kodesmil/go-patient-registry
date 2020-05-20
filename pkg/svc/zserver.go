@@ -196,7 +196,29 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}
 		}
 		if in.GetLoadRoom() != nil {
-			out, err := pb.DefaultListChatMessage(stream.Context(), s.database, nil, nil, nil, nil)
+			room := in.GetLoadRoom()
+			filtering := &query.Filtering{
+				Root: &query.Filtering_StringCondition{
+					StringCondition: &query.StringCondition{
+						FieldPath: []string{"chat_rooms", "id"},
+						Value:     room.Room.Id.ResourceId,
+						Type:      query.StringCondition_EQ,
+					},
+				},
+			}
+			sorting := &query.Sorting{
+				Criterias: []*query.SortCriteria{
+					{
+						Tag:   "created_at",
+						Order: query.SortCriteria_DESC,
+					},
+				},
+			}
+			db := s.database.Joins("left join chat_rooms on chat_rooms.id = chat_messages.chat_room_id::uuid")
+			out, err := pb.DefaultListChatMessage(
+				stream.Context(), db,
+				filtering, sorting, nil, nil,
+			)
 			if err != nil {
 				return err
 			}
@@ -212,7 +234,16 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		}
 		if in.GetSendMessage() != nil {
 			message := in.GetSendMessage().Payload
-			out, err := pb.DefaultCreateChatMessage(stream.Context(), message, s.database)
+			var created, err = pb.DefaultCreateChatMessage(
+				stream.Context(), message, s.database,
+			)
+			if err != nil {
+				return err
+			}
+			out, err := pb.DefaultReadChatMessage(
+				stream.Context(), &pb.ChatMessage{Id: created.Id},
+				s.database,
+			)
 			if err != nil {
 				return err
 			}
@@ -227,14 +258,4 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}
 		}
 	}
-
-	for _, buf := range s.buf {
-		buf <- &pb.StreamChatEvent{
-			Event: &pb.StreamChatEvent_LeaveRooms{
-				LeaveRooms: &pb.EventLeaveRooms{},
-			},
-		}
-	}
-
-	return nil
 }

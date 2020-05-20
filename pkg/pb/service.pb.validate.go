@@ -4766,6 +4766,8 @@ func (m *Profile) Validate() error {
 
 	}
 
+	// no validation rules for ProfilePictureUrl
+
 	return nil
 }
 
