@@ -3,14 +3,14 @@ kind: Config
 metadata:
   name: ks-backend
 build:
-    # useBuildkit: true
   local:
+  # useBuildkit: true
   artifacts:
   - image: docker.io/kodesmil/ks-backend
 deploy:
   kubectl:
     manifests:
-    - manifests/deployment.yaml
     - manifests/ingress.yaml
+    - manifests/deployment.yaml
     - manifests/secret.yaml
     - manifests/service.yaml

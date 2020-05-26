@@ -9,31 +9,63 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"sync"
-	"time"
 )
 
 func NewChatServer(database *gorm.DB) *chatServer {
 	return &chatServer{
-		database: database,
-		profile:  make(map[string]pb.Profile),
-		buf:      make(map[string]chan *pb.StreamChatEvent),
-		last:     time.Now(),
+		database:    database,
+		connections: make(map[string]*Connection),
 	}
 }
 
 type chatServer struct {
-	database *gorm.DB
+	database    *gorm.DB
+	connections map[string]*Connection
+}
 
-	mu      sync.RWMutex
-	profile map[string]pb.Profile
-	buf     map[string]chan *pb.StreamChatEvent
+type Connection struct {
+	stream pb.Chat_StreamServer
+	active bool
+	error  chan error
+}
 
-	last time.Time
-	in   int64
-	out  int64
+func (s *chatServer) BroadcastMessage(msg *pb.StreamChatEvent) error {
+	wait := sync.WaitGroup{}
+	for _, conn := range s.connections {
+		wait.Add(1)
+		go func(msg *pb.StreamChatEvent, conn *Connection) {
+			defer wait.Done()
+
+			if conn.active {
+				err := conn.stream.Send(msg)
+				if err != nil {
+					logrus.Errorf("Error with Stream: %v - Error: %v", conn.stream, err)
+					conn.active = false
+					conn.error <- err
+				}
+			}
+		}(msg, conn)
+
+	}
+	return nil
 }
 
 func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
+
+	accountID := &resource.Identifier{ResourceId: fmt.Sprintf(
+		"%v",
+		stream.Context().Value("AccountID"),
+	)}
+
+	if _, ok := s.connections[accountID.ResourceId]; !ok {
+		conn := &Connection{
+			stream: stream,
+			active: true,
+			error:  make(chan error),
+		}
+		s.connections[accountID.ResourceId] = conn
+	}
+
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {
@@ -42,11 +74,6 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		if err != nil {
 			return err
 		}
-		accountID := &resource.Identifier{ResourceId: fmt.Sprintf(
-			"%v",
-			stream.Context().Value("AccountID"),
-		)}
-		logrus.Info(accountID)
 		if in.GetLoadRooms() != nil {
 			filtering := &query.Filtering{
 				Root: &query.Filtering_StringCondition{
@@ -124,7 +151,22 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			if err != nil {
 				return err
 			}
-			if err := stream.Send(&pb.StreamChatEvent{
+
+			logrus.Println("Hello")
+			var profiles []pb.ProfileORM
+			err = s.database.
+				Table("chat_room_profiles").
+				Select("profile_id").
+				Where("chat_room_id = ?", out.ChatRoom.Id.ResourceId).
+				Find(&profiles).
+				Error
+
+			logrus.Println(profiles)
+			if err != nil {
+				return err
+			}
+
+			if err := s.BroadcastMessage(&pb.StreamChatEvent{
 				Event: &pb.StreamChatEvent_SendMessage{
 					SendMessage: &pb.EventSendMessage{
 						Payload: out,
