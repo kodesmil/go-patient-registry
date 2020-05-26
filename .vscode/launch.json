@@ -20,7 +20,7 @@
             "localRoot": "${workspaceFolder}",
             "remoteRoot": "/src/",
             "podSelector": {
-                "app.kubernetes.io/name": "go-patient-registry"
+                "app.kubernetes.io/name": "ks-backend"
             }
         }
     ]

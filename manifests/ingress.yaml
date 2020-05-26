@@ -1,9 +1,9 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: go-patient-registry-http
+  name: ks-backend-http
   labels:
-    app.kubernetes.io/name: go-patient-registry
+    app.kubernetes.io/name: ks-backend
   annotations:
     cert-manager.io/cluster-issuer: kodesmil-letsencrypt
     kubernetes.io/ingress.class: nginx
@@ -19,15 +19,15 @@ spec:
         paths:
           - path: /admin
             backend:
-              serviceName: go-patient-registry
+              serviceName: ks-backend
               servicePort: admin
 ---
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: go-patient-registry-grpc
+  name: ks-backend-grpc
   labels:
-    app.kubernetes.io/name: go-patient-registry
+    app.kubernetes.io/name: ks-backend
   annotations:
     cert-manager.io/cluster-issuer: kodesmil-letsencrypt
     kubernetes.io/ingress.class: nginx
@@ -45,5 +45,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: go-patient-registry
+              serviceName: ks-backend
               servicePort: grpc

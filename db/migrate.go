@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/kodesmil/go-patient-registry/pkg/pb"
+	"github.com/kodesmil/ks-backend/pkg/pb"
 	"github.com/spf13/viper"
 
 	"github.com/jinzhu/gorm"

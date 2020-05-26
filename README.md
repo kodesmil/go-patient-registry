@@ -1,4 +1,4 @@
-# go-patient-registry
+# ks-backend
 
 _This generated README.md file loosely follows a [popular template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)._
 
@@ -61,4 +61,4 @@ Give an example
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kodesmil/go-patient-registry/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kodesmil/ks-backend/tags).

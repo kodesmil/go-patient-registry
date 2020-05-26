@@ -123,13 +123,13 @@ push-chart: helm-lint helm-archive helm-properties
 
 .PHONY: helm-install
 helm-install: docker
-	helm upgrade --install --set "image.tag=$(IMAGE_VERSION)" --devel --namespace go-patient-registry -f ./helm/go-patient-registry/minikube-values.yaml go-patient-registry ./helm/go-patient-registry/
+	helm upgrade --install --set "image.tag=$(IMAGE_VERSION)" --devel --namespace ks-backend -f ./helm/ks-backend/minikube-values.yaml ks-backend ./helm/ks-backend/
 	# You have to add host name minikube.local to hosts file. This is necessary to communicate with your app in minikube.
 	# You might execute command in terminal:
 	# 'echo "$(minikube ip) minikube.local" > /etc/hosts' or 'echo "$(minikube ip) minikube.local" | sudo tee -a /etc/hosts'
 
 .PHONY: helm-delete
 helm-delete:
-	helm delete --purge go-patient-registry
+	helm delete --purge ks-backend
 
 

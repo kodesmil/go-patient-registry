@@ -1,12 +1,12 @@
 apiVersion: skaffold/v2beta4
 kind: Config
 metadata:
-  name: go-patient-registry
+  name: ks-backend
 build:
-  local:
     # useBuildkit: true
+  local:
   artifacts:
-  - image: gcr.io/motim1/go-patient-registry
+  - image: docker.io/kodesmil/ks-backend
 deploy:
   kubectl:
     manifests:
