@@ -6,6 +6,7 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/ks-backend/pkg/pb"
+	"github.com/kodesmil/ks-backend/pkg/strings"
 	"github.com/sirupsen/logrus"
 	"io"
 	"sync"
@@ -29,13 +30,15 @@ type Connection struct {
 	error  chan error
 }
 
-func (s *chatServer) BroadcastMessage(msg *pb.StreamChatEvent) error {
+func (s *chatServer) BroadcastMessage(ids []string, msg *pb.StreamChatEvent) error {
 	wait := sync.WaitGroup{}
-	for _, conn := range s.connections {
+	for id, conn := range s.connections {
+		if !strings.Include(ids, id) {
+			continue
+		}
 		wait.Add(1)
 		go func(msg *pb.StreamChatEvent, conn *Connection) {
 			defer wait.Done()
-
 			if conn.active {
 				err := conn.stream.Send(msg)
 				if err != nil {
@@ -152,8 +155,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 				return err
 			}
 
-			logrus.Println("Hello")
-			var profiles []pb.ProfileORM
+			var profiles []profileId
 			err = s.database.
 				Table("chat_room_profiles").
 				Select("profile_id").
@@ -161,12 +163,13 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 				Find(&profiles).
 				Error
 
-			logrus.Println(profiles)
 			if err != nil {
 				return err
 			}
 
-			if err := s.BroadcastMessage(&pb.StreamChatEvent{
+			if err := s.BroadcastMessage(Map(profiles, func(profile profileId) string {
+				return profile.ProfileId
+			}), &pb.StreamChatEvent{
 				Event: &pb.StreamChatEvent_SendMessage{
 					SendMessage: &pb.EventSendMessage{
 						Payload: out,
@@ -177,4 +180,16 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}
 		}
 	}
+}
+
+type profileId struct {
+	ProfileId string
+}
+
+func Map(vs []profileId, f func(profileId) string) []string {
+	vsm := make([]string, len(vs))
+	for i, v := range vs {
+		vsm[i] = f(v)
+	}
+	return vsm
 }
