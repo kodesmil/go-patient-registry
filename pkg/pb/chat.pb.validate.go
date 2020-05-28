@@ -94,25 +94,7 @@ func (m *ChatMessage) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetChatRoom()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ChatMessageValidationError{
-				field:  "ChatRoom",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetChatRoomId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ChatMessageValidationError{
-				field:  "ChatRoomId",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Status
 
 	return nil
 }
@@ -223,6 +205,8 @@ func (m *ChatRoom) Validate() error {
 
 	}
 
+	// no validation rules for Name
+
 	return nil
 }
 
@@ -279,6 +263,133 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ChatRoomValidationError{}
+
+// Validate checks the field values on ChatRoomParticipant with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ChatRoomParticipant) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "Id",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetLastSeenAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "LastSeenAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "Profile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetChatRoom()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ChatRoomParticipantValidationError{
+				field:  "ChatRoom",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ChatRoomParticipantValidationError is the validation error returned by
+// ChatRoomParticipant.Validate if the designated constraints aren't met.
+type ChatRoomParticipantValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ChatRoomParticipantValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ChatRoomParticipantValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ChatRoomParticipantValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ChatRoomParticipantValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ChatRoomParticipantValidationError) ErrorName() string {
+	return "ChatRoomParticipantValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ChatRoomParticipantValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sChatRoomParticipant.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ChatRoomParticipantValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ChatRoomParticipantValidationError{}
 
 // Validate checks the field values on StreamChatEvent with the rules defined
 // in the proto definition for this message. If any rules are violated, an
@@ -545,6 +656,16 @@ func (m *EventLoadRoom) Validate() error {
 		if err := v.Validate(); err != nil {
 			return EventLoadRoomValidationError{
 				field:  "Room",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetMe()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventLoadRoomValidationError{
+				field:  "Me",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -821,10 +942,10 @@ func (m *EventSendMessage) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
+	if v, ok := interface{}(m.GetMessage()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return EventSendMessageValidationError{
-				field:  "Payload",
+				field:  "Message",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -896,13 +1017,13 @@ func (m *EventSendMessages) Validate() error {
 		return nil
 	}
 
-	for idx, item := range m.GetPayload() {
+	for idx, item := range m.GetMessages() {
 		_, _ = idx, item
 
 		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return EventSendMessagesValidationError{
-					field:  fmt.Sprintf("Payload[%v]", idx),
+					field:  fmt.Sprintf("Messages[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -1058,10 +1179,10 @@ func (m *EventInviteProfile) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetParticipant()).(interface{ Validate() error }); ok {
+	if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return EventInviteProfileValidationError{
-				field:  "Participant",
+				field:  "User",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

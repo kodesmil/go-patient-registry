@@ -26,8 +26,8 @@ func MigrateDB() error {
 		&pb.NotificationDeviceORM{},
 		&pb.NotificationSettingORM{},
 		&pb.ChatMessageORM{},
-		&pb.ChatMessageORM{},
 		&pb.ChatRoomORM{},
+		&pb.ChatRoomParticipantORM{},
 		&pb.LogActivityORM{},
 	).Error
 }

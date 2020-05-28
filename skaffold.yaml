@@ -3,10 +3,16 @@ kind: Config
 metadata:
   name: ks-backend
 build:
-  local:
+  tagPolicy:
+    sha256: {}
+  # local:
   # useBuildkit: true
   artifacts:
   - image: docker.io/kodesmil/ks-backend
+    docker:
+      dockerfile: Dockerfile
+      cacheFrom:
+        - docker.io/kodesmil/ks-backend:latest
 deploy:
   kubectl:
     manifests:

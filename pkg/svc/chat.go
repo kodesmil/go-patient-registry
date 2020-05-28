@@ -81,13 +81,13 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			filtering := &query.Filtering{
 				Root: &query.Filtering_StringCondition{
 					StringCondition: &query.StringCondition{
-						FieldPath: []string{"chat_room_profiles", "profile_id"},
+						FieldPath: []string{"chat_room_participants", "profile_id"},
 						Value:     accountID.ResourceId,
 						Type:      query.StringCondition_EQ,
 					},
 				},
 			}
-			db := s.database.Joins("left join chat_room_profiles on chat_room_profiles.chat_room_id = chat_rooms.id")
+			db := s.database.Joins("left join chat_room_participants on chat_room_participants.chat_room_id::uuid = chat_rooms.id")
 			out, err := pb.DefaultListChatRoom(stream.Context(), db, filtering, nil, nil, nil)
 			if err != nil {
 				return err
@@ -121,7 +121,9 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 					},
 				},
 			}
-			db := s.database.Joins("left join chat_rooms on chat_rooms.id = chat_messages.chat_room_id::uuid")
+			db := s.database.
+				Joins("left join chat_room_participants on chat_room_participants.id = chat_messages.author_id").
+				Joins("left join chat_rooms on chat_rooms.id = chat_room_participants.chat_room_id::uuid")
 			out, err := pb.DefaultListChatMessage(
 				stream.Context(), db,
 				filtering, sorting, nil, nil,
@@ -132,7 +134,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			if err := stream.Send(&pb.StreamChatEvent{
 				Event: &pb.StreamChatEvent_SendMessages{
 					SendMessages: &pb.EventSendMessages{
-						Payload: out,
+						Messages: out,
 					},
 				},
 			}); err != nil {
@@ -140,7 +142,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}
 		}
 		if in.GetSendMessage() != nil {
-			message := in.GetSendMessage().Payload
+			message := in.GetSendMessage().Message
 			var created, err = pb.DefaultCreateChatMessage(
 				stream.Context(), message, s.database,
 			)
@@ -157,9 +159,9 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 
 			var profiles []profileId
 			err = s.database.
-				Table("chat_room_profiles").
+				Table("chat_room_participants").
 				Select("profile_id").
-				Where("chat_room_id = ?", out.ChatRoom.Id.ResourceId).
+				Where("chat_room_id = ?", out.GetAuthor().ChatRoom.Id.ResourceId).
 				Find(&profiles).
 				Error
 
@@ -172,7 +174,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}), &pb.StreamChatEvent{
 				Event: &pb.StreamChatEvent_SendMessage{
 					SendMessage: &pb.EventSendMessage{
-						Payload: out,
+						Message: out,
 					},
 				},
 			}); err != nil {
