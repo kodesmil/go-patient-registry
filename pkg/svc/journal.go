@@ -5,18 +5,10 @@ import (
 	"github.com/kodesmil/ks-backend/pkg/pb"
 )
 
-func NewJournalEntriesServer(database *gorm.DB) (pb.JournalEntriesServer, error) {
-	return &journalEntriesServer{&pb.JournalEntriesDefaultServer{DB: database}}, nil
+func NewJournalServer(database *gorm.DB) (pb.JournalServer, error) {
+	return &journalServer{&pb.JournalDefaultServer{DB: database}}, nil
 }
 
-type journalEntriesServer struct {
-	*pb.JournalEntriesDefaultServer
-}
-
-func NewJournalSubjectsServer(database *gorm.DB) (pb.JournalSubjectsServer, error) {
-	return &journalSubjectsServer{&pb.JournalSubjectsDefaultServer{DB: database}}, nil
-}
-
-type journalSubjectsServer struct {
-	*pb.JournalSubjectsDefaultServer
+type journalServer struct {
+	*pb.JournalDefaultServer
 }

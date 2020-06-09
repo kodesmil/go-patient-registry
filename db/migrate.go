@@ -17,8 +17,8 @@ func MigrateDB() error {
 	return db.AutoMigrate(
 		&pb.ProfileORM{},
 		&pb.GroupORM{},
-		&pb.JournalSubjectORM{},
-		&pb.JournalEntryORM{},
+		&pb.PeriodDailyEntryORM{},
+		&pb.PeriodInfoORM{},
 		&pb.FeedArticleORM{},
 		&pb.FeedArticleDetailORM{},
 		&pb.FeedAuthorORM{},

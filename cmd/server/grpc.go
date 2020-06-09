@@ -119,17 +119,17 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterGroupsServer(grpcServer, gs)
 
-	jss, err := svc.NewJournalSubjectsServer(db)
+	jse, err := svc.NewJournalServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterJournalSubjectsServer(grpcServer, jss)
+	pb.RegisterJournalServer(grpcServer, jse)
 
-	jse, err := svc.NewJournalEntriesServer(db)
+	ppe, err := svc.NewPeriodServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterJournalEntriesServer(grpcServer, jse)
+	pb.RegisterPeriodServer(grpcServer, ppe)
 
 	fa, err := svc.NewFeedArticlesServer(db)
 	if err != nil {
@@ -166,8 +166,8 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		Admin := admin.New(&admin.AdminConfig{DB: db})
 
 		// Allow to use Admin to manage User, Product
-		Admin.AddResource(&pb.JournalEntryORM{})
-		Admin.AddResource(&pb.JournalSubjectORM{})
+		Admin.AddResource(&pb.PeriodInfoORM{})
+		Admin.AddResource(&pb.PeriodDailyEntryORM{})
 		Admin.AddResource(&pb.FeedTagORM{})
 		article := Admin.AddResource(&pb.FeedArticleORM{})
 		article.Meta(&admin.Meta{Name: "Content", Type: "text"})

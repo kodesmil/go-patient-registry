@@ -14,6 +14,7 @@ It is generated from these files:
 	github.com/kodesmil/ks-model/group.proto
 	github.com/kodesmil/ks-model/feed.proto
 	github.com/kodesmil/ks-model/journal.proto
+	github.com/kodesmil/ks-model/period.proto
 	github.com/kodesmil/ks-model/notification.proto
 
 It has these top-level messages:
@@ -31,6 +32,7 @@ It has these top-level messages:
 	LogActivity
 	ChatMessage
 	ChatRoom
+	ChatRoomParticipant
 	StreamChatEvent
 	EventNone
 	EventLoadRoom
@@ -65,6 +67,7 @@ It has these top-level messages:
 	FeedArticle
 	ListFeedArticleRequest
 	ListFeedArticleResponse
+	JournalSubjectType
 	JournalSubject
 	JournalEntry
 	CreateJournalEntryRequest
@@ -77,8 +80,28 @@ It has these top-level messages:
 	DeleteJournalEntryResponse
 	ListJournalEntryRequest
 	ListJournalEntryResponse
-	ListJournalSubjectRequest
-	ListJournalSubjectResponse
+	PeriodInfo
+	PeriodDailyEntry
+	CreatePeriodDailyEntryRequest
+	CreatePeriodDailyEntryResponse
+	ReadPeriodDailyEntryRequest
+	ReadPeriodDailyEntryResponse
+	UpdatePeriodDailyEntryRequest
+	UpdatePeriodDailyEntryResponse
+	DeletePeriodDailyEntryRequest
+	DeletePeriodDailyEntryResponse
+	ListPeriodDailyEntryRequest
+	ListPeriodDailyEntryResponse
+	CreatePeriodInfoRequest
+	CreatePeriodInfoResponse
+	ReadPeriodInfoRequest
+	ReadPeriodInfoResponse
+	UpdatePeriodInfoRequest
+	UpdatePeriodInfoResponse
+	DeletePeriodInfoRequest
+	DeletePeriodInfoResponse
+	ListPeriodInfoRequest
+	ListPeriodInfoResponse
 	NotificationSetting
 	CreateNotificationSettingRequest
 	CreateNotificationSettingResponse
@@ -99,7 +122,7 @@ package pb
 import context "context"
 import fmt "fmt"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
+import auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"

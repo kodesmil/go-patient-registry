@@ -34,6 +34,105 @@ var (
 	_ = ptypes.DynamicAny{}
 )
 
+// Validate checks the field values on JournalSubjectType with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *JournalSubjectType) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalSubjectTypeValidationError{
+				field:  "Id",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalSubjectTypeValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalSubjectTypeValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Name
+
+	return nil
+}
+
+// JournalSubjectTypeValidationError is the validation error returned by
+// JournalSubjectType.Validate if the designated constraints aren't met.
+type JournalSubjectTypeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JournalSubjectTypeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JournalSubjectTypeValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JournalSubjectTypeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JournalSubjectTypeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JournalSubjectTypeValidationError) ErrorName() string {
+	return "JournalSubjectTypeValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e JournalSubjectTypeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJournalSubjectType.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JournalSubjectTypeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JournalSubjectTypeValidationError{}
+
 // Validate checks the field values on JournalSubject with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
@@ -52,11 +151,42 @@ func (m *JournalSubject) Validate() error {
 		}
 	}
 
-	// no validation rules for Key
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalSubjectValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalSubjectValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for Name
 
-	// no validation rules for Type
+	for idx, item := range m.GetTypes() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return JournalSubjectValidationError{
+					field:  fmt.Sprintf("Types[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	return nil
 }
@@ -133,10 +263,6 @@ func (m *JournalEntry) Validate() error {
 		}
 	}
 
-	// no validation rules for Severity
-
-	// no validation rules for Note
-
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return JournalEntryValidationError{
@@ -147,7 +273,29 @@ func (m *JournalEntry) Validate() error {
 		}
 	}
 
-	// no validation rules for JournalSubjectId
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalEntryValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetDay()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JournalEntryValidationError{
+				field:  "Day",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Severity
+
+	// no validation rules for Note
 
 	return nil
 }
@@ -1000,192 +1148,3 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListJournalEntryResponseValidationError{}
-
-// Validate checks the field values on ListJournalSubjectRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ListJournalSubjectRequest) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ListJournalSubjectRequestValidationError{
-				field:  "Filter",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetOrderBy()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ListJournalSubjectRequestValidationError{
-				field:  "OrderBy",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetFields()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ListJournalSubjectRequestValidationError{
-				field:  "Fields",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetPaging()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ListJournalSubjectRequestValidationError{
-				field:  "Paging",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	return nil
-}
-
-// ListJournalSubjectRequestValidationError is the validation error returned by
-// ListJournalSubjectRequest.Validate if the designated constraints aren't met.
-type ListJournalSubjectRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ListJournalSubjectRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ListJournalSubjectRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ListJournalSubjectRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ListJournalSubjectRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ListJournalSubjectRequestValidationError) ErrorName() string {
-	return "ListJournalSubjectRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ListJournalSubjectRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sListJournalSubjectRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ListJournalSubjectRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ListJournalSubjectRequestValidationError{}
-
-// Validate checks the field values on ListJournalSubjectResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ListJournalSubjectResponse) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	for idx, item := range m.GetResults() {
-		_, _ = idx, item
-
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ListJournalSubjectResponseValidationError{
-					field:  fmt.Sprintf("Results[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ListJournalSubjectResponseValidationError is the validation error returned
-// by ListJournalSubjectResponse.Validate if the designated constraints aren't met.
-type ListJournalSubjectResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ListJournalSubjectResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ListJournalSubjectResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ListJournalSubjectResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ListJournalSubjectResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ListJournalSubjectResponseValidationError) ErrorName() string {
-	return "ListJournalSubjectResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ListJournalSubjectResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sListJournalSubjectResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ListJournalSubjectResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ListJournalSubjectResponseValidationError{}
