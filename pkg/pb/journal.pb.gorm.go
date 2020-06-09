@@ -10,7 +10,7 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/infobloxopen/atlas-app-toolkit/auth"
+import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
