@@ -3,11 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/messaging"
-	"fmt"
 	"github.com/qor/admin"
-	"github.com/robfig/cron/v3"
 	"net/http"
 	"time"
 
@@ -33,11 +29,6 @@ import (
 )
 
 func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Server, error) {
-
-	app, err := firebase.NewApp(context.Background(), nil)
-	if err != nil {
-		logrus.Fatalf("error initializing app: %v\n", err)
-	}
 
 	firebaseAuth := func(ctx context.Context) (context.Context, error) {
 		rawToken, err := grpc_auth.AuthFromMD(ctx, "Bearer")
@@ -190,74 +181,6 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		if err != nil {
 			return
 		}
-	}()
-
-	type NotificationResult struct {
-		DeviceToken string
-	}
-
-	go func() {
-
-		c := cron.New()
-		id, err := c.AddFunc("*/1 * * * *", func() {
-
-			hours, minutes, _ := time.Now().Clock()
-			pattern := fmt.Sprintf(
-				"(\\*|%d) (\\*|%d) \\* \\* \\* \\*",
-				hours,
-				minutes,
-			)
-
-			ctx := context.Background()
-
-			var notificationDevices []pb.NotificationDeviceORM
-
-			err = db.
-				Joins("left join notification_settings ns on ns.account_id = notification_devices.account_id").
-				Where("ns.enable_notifications = ?", true).
-				Where("ns.enable_journal_reminder = ?", true).
-				Where("ns.cron_journal_reminder ~ ?", pattern).
-				Find(&notificationDevices).
-				Error
-
-			if err != nil {
-				logrus.Fatal(err)
-			}
-
-			if len(notificationDevices) == 0 {
-				logrus.Infof("No notifications are about to be sent")
-				return
-			}
-
-			client, err := app.Messaging(ctx)
-			if err != nil {
-				logrus.Fatalf("error getting messaging client: %v\n", err)
-			}
-
-			message := &messaging.MulticastMessage{
-				Notification: &messaging.Notification{
-					Title: "Goooooooooooooooooooooood",
-					Body:  "Mooooooooooooooooooooooorning  💖",
-				},
-				Tokens: pb.MapToDeviceTokens(notificationDevices),
-			}
-
-			// Send a message to the device corresponding to the provided
-			// registration token.
-			response, err := client.SendMulticast(ctx, message)
-			if err != nil {
-				logrus.Fatal(err)
-			}
-
-			// Response is a message ID string.
-			logrus.Println("Successfully sent message:", response)
-
-		})
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		fmt.Println("Started job with id: ", id)
-		c.Start()
 	}()
 
 	return grpcServer, nil

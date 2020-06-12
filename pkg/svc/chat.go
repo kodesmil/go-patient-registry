@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/ks-backend/pkg/pb"
 	"github.com/kodesmil/ks-backend/pkg/strings"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"sync"
 )
@@ -42,7 +42,7 @@ func (s *chatServer) BroadcastMessage(ids []string, msg *pb.StreamChatEvent) err
 			if conn.active {
 				err := conn.stream.Send(msg)
 				if err != nil {
-					logrus.Errorf("Error with Stream: %v - Error: %v", conn.stream, err)
+					log.Errorf("Error with Stream: %v - Error: %v", conn.stream, err)
 					conn.active = false
 					conn.error <- err
 				}
@@ -60,7 +60,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		stream.Context().Value("AccountID"),
 	)}
 
-	if _, ok := s.connections[accountID.ResourceId]; !ok {
+	if res, ok := s.connections[accountID.ResourceId]; !ok || !res.active {
 		conn := &Connection{
 			stream: stream,
 			active: true,

@@ -116,8 +116,10 @@ func ServeExternal(logger *logrus.Logger) error {
 
 	grpcServer, err := NewGRPCServer(logger, viper.GetString("database.dsn"))
 	if err != nil {
-		logger.Fatalln(err)
+		logger.Fatal(err)
 	}
+
+	NewNotificationServer(viper.GetString("database.dsn"))
 
 	grpc_prometheus.Register(grpcServer)
 	reflection.Register(grpcServer)
@@ -125,12 +127,12 @@ func ServeExternal(logger *logrus.Logger) error {
 		server.WithGrpcServer(grpcServer),
 	)
 	if err != nil {
-		logger.Fatalln(err)
+		logger.Fatal(err)
 	}
 
 	grpcL, err := net.Listen("tcp", fmt.Sprintf("%s:%s", viper.GetString("server.address"), viper.GetString("server.port")))
 	if err != nil {
-		logger.Fatalln(err)
+		logger.Fatal(err)
 	}
 
 	httpL, err := net.Listen("tcp", fmt.Sprintf("%s:%s", viper.GetString("gateway.address"), viper.GetString("gateway.port")))
