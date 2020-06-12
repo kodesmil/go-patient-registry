@@ -28,9 +28,8 @@ func (m *ChatMessageORM) AfterCreate_(ctx context.Context, db *gorm1.DB) error {
 			Select("notification_devices.device_token").
 			Joins("left join notification_settings ns on ns.account_id = notification_devices.account_id").
 			Joins("left join chat_room_participants crp on crp.profile_id = ns.account_id").
-			Joins("left join chat_rooms cr on cr.id = crp.room_id").
 			Where("ns.enable_notifications = ?", true).
-			Where("crp.id = (select chat_room_id from chat_room_participants where id = ?)", m.AuthorId).
+			Where("crp.chat_room_id = (select chat_room_id from chat_room_participants where id = ?)", m.AuthorId).
 			Find(&notificationDevices).
 			Error
 
