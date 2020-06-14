@@ -4,12 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
-	"net"
-	"net/http"
-	"strings"
-	"time"
-
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
 	"github.com/infobloxopen/atlas-app-toolkit/health"
@@ -21,6 +15,10 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
+	"net"
+	"net/http"
+	"strings"
 )
 
 func main() {
@@ -80,9 +78,9 @@ func ServeInternal(logger *logrus.Logger) error {
 		viper.GetString("internal.readiness"),
 	)
 	healthChecker.AddReadiness("DB ready check", dbReady)
-	healthChecker.AddLiveness("ping", health.HTTPGetCheck(
-		fmt.Sprint("http://", viper.GetString("internal.address"), ":", viper.GetString("internal.port"), "/ping"), time.Minute),
-	)
+	//healthChecker.AddLiveness("ping", health.HTTPGetCheck(
+	//		fmt.Sprint("http://", viper.GetString("internal.address"), ":", viper.GetString("internal.port"), "/ping"), time.Hour),
+	//	)
 
 	s, err := server.NewServer(
 		// register our health checks

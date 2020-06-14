@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io"
 	"sync"
+	"time"
 )
 
 func NewChatServer(database *gorm.DB) *chatServer {
@@ -138,6 +139,14 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 					},
 				},
 			}); err != nil {
+				return err
+			}
+			err = db.Exec(
+				"UPDATE chat_room_participants SET last_seen_at=? WHERE id=?",
+				time.Now(),
+				room.Me.Id.ResourceId,
+			).Error
+			if err != nil {
 				return err
 			}
 		}
