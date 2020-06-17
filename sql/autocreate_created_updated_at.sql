@@ -18,25 +18,25 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_set_updated_at
     BEFORE UPDATE
-    ON period_daily_entries
+    ON health_menstruation_daily_entries
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_updated_at();
 
 CREATE TRIGGER trigger_set_created_at
     BEFORE INSERT
-    ON period_daily_entries
+    ON health_menstruation_daily_entries
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_created_at();
 
 CREATE TRIGGER trigger_set_updated_at
     BEFORE UPDATE
-    ON period_infos
+    ON health_menstruation_personal_infos
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_updated_at();
 
 CREATE TRIGGER trigger_set_created_at
     BEFORE INSERT
-    ON period_infos
+    ON health_menstruation_personal_infos
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_created_at();
 
