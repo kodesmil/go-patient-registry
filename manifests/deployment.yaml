@@ -17,24 +17,6 @@ spec:
       securityContext:
         {}
       containers:
-        - name: cloudsql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.14
-          command: [
-            "/cloud_sql_proxy",
-            "-instances=motim1:europe-west1:kodesmil=tcp:5432",
-            "-credential_file=/secrets/cloudsql/credentials.json",
-          ]
-          securityContext:
-            runAsUser: 2  # non-root user
-            allowPrivilegeEscalation: false
-          volumeMounts:
-            - name: cloudsql-instance-credentials
-              mountPath: /secrets/cloudsql
-              readOnly: true
-          ports:
-            - name: http
-              containerPort: 5432
-              protocol: TCP
         - name: ks-backend
           image: docker.io/kodesmil/ks-backend
           imagePullPolicy: Always
