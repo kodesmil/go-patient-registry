@@ -5,12 +5,22 @@ metadata:
 build:
   artifacts:
     - image: docker.io/kodesmil/ks-backend
+    - image: docker.io/kodesmil/ion-biz
+      context: ion
       docker:
-        dockerfile: Dockerfile
-        cacheFrom:
-          - docker.io/kodesmil/ks-backend:latest
-  tagPolicy:
-    sha256: {}
+        dockerfile: docker/avp.Dockerfile
+    - image: docker.io/kodesmil/ion-islb
+      context: ion
+      docker:
+        dockerfile: docker/biz.Dockerfile
+    - image: docker.io/kodesmil/ion-sfu
+      context: ion
+      docker:
+        dockerfile: docker/islb.Dockerfile
+    - image: docker.io/kodesmil/ion-web
+      context: ion
+      docker:
+        dockerfile: docker/sfu.Dockerfile
 deploy:
   helm:
     releases:
@@ -21,9 +31,37 @@ deploy:
         overrides:
           postgresqlDatabase: swanly
           postgresqlPassword: postgres
+      - name: ion-nats
+        chartPath: bitnami/nats
+        wait: true
+        remote: true
+        overrides:
+          usePassword: false
+          metrics.enabled: true
+      - name: ion-redis
+        chartPath: bitnami/redis
+        wait: true
+        remote: true
+        overrides:
+          usePassword: false
+          metrics.enabled: true
+      - name: ion-etcd
+        chartPath: bitnami/etcd
+        wait: true
+        remote: true
+        overrides:
+          usePassword: false
+          metrics.enabled: true
   kubectl:
     manifests:
-      - manifests/ingress.yaml
       - manifests/deployment.yaml
+      - manifests/ingress.yaml
+      - manifests/issuer.yaml
       - manifests/secret.yaml
       - manifests/service.yaml
+      - ion/kube/biz.yaml
+      - ion/kube/config.yaml
+      - ion/kube/ingress.yaml
+      - ion/kube/islb.yaml
+      - ion/kube/sfu.yaml
+      - ion/kube/web.yaml
