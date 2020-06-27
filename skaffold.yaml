@@ -1,31 +1,29 @@
-apiVersion: skaffold/v2beta4
+apiVersion: skaffold/v2beta5
 kind: Config
 metadata:
   name: ks-backend
 build:
+  artifacts:
+    - image: docker.io/kodesmil/ks-backend
+      docker:
+        dockerfile: Dockerfile
+        cacheFrom:
+          - docker.io/kodesmil/ks-backend:latest
   tagPolicy:
     sha256: {}
-  # local:
-  # useBuildkit: true
-  artifacts:
-  - image: docker.io/kodesmil/ks-backend
-    docker:
-      dockerfile: Dockerfile
-      cacheFrom:
-        - docker.io/kodesmil/ks-backend:latest
 deploy:
   helm:
     releases:
       - name: postgresql
         chartPath: bitnami/postgresql
-        remote: true
         wait: true
+        remote: true
         overrides:
-          postgresqlPassword: postgres
           postgresqlDatabase: swanly
+          postgresqlPassword: postgres
   kubectl:
     manifests:
-    - manifests/ingress.yaml
-    - manifests/deployment.yaml
-    - manifests/secret.yaml
-    - manifests/service.yaml
+      - manifests/ingress.yaml
+      - manifests/deployment.yaml
+      - manifests/secret.yaml
+      - manifests/service.yaml

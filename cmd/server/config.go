@@ -10,12 +10,10 @@ const (
 	defaultServerPort    = "9090"
 
 	// Database
-	defaultDatabaseEnable = true
-	// DSN example: "postgres://postgres:D6AQjmbzUC@postgresql-1586518706.default.svc.cluster.local:5432/go_patient_registry?sslmode=disable"
-	defaultDatabaseDSN     = ""
-	defaultDatabaseType    = "postgres"
-	defaultDatabaseAddress = "postgresql"
-	// defaultDatabaseAddress  = "my-release-postgresql.default.svc.cluster.local"
+	defaultDatabaseEnable   = true
+	defaultDatabaseDSN      = ""
+	defaultDatabaseType     = "postgres"
+	defaultDatabaseAddress  = "postgresql"
 	defaultDatabasePort     = "5432"
 	defaultDatabaseName     = "swanly"
 	defaultDatabaseUser     = "postgres"
