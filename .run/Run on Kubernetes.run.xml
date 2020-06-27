@@ -4,12 +4,12 @@
     <option name="cleanupDeployments" value="false" />
     <option name="envVariables" />
     <option name="imageRepositoryOverride" />
-    <option name="kubernetesContext" />
+    <option name="kubernetesContext" value="do-fra1-swanly" />
     <option name="redeployOnChanges" value="false" />
     <option name="skaffoldConfigurationFilePath" value="$PROJECT_DIR$/skaffold.yaml" />
     <option name="skaffoldNamespace" />
     <option name="skaffoldProfile" />
-    <option name="verbosity" value="NONE" />
+    <option name="verbosity" value="INFO" />
     <method v="2" />
   </configuration>
 </component>
