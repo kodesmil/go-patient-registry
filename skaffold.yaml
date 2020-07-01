@@ -5,6 +5,8 @@ metadata:
 build:
   artifacts:
     - image: docker.io/kodesmil/ks-backend
+      docker:
+        dockerfile: deployments/Dockerfile
     - image: docker.io/kodesmil/ion-avp
       context: ion
       docker:
@@ -54,10 +56,10 @@ deploy:
           metrics.enabled: "true"
   kubectl:
     manifests:
-      - manifests/deployment.yaml
-      - manifests/ingress.yaml
-      - manifests/secret.yaml
-      - manifests/service.yaml
+      - deployments/deployment.yaml
+      - deployments/ingress.yaml
+      - deployments/secret.yaml
+      - deployments/service.yaml
       - ion/kube/biz.yaml
       - ion/kube/config.yaml
       - ion/kube/ingress.yaml

@@ -2,5 +2,5 @@ bin
 .idea
 .docker-*
 .push-*
-manifests/secret.yaml
-manifests/key.json
+deployments/secret.yaml
+deployments/key.json

@@ -11,8 +11,8 @@ metadata:
 spec:
   tls:
     - hosts:
-        - "*.qa.api.kodesmil.com"
-      secretName: letsencrypt-cert
+        - "admin.qa.api.kodesmil.com"
+      secretName: letsencrypt-cert-admin
   rules:
     - host: admin.qa.api.kodesmil.com
       http:
@@ -37,10 +37,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - "*.qa.api.kodesmil.com"
-      secretName: letsencrypt-cert
+        - "swanly.qa.api.kodesmil.com"
+      secretName: letsencrypt-cert-swanly
   rules:
-    - host: grpc-clinic.qa.api.kodesmil.com
+    - host: swanly.qa.api.kodesmil.com
       http:
         paths:
           - path: /

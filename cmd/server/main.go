@@ -9,6 +9,7 @@ import (
 	"github.com/infobloxopen/atlas-app-toolkit/health"
 	"github.com/infobloxopen/atlas-app-toolkit/server"
 	pubsubgrpc "github.com/infobloxopen/atlas-pubsub/grpc"
+	server2 "github.com/kodesmil/ks-backend/internal/app/server"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -32,7 +33,7 @@ func main() {
 
 	if viper.GetBool("profiler.enable") {
 		go func() {
-			if err := ServeProfiler(logger); err != nil {
+			if err := server2.ServeProfiler(logger); err != nil {
 				logger.Fatal(err)
 			}
 		}()
@@ -112,12 +113,12 @@ func ServeExternal(logger *logrus.Logger) error {
 		setDBConnection()
 	}
 
-	grpcServer, err := NewGRPCServer(logger, viper.GetString("database.dsn"))
+	grpcServer, err := server2.NewGRPCServer(logger, viper.GetString("database.dsn"))
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	NewNotificationServer(viper.GetString("database.dsn"))
+	server2.NewNotificationServer(viper.GetString("database.dsn"))
 
 	grpc_prometheus.Register(grpcServer)
 	reflection.Register(grpcServer)

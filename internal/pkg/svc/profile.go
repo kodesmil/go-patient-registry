@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
-	"github.com/kodesmil/ks-backend/pkg/pb"
+	"github.com/kodesmil/ks-backend/internal/pkg/pb"
 	"golang.org/x/net/context"
 )
 

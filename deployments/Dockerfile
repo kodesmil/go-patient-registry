@@ -3,12 +3,14 @@
 FROM golang
 ENV GOTRACEBACK=all
 WORKDIR /src/
-COPY go.mod go.sum ./
+COPY ../go.mod go.sum ./
 RUN go mod download
-COPY app app
-COPY cmd cmd
-COPY db db
-COPY pkg pkg
+
+COPY ../app app
+COPY ../cmd cmd
+COPY ../internal/pkg/db db
+COPY ../pkg pkg
+
 # RUN --mount=type=cache,target=/go/pkg/mod \
 #     --mount=type=cache,target=/root/.cache/go-build \
 RUN     GO111MODULE=on CGO_ENABLED=0 GOOS=linux \

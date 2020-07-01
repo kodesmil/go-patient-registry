@@ -2,7 +2,7 @@ package svc
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/kodesmil/ks-backend/pkg/pb"
+	"github.com/kodesmil/ks-backend/internal/pkg/pb"
 )
 
 func NewNotificationDevicesServer(database *gorm.DB) (pb.NotificationDevicesServer, error) {

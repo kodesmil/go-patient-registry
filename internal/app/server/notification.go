@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"firebase.google.com/go/messaging"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/kodesmil/ks-backend/pkg/pb"
+	"github.com/kodesmil/ks-backend/internal/pkg/pb"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"time"

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -19,9 +19,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/kodesmil/atlas-app-toolkit/gateway"
 	"github.com/kodesmil/atlas-app-toolkit/requestid"
-	migrate "github.com/kodesmil/ks-backend/db"
-	"github.com/kodesmil/ks-backend/pkg/pb"
-	"github.com/kodesmil/ks-backend/pkg/svc"
+	migrate "github.com/kodesmil/ks-backend/internal/pkg/db"
+	"github.com/kodesmil/ks-backend/internal/pkg/pb"
+	"github.com/kodesmil/ks-backend/internal/pkg/svc"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
