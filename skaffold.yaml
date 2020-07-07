@@ -17,27 +17,6 @@ deploy:
         overrides:
           postgresqlDatabase: swanly
           postgresqlPassword: postgres
-      - name: ion-nats
-        chartPath: bitnami/nats
-        wait: true
-        remote: true
-        setValues:
-          auth.enabled: "false"
-          metrics.enabled: "true"
-      - name: ion-redis
-        chartPath: bitnami/redis
-        wait: true
-        remote: true
-        overrides:
-          usePassword: false
-          metrics.enabled: true
-      - name: ion-etcd
-        chartPath: bitnami/etcd
-        wait: true
-        remote: true
-        setValues:
-          auth.rbac.enabled: "false"
-          metrics.enabled: "true"
       - name: ion
         chartPath: ion/kube/ion
         wait: true

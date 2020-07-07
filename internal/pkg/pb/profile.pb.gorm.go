@@ -14,7 +14,8 @@ It is generated from these files:
 	github.com/kodesmil/ks-model/group.proto
 	github.com/kodesmil/ks-model/feed.proto
 	github.com/kodesmil/ks-model/journal.proto
-	github.com/kodesmil/ks-model/period.proto
+	github.com/kodesmil/ks-model/health.proto
+	github.com/kodesmil/ks-model/service.proto
 	github.com/kodesmil/ks-model/notification.proto
 
 It has these top-level messages:
@@ -80,28 +81,116 @@ It has these top-level messages:
 	DeleteJournalEntryResponse
 	ListJournalEntryRequest
 	ListJournalEntryResponse
-	PeriodInfo
-	PeriodDailyEntry
-	CreatePeriodDailyEntryRequest
-	CreatePeriodDailyEntryResponse
-	ReadPeriodDailyEntryRequest
-	ReadPeriodDailyEntryResponse
-	UpdatePeriodDailyEntryRequest
-	UpdatePeriodDailyEntryResponse
-	DeletePeriodDailyEntryRequest
-	DeletePeriodDailyEntryResponse
-	ListPeriodDailyEntryRequest
-	ListPeriodDailyEntryResponse
-	CreatePeriodInfoRequest
-	CreatePeriodInfoResponse
-	ReadPeriodInfoRequest
-	ReadPeriodInfoResponse
-	UpdatePeriodInfoRequest
-	UpdatePeriodInfoResponse
-	DeletePeriodInfoRequest
-	DeletePeriodInfoResponse
-	ListPeriodInfoRequest
-	ListPeriodInfoResponse
+	HealthMenstruationPersonalInfo
+	HealthMenstruationDailyEntry
+	CreateHealthMenstruationDailyEntryRequest
+	CreateHealthMenstruationDailyEntryResponse
+	ReadHealthMenstruationDailyEntryRequest
+	ReadHealthMenstruationDailyEntryResponse
+	UpdateHealthMenstruationDailyEntryRequest
+	UpdateHealthMenstruationDailyEntryResponse
+	DeleteHealthMenstruationDailyEntryRequest
+	DeleteHealthMenstruationDailyEntryResponse
+	ListHealthMenstruationDailyEntryRequest
+	ListHealthMenstruationDailyEntryResponse
+	CreateHealthMenstruationPersonalInfoRequest
+	CreateHealthMenstruationPersonalInfoResponse
+	ReadHealthMenstruationPersonalInfoRequest
+	ReadHealthMenstruationPersonalInfoResponse
+	UpdateHealthMenstruationPersonalInfoRequest
+	UpdateHealthMenstruationPersonalInfoResponse
+	DeleteHealthMenstruationPersonalInfoRequest
+	DeleteHealthMenstruationPersonalInfoResponse
+	ListHealthMenstruationPersonalInfoRequest
+	ListHealthMenstruationPersonalInfoResponse
+	ServiceTag
+	Service
+	ServiceOffer
+	ServiceInPerson
+	ServiceApplication
+	ServiceApplicationFile
+	ServiceProvider
+	ServiceSession
+	CreateServiceSessionRequest
+	CreateServiceSessionResponse
+	ReadServiceSessionRequest
+	ReadServiceSessionResponse
+	UpdateServiceSessionRequest
+	UpdateServiceSessionResponse
+	DeleteServiceSessionRequest
+	DeleteServiceSessionResponse
+	ListServiceSessionRequest
+	ListServiceSessionResponse
+	CreateServiceProviderRequest
+	CreateServiceProviderResponse
+	ReadServiceProviderRequest
+	ReadServiceProviderResponse
+	UpdateServiceProviderRequest
+	UpdateServiceProviderResponse
+	DeleteServiceProviderRequest
+	DeleteServiceProviderResponse
+	ListServiceProviderRequest
+	ListServiceProviderResponse
+	CreateServiceApplicationRequest
+	CreateServiceApplicationResponse
+	ReadServiceApplicationRequest
+	ReadServiceApplicationResponse
+	UpdateServiceApplicationRequest
+	UpdateServiceApplicationResponse
+	DeleteServiceApplicationRequest
+	DeleteServiceApplicationResponse
+	ListServiceApplicationRequest
+	ListServiceApplicationResponse
+	CreateServiceTagRequest
+	CreateServiceTagResponse
+	ReadServiceTagRequest
+	ReadServiceTagResponse
+	UpdateServiceTagRequest
+	UpdateServiceTagResponse
+	DeleteServiceTagRequest
+	DeleteServiceTagResponse
+	ListServiceTagRequest
+	ListServiceTagResponse
+	CreateServiceApplicationFileRequest
+	CreateServiceApplicationFileResponse
+	ReadServiceApplicationFileRequest
+	ReadServiceApplicationFileResponse
+	UpdateServiceApplicationFileRequest
+	UpdateServiceApplicationFileResponse
+	DeleteServiceApplicationFileRequest
+	DeleteServiceApplicationFileResponse
+	ListServiceApplicationFileRequest
+	ListServiceApplicationFileResponse
+	CreateServiceOfferRequest
+	CreateServiceOfferResponse
+	ReadServiceOfferRequest
+	ReadServiceOfferResponse
+	UpdateServiceOfferRequest
+	UpdateServiceOfferResponse
+	DeleteServiceOfferRequest
+	DeleteServiceOfferResponse
+	ListServiceOfferRequest
+	ListServiceOfferResponse
+	CreateServiceInPersonRequest
+	CreateServiceInPersonResponse
+	ReadServiceInPersonRequest
+	ReadServiceInPersonResponse
+	UpdateServiceInPersonRequest
+	UpdateServiceInPersonResponse
+	DeleteServiceInPersonRequest
+	DeleteServiceInPersonResponse
+	ListServiceInPersonRequest
+	ListServiceInPersonResponse
+	CreateServiceRequest
+	CreateServiceResponse
+	ReadServiceRequest
+	ReadServiceResponse
+	UpdateServiceRequest
+	UpdateServiceResponse
+	DeleteServiceRequest
+	DeleteServiceResponse
+	ListServiceRequest
+	ListServiceResponse
 	NotificationSetting
 	CreateNotificationSettingRequest
 	CreateNotificationSettingResponse
@@ -143,14 +232,16 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type ProfileORM struct {
-	AccountID         string
-	FirstName         string
-	Groups            []*GroupORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	Id                string      `gorm:"type:text;primary_key;not null"`
-	LastName          string
-	Notes             string
-	PrimaryEmail      string `gorm:"unique"`
-	ProfilePictureUrl string
+	AccountID            string
+	FirstName            string
+	Groups               []*GroupORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
+	Id                   string      `gorm:"type:text;primary_key;not null"`
+	LastName             string
+	Notes                string
+	PrimaryEmail         string `gorm:"unique"`
+	ProfilePictureUrl    string
+	ServiceApplicationId *string
+	ServiceSessionId     *string
 }
 
 // TableName overrides the default tablename generated by GORM
