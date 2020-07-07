@@ -146,6 +146,12 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterNotificationSettingsServer(grpcServer, ns)
 
+	ss, err := svc.NewServicesServer(db)
+	if err != nil {
+		return nil, err
+	}
+	pb.RegisterServicesServer(grpcServer, ss)
+
 	cm := svc.NewChatServer(db)
 	if err != nil {
 		return nil, err
@@ -159,20 +165,35 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 		// Allow to use Admin to manage User, Product
 		Admin.AddResource(&pb.HealthMenstruationPersonalInfoORM{})
 		Admin.AddResource(&pb.HealthMenstruationDailyEntryORM{})
+
 		Admin.AddResource(&pb.FeedTagORM{})
 		article := Admin.AddResource(&pb.FeedArticleORM{})
 		article.Meta(&admin.Meta{Name: "Content", Type: "text"})
 		articleDetail := Admin.AddResource(&pb.FeedArticleDetailORM{})
 		articleDetail.Meta(&admin.Meta{Name: "Content", Type: "text"})
 		Admin.AddResource(&pb.FeedAuthorORM{})
+
 		Admin.AddResource(&pb.ProfileORM{})
 		Admin.AddResource(&pb.GroupORM{})
+
 		Admin.AddResource(&pb.NotificationSettingORM{})
 		Admin.AddResource(&pb.NotificationDeviceORM{})
+
 		Admin.AddResource(&pb.ChatMessageORM{})
 		Admin.AddResource(&pb.ChatRoomORM{})
 		Admin.AddResource(&pb.ChatRoomParticipantORM{})
+
 		Admin.AddResource(&pb.LogActivityORM{})
+
+		Admin.AddResource(&pb.ServiceORM{})
+		Admin.AddResource(&pb.ServiceSessionORM{})
+		Admin.AddResource(&pb.ServiceOfferORM{})
+		Admin.AddResource(&pb.ServiceProviderORM{})
+		Admin.AddResource(&pb.ServiceTagORM{})
+		Admin.AddResource(&pb.ServiceInPersonORM{})
+		Admin.AddResource(&pb.ServiceApplicationORM{})
+		Admin.AddResource(&pb.ServiceApplicationFileORM{})
+
 		mux := http.NewServeMux()
 
 		Admin.MountTo("/admin", mux)

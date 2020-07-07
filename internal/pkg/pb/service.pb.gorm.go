@@ -11,6 +11,7 @@ import fmt "fmt"
 import strings "strings"
 import time "time"
 
+import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
@@ -514,6 +515,7 @@ type ServiceInPersonWithAfterToPB interface {
 }
 
 type ServiceApplicationORM struct {
+	AccountID  string
 	AppliedAt  *time.Time
 	ApprovedAt *time.Time
 	ApprovedBy *ProfileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
@@ -597,6 +599,11 @@ func (m *ServiceApplication) ToORM(ctx context.Context) (ServiceApplicationORM, 
 		}
 		to.ApprovedBy = &tempApprovedBy
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return to, err
+	}
+	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceApplicationWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -693,6 +700,7 @@ type ServiceApplicationWithAfterToPB interface {
 }
 
 type ServiceApplicationFileORM struct {
+	AccountID            string
 	CreatedAt            *time.Time
 	Id                   string `gorm:"type:uuid;primary_key"`
 	ServiceApplicationId *string
@@ -735,6 +743,11 @@ func (m *ServiceApplicationFile) ToORM(ctx context.Context) (ServiceApplicationF
 		to.UpdatedAt = &t
 	}
 	to.Url = m.Url
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return to, err
+	}
+	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceApplicationFileWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -2746,7 +2759,11 @@ func DefaultDeleteServiceApplicationSet(ctx context.Context, in []*ServiceApplic
 			return err
 		}
 	}
-	err = db.Where("id in (?)", keys).Delete(&ServiceApplicationORM{}).Error
+	acctId, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceApplicationORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -2772,6 +2789,11 @@ func DefaultStrictUpdateServiceApplication(ctx context.Context, in *ServiceAppli
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceApplicationORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationORMWithBeforeStrictUpdateCleanup); ok {
@@ -3182,7 +3204,11 @@ func DefaultDeleteServiceApplicationFileSet(ctx context.Context, in []*ServiceAp
 			return err
 		}
 	}
-	err = db.Where("id in (?)", keys).Delete(&ServiceApplicationFileORM{}).Error
+	acctId, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceApplicationFileORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -3208,6 +3234,11 @@ func DefaultStrictUpdateServiceApplicationFile(ctx context.Context, in *ServiceA
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceApplicationFileORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationFileORMWithBeforeStrictUpdateCleanup); ok {

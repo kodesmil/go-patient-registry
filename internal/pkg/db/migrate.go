@@ -28,6 +28,13 @@ func MigrateDB() error {
 		&pb.ChatMessageORM{},
 		&pb.ChatRoomORM{},
 		&pb.ChatRoomParticipantORM{},
-		&pb.LogActivityORM{},
+		&pb.ServiceORM{},
+		&pb.ServiceProviderORM{},
+		&pb.ServiceTagORM{},
+		&pb.ServiceSessionORM{},
+		&pb.ServiceInPersonORM{},
+		&pb.ServiceOfferORM{},
+		&pb.ServiceApplicationORM{},
+		&pb.ServiceApplicationFileORM{},
 	).Error
 }
