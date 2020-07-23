@@ -408,6 +408,7 @@ type ServiceOfferWithAfterToPB interface {
 }
 
 type ServiceInPersonORM struct {
+	AccountID         string
 	CreatedAt         *time.Time
 	FirstName         string
 	Id                string `gorm:"type:uuid;primary_key"`
@@ -452,6 +453,11 @@ func (m *ServiceInPerson) ToORM(ctx context.Context) (ServiceInPersonORM, error)
 	}
 	to.FirstName = m.FirstName
 	to.LastName = m.LastName
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return to, err
+	}
+	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceInPersonWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -810,6 +816,7 @@ type ServiceApplicationFileWithAfterToPB interface {
 }
 
 type ServiceProviderORM struct {
+	AccountID            string
 	CreatedAt            *time.Time
 	Id                   int64              `gorm:"type:serial;primary_key"`
 	Offers               []*ServiceOfferORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
@@ -871,6 +878,11 @@ func (m *ServiceProvider) ToORM(ctx context.Context) (ServiceProviderORM, error)
 		}
 		to.ServiceInPerson = &tempServiceInPerson
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return to, err
+	}
+	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceProviderWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -2398,7 +2410,11 @@ func DefaultDeleteServiceInPersonSet(ctx context.Context, in []*ServiceInPerson,
 			return err
 		}
 	}
-	err = db.Where("id in (?)", keys).Delete(&ServiceInPersonORM{}).Error
+	acctId, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceInPersonORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -2424,6 +2440,11 @@ func DefaultStrictUpdateServiceInPerson(ctx context.Context, in *ServiceInPerson
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceInPersonORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceInPersonORMWithBeforeStrictUpdateCleanup); ok {
@@ -3570,7 +3591,11 @@ func DefaultDeleteServiceProviderSet(ctx context.Context, in []*ServiceProvider,
 			return err
 		}
 	}
-	err = db.Where("id in (?)", keys).Delete(&ServiceProviderORM{}).Error
+	acctId, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return err
+	}
+	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceProviderORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -3596,6 +3621,11 @@ func DefaultStrictUpdateServiceProvider(ctx context.Context, in *ServiceProvider
 	if err != nil {
 		return nil, err
 	}
+	accountID, err := auth1.GetAccountID(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceProviderORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceProviderORMWithBeforeStrictUpdateCleanup); ok {
