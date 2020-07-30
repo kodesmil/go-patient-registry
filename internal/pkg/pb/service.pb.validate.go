@@ -55,21 +55,6 @@ func (m *ServiceTag) Validate() error {
 
 	// no validation rules for Name
 
-	for idx, item := range m.GetServices() {
-		_, _ = idx, item
-
-		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ServiceTagValidationError{
-					field:  fmt.Sprintf("Services[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
 	return nil
 }
 
