@@ -29,3 +29,8 @@ deploy:
       - deployments/ingress.yaml
       - deployments/secret.yaml
       - deployments/service.yaml
+
+portForward:
+  - resourceType: service
+    resourceName: postgresql
+    port: 5432
