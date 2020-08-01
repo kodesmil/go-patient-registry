@@ -1073,16 +1073,6 @@ func (m *ServiceProviderSessionEvaluation) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetProvider()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceProviderSessionEvaluationValidationError{
-				field:  "Provider",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	// no validation rules for Comment
 
 	// no validation rules for RecommendationRate
@@ -1335,14 +1325,19 @@ func (m *ServiceSessionNote) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceSessionNoteValidationError{
-				field:  "Author",
-				reason: "embedded message failed validation",
-				cause:  err,
+	for idx, item := range m.GetSession() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceSessionNoteValidationError{
+					field:  fmt.Sprintf("Session[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
 			}
 		}
+
 	}
 
 	// no validation rules for Text
