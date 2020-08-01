@@ -1025,6 +1025,128 @@ var _ interface {
 	ErrorName() string
 } = ServiceProviderValidationError{}
 
+// Validate checks the field values on ServiceProviderSessionEvaluation with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, an error is returned.
+func (m *ServiceProviderSessionEvaluation) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceProviderSessionEvaluationValidationError{
+				field:  "Id",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceProviderSessionEvaluationValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceProviderSessionEvaluationValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceProviderSessionEvaluationValidationError{
+				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProvider()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceProviderSessionEvaluationValidationError{
+				field:  "Provider",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Comment
+
+	// no validation rules for RecommendationRate
+
+	return nil
+}
+
+// ServiceProviderSessionEvaluationValidationError is the validation error
+// returned by ServiceProviderSessionEvaluation.Validate if the designated
+// constraints aren't met.
+type ServiceProviderSessionEvaluationValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ServiceProviderSessionEvaluationValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ServiceProviderSessionEvaluationValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ServiceProviderSessionEvaluationValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ServiceProviderSessionEvaluationValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ServiceProviderSessionEvaluationValidationError) ErrorName() string {
+	return "ServiceProviderSessionEvaluationValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ServiceProviderSessionEvaluationValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sServiceProviderSessionEvaluation.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ServiceProviderSessionEvaluationValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ServiceProviderSessionEvaluationValidationError{}
+
 // Validate checks the field values on ServiceSession with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
 // is returned.
@@ -1093,6 +1215,31 @@ func (m *ServiceSession) Validate() error {
 		}
 	}
 
+	for idx, item := range m.GetNotes() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceSessionValidationError{
+					field:  fmt.Sprintf("Notes[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if v, ok := interface{}(m.GetEvaluation()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceSessionValidationError{
+				field:  "Evaluation",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -1149,6 +1296,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ServiceSessionValidationError{}
+
+// Validate checks the field values on ServiceSessionNote with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ServiceSessionNote) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceSessionNoteValidationError{
+				field:  "Id",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceSessionNoteValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceSessionNoteValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceSessionNoteValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Text
+
+	return nil
+}
+
+// ServiceSessionNoteValidationError is the validation error returned by
+// ServiceSessionNote.Validate if the designated constraints aren't met.
+type ServiceSessionNoteValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ServiceSessionNoteValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ServiceSessionNoteValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ServiceSessionNoteValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ServiceSessionNoteValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ServiceSessionNoteValidationError) ErrorName() string {
+	return "ServiceSessionNoteValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ServiceSessionNoteValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sServiceSessionNote.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ServiceSessionNoteValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ServiceSessionNoteValidationError{}
 
 // Validate checks the field values on CreateServiceSessionRequest with the
 // rules defined in the proto definition for this message. If any rules are

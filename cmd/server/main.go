@@ -39,10 +39,6 @@ func main() {
 		}()
 	}
 
-	if viper.GetBool("atlas.pubsub.enable") {
-		InitSubscriber(logger)
-	}
-
 	if err := <-doneC; err != nil {
 		logger.Fatal(err)
 	}
