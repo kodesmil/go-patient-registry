@@ -3009,23 +3009,23 @@ func DefaultApplyFieldMaskServiceEmployment(ctx context.Context, patchee *Servic
 }
 
 // DefaultListServiceEmployment executes a gorm list call
-func DefaultListServiceEmployment(ctx context.Context, db *gorm1.DB) ([]*ServiceEmployment, error) {
+func DefaultListServiceEmployment(ctx context.Context, db *gorm1.DB, f *query1.Filtering, s *query1.Sorting, p *query1.Pagination, fs *query1.FieldSelection) ([]*ServiceEmployment, error) {
 	in := ServiceEmployment{}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceEmploymentORMWithBeforeListApplyQuery); ok {
-		if db, err = hook.BeforeListApplyQuery(ctx, db); err != nil {
+		if db, err = hook.BeforeListApplyQuery(ctx, db, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
-	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ServiceEmploymentORM{}, &ServiceEmployment{}, nil, nil, nil, nil)
+	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ServiceEmploymentORM{}, &ServiceEmployment{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceEmploymentORMWithBeforeListFind); ok {
-		if db, err = hook.BeforeListFind(ctx, db); err != nil {
+		if db, err = hook.BeforeListFind(ctx, db, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
@@ -3036,7 +3036,7 @@ func DefaultListServiceEmployment(ctx context.Context, db *gorm1.DB) ([]*Service
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceEmploymentORMWithAfterListFind); ok {
-		if err = hook.AfterListFind(ctx, db, &ormResponse); err != nil {
+		if err = hook.AfterListFind(ctx, db, &ormResponse, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
@@ -3052,13 +3052,13 @@ func DefaultListServiceEmployment(ctx context.Context, db *gorm1.DB) ([]*Service
 }
 
 type ServiceEmploymentORMWithBeforeListApplyQuery interface {
-	BeforeListApplyQuery(context.Context, *gorm1.DB) (*gorm1.DB, error)
+	BeforeListApplyQuery(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
 }
 type ServiceEmploymentORMWithBeforeListFind interface {
-	BeforeListFind(context.Context, *gorm1.DB) (*gorm1.DB, error)
+	BeforeListFind(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
 }
 type ServiceEmploymentORMWithAfterListFind interface {
-	AfterListFind(context.Context, *gorm1.DB, *[]ServiceEmploymentORM) error
+	AfterListFind(context.Context, *gorm1.DB, *[]ServiceEmploymentORM, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) error
 }
 
 // DefaultCreateServiceDetails executes a basic gorm create call
@@ -3391,23 +3391,23 @@ func DefaultApplyFieldMaskServiceDetails(ctx context.Context, patchee *ServiceDe
 }
 
 // DefaultListServiceDetails executes a gorm list call
-func DefaultListServiceDetails(ctx context.Context, db *gorm1.DB) ([]*ServiceDetails, error) {
+func DefaultListServiceDetails(ctx context.Context, db *gorm1.DB, f *query1.Filtering, s *query1.Sorting, p *query1.Pagination, fs *query1.FieldSelection) ([]*ServiceDetails, error) {
 	in := ServiceDetails{}
 	ormObj, err := in.ToORM(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceDetailsORMWithBeforeListApplyQuery); ok {
-		if db, err = hook.BeforeListApplyQuery(ctx, db); err != nil {
+		if db, err = hook.BeforeListApplyQuery(ctx, db, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
-	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ServiceDetailsORM{}, &ServiceDetails{}, nil, nil, nil, nil)
+	db, err = gorm2.ApplyCollectionOperators(ctx, db, &ServiceDetailsORM{}, &ServiceDetails{}, f, s, p, fs)
 	if err != nil {
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceDetailsORMWithBeforeListFind); ok {
-		if db, err = hook.BeforeListFind(ctx, db); err != nil {
+		if db, err = hook.BeforeListFind(ctx, db, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
@@ -3418,7 +3418,7 @@ func DefaultListServiceDetails(ctx context.Context, db *gorm1.DB) ([]*ServiceDet
 		return nil, err
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceDetailsORMWithAfterListFind); ok {
-		if err = hook.AfterListFind(ctx, db, &ormResponse); err != nil {
+		if err = hook.AfterListFind(ctx, db, &ormResponse, f, s, p, fs); err != nil {
 			return nil, err
 		}
 	}
@@ -3434,13 +3434,13 @@ func DefaultListServiceDetails(ctx context.Context, db *gorm1.DB) ([]*ServiceDet
 }
 
 type ServiceDetailsORMWithBeforeListApplyQuery interface {
-	BeforeListApplyQuery(context.Context, *gorm1.DB) (*gorm1.DB, error)
+	BeforeListApplyQuery(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
 }
 type ServiceDetailsORMWithBeforeListFind interface {
-	BeforeListFind(context.Context, *gorm1.DB) (*gorm1.DB, error)
+	BeforeListFind(context.Context, *gorm1.DB, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) (*gorm1.DB, error)
 }
 type ServiceDetailsORMWithAfterListFind interface {
-	AfterListFind(context.Context, *gorm1.DB, *[]ServiceDetailsORM) error
+	AfterListFind(context.Context, *gorm1.DB, *[]ServiceDetailsORM, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) error
 }
 
 // DefaultCreateServiceApplication executes a basic gorm create call
@@ -6549,6 +6549,340 @@ type ServicesServiceOfferWithBeforeDeleteServiceOffer interface {
 // ServicesServiceOfferWithAfterDeleteServiceOffer called before DefaultDeleteServiceOfferServiceOffer in the default DeleteServiceOffer handler
 type ServicesServiceOfferWithAfterDeleteServiceOffer interface {
 	AfterDeleteServiceOffer(context.Context, *DeleteServiceOfferResponse, *gorm1.DB) error
+}
+
+// ListServiceEmployment ...
+func (m *ServicesDefaultServer) ListServiceEmployment(ctx context.Context, in *ListServiceEmploymentRequest) (*ListServiceEmploymentResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeListServiceEmployment); ok {
+		var err error
+		if db, err = custom.BeforeListServiceEmployment(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultListServiceEmployment(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
+	if err != nil {
+		return nil, err
+	}
+	out := &ListServiceEmploymentResponse{Results: res}
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterListServiceEmployment); ok {
+		var err error
+		if err = custom.AfterListServiceEmployment(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceEmploymentWithBeforeListServiceEmployment called before DefaultListServiceEmploymentServiceEmployment in the default ListServiceEmployment handler
+type ServicesServiceEmploymentWithBeforeListServiceEmployment interface {
+	BeforeListServiceEmployment(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceEmploymentWithAfterListServiceEmployment called before DefaultListServiceEmploymentServiceEmployment in the default ListServiceEmployment handler
+type ServicesServiceEmploymentWithAfterListServiceEmployment interface {
+	AfterListServiceEmployment(context.Context, *ListServiceEmploymentResponse, *gorm1.DB) error
+}
+
+// CreateServiceEmployment ...
+func (m *ServicesDefaultServer) CreateServiceEmployment(ctx context.Context, in *CreateServiceEmploymentRequest) (*CreateServiceEmploymentResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeCreateServiceEmployment); ok {
+		var err error
+		if db, err = custom.BeforeCreateServiceEmployment(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultCreateServiceEmployment(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, err
+	}
+	out := &CreateServiceEmploymentResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterCreateServiceEmployment); ok {
+		var err error
+		if err = custom.AfterCreateServiceEmployment(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceEmploymentWithBeforeCreateServiceEmployment called before DefaultCreateServiceEmploymentServiceEmployment in the default CreateServiceEmployment handler
+type ServicesServiceEmploymentWithBeforeCreateServiceEmployment interface {
+	BeforeCreateServiceEmployment(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceEmploymentWithAfterCreateServiceEmployment called before DefaultCreateServiceEmploymentServiceEmployment in the default CreateServiceEmployment handler
+type ServicesServiceEmploymentWithAfterCreateServiceEmployment interface {
+	AfterCreateServiceEmployment(context.Context, *CreateServiceEmploymentResponse, *gorm1.DB) error
+}
+
+// ReadServiceEmployment ...
+func (m *ServicesDefaultServer) ReadServiceEmployment(ctx context.Context, in *ReadServiceEmploymentRequest) (*ReadServiceEmploymentResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeReadServiceEmployment); ok {
+		var err error
+		if db, err = custom.BeforeReadServiceEmployment(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultReadServiceEmployment(ctx, &ServiceEmployment{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, err
+	}
+	out := &ReadServiceEmploymentResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterReadServiceEmployment); ok {
+		var err error
+		if err = custom.AfterReadServiceEmployment(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceEmploymentWithBeforeReadServiceEmployment called before DefaultReadServiceEmploymentServiceEmployment in the default ReadServiceEmployment handler
+type ServicesServiceEmploymentWithBeforeReadServiceEmployment interface {
+	BeforeReadServiceEmployment(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceEmploymentWithAfterReadServiceEmployment called before DefaultReadServiceEmploymentServiceEmployment in the default ReadServiceEmployment handler
+type ServicesServiceEmploymentWithAfterReadServiceEmployment interface {
+	AfterReadServiceEmployment(context.Context, *ReadServiceEmploymentResponse, *gorm1.DB) error
+}
+
+// UpdateServiceEmployment ...
+func (m *ServicesDefaultServer) UpdateServiceEmployment(ctx context.Context, in *UpdateServiceEmploymentRequest) (*UpdateServiceEmploymentResponse, error) {
+	var err error
+	var res *ServiceEmployment
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeUpdateServiceEmployment); ok {
+		var err error
+		if db, err = custom.BeforeUpdateServiceEmployment(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err = DefaultStrictUpdateServiceEmployment(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, err
+	}
+	out := &UpdateServiceEmploymentResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterUpdateServiceEmployment); ok {
+		var err error
+		if err = custom.AfterUpdateServiceEmployment(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceEmploymentWithBeforeUpdateServiceEmployment called before DefaultUpdateServiceEmploymentServiceEmployment in the default UpdateServiceEmployment handler
+type ServicesServiceEmploymentWithBeforeUpdateServiceEmployment interface {
+	BeforeUpdateServiceEmployment(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceEmploymentWithAfterUpdateServiceEmployment called before DefaultUpdateServiceEmploymentServiceEmployment in the default UpdateServiceEmployment handler
+type ServicesServiceEmploymentWithAfterUpdateServiceEmployment interface {
+	AfterUpdateServiceEmployment(context.Context, *UpdateServiceEmploymentResponse, *gorm1.DB) error
+}
+
+// DeleteServiceEmployment ...
+func (m *ServicesDefaultServer) DeleteServiceEmployment(ctx context.Context, in *DeleteServiceEmploymentRequest) (*DeleteServiceEmploymentResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeDeleteServiceEmployment); ok {
+		var err error
+		if db, err = custom.BeforeDeleteServiceEmployment(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	err := DefaultDeleteServiceEmployment(ctx, &ServiceEmployment{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, err
+	}
+	out := &DeleteServiceEmploymentResponse{}
+	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterDeleteServiceEmployment); ok {
+		var err error
+		if err = custom.AfterDeleteServiceEmployment(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceEmploymentWithBeforeDeleteServiceEmployment called before DefaultDeleteServiceEmploymentServiceEmployment in the default DeleteServiceEmployment handler
+type ServicesServiceEmploymentWithBeforeDeleteServiceEmployment interface {
+	BeforeDeleteServiceEmployment(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceEmploymentWithAfterDeleteServiceEmployment called before DefaultDeleteServiceEmploymentServiceEmployment in the default DeleteServiceEmployment handler
+type ServicesServiceEmploymentWithAfterDeleteServiceEmployment interface {
+	AfterDeleteServiceEmployment(context.Context, *DeleteServiceEmploymentResponse, *gorm1.DB) error
+}
+
+// ListServiceDetails ...
+func (m *ServicesDefaultServer) ListServiceDetails(ctx context.Context, in *ListServiceDetailsRequest) (*ListServiceDetailsResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeListServiceDetails); ok {
+		var err error
+		if db, err = custom.BeforeListServiceDetails(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultListServiceDetails(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
+	if err != nil {
+		return nil, err
+	}
+	out := &ListServiceDetailsResponse{Results: res}
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterListServiceDetails); ok {
+		var err error
+		if err = custom.AfterListServiceDetails(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceDetailsWithBeforeListServiceDetails called before DefaultListServiceDetailsServiceDetails in the default ListServiceDetails handler
+type ServicesServiceDetailsWithBeforeListServiceDetails interface {
+	BeforeListServiceDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceDetailsWithAfterListServiceDetails called before DefaultListServiceDetailsServiceDetails in the default ListServiceDetails handler
+type ServicesServiceDetailsWithAfterListServiceDetails interface {
+	AfterListServiceDetails(context.Context, *ListServiceDetailsResponse, *gorm1.DB) error
+}
+
+// CreateServiceDetails ...
+func (m *ServicesDefaultServer) CreateServiceDetails(ctx context.Context, in *CreateServiceDetailsRequest) (*CreateServiceDetailsResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeCreateServiceDetails); ok {
+		var err error
+		if db, err = custom.BeforeCreateServiceDetails(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultCreateServiceDetails(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, err
+	}
+	out := &CreateServiceDetailsResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterCreateServiceDetails); ok {
+		var err error
+		if err = custom.AfterCreateServiceDetails(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceDetailsWithBeforeCreateServiceDetails called before DefaultCreateServiceDetailsServiceDetails in the default CreateServiceDetails handler
+type ServicesServiceDetailsWithBeforeCreateServiceDetails interface {
+	BeforeCreateServiceDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceDetailsWithAfterCreateServiceDetails called before DefaultCreateServiceDetailsServiceDetails in the default CreateServiceDetails handler
+type ServicesServiceDetailsWithAfterCreateServiceDetails interface {
+	AfterCreateServiceDetails(context.Context, *CreateServiceDetailsResponse, *gorm1.DB) error
+}
+
+// ReadServiceDetails ...
+func (m *ServicesDefaultServer) ReadServiceDetails(ctx context.Context, in *ReadServiceDetailsRequest) (*ReadServiceDetailsResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeReadServiceDetails); ok {
+		var err error
+		if db, err = custom.BeforeReadServiceDetails(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultReadServiceDetails(ctx, &ServiceDetails{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, err
+	}
+	out := &ReadServiceDetailsResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterReadServiceDetails); ok {
+		var err error
+		if err = custom.AfterReadServiceDetails(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceDetailsWithBeforeReadServiceDetails called before DefaultReadServiceDetailsServiceDetails in the default ReadServiceDetails handler
+type ServicesServiceDetailsWithBeforeReadServiceDetails interface {
+	BeforeReadServiceDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceDetailsWithAfterReadServiceDetails called before DefaultReadServiceDetailsServiceDetails in the default ReadServiceDetails handler
+type ServicesServiceDetailsWithAfterReadServiceDetails interface {
+	AfterReadServiceDetails(context.Context, *ReadServiceDetailsResponse, *gorm1.DB) error
+}
+
+// UpdateServiceDetails ...
+func (m *ServicesDefaultServer) UpdateServiceDetails(ctx context.Context, in *UpdateServiceDetailsRequest) (*UpdateServiceDetailsResponse, error) {
+	var err error
+	var res *ServiceDetails
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeUpdateServiceDetails); ok {
+		var err error
+		if db, err = custom.BeforeUpdateServiceDetails(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err = DefaultStrictUpdateServiceDetails(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, err
+	}
+	out := &UpdateServiceDetailsResponse{Result: res}
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterUpdateServiceDetails); ok {
+		var err error
+		if err = custom.AfterUpdateServiceDetails(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceDetailsWithBeforeUpdateServiceDetails called before DefaultUpdateServiceDetailsServiceDetails in the default UpdateServiceDetails handler
+type ServicesServiceDetailsWithBeforeUpdateServiceDetails interface {
+	BeforeUpdateServiceDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceDetailsWithAfterUpdateServiceDetails called before DefaultUpdateServiceDetailsServiceDetails in the default UpdateServiceDetails handler
+type ServicesServiceDetailsWithAfterUpdateServiceDetails interface {
+	AfterUpdateServiceDetails(context.Context, *UpdateServiceDetailsResponse, *gorm1.DB) error
+}
+
+// DeleteServiceDetails ...
+func (m *ServicesDefaultServer) DeleteServiceDetails(ctx context.Context, in *DeleteServiceDetailsRequest) (*DeleteServiceDetailsResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeDeleteServiceDetails); ok {
+		var err error
+		if db, err = custom.BeforeDeleteServiceDetails(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	err := DefaultDeleteServiceDetails(ctx, &ServiceDetails{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, err
+	}
+	out := &DeleteServiceDetailsResponse{}
+	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterDeleteServiceDetails); ok {
+		var err error
+		if err = custom.AfterDeleteServiceDetails(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// ServicesServiceDetailsWithBeforeDeleteServiceDetails called before DefaultDeleteServiceDetailsServiceDetails in the default DeleteServiceDetails handler
+type ServicesServiceDetailsWithBeforeDeleteServiceDetails interface {
+	BeforeDeleteServiceDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// ServicesServiceDetailsWithAfterDeleteServiceDetails called before DefaultDeleteServiceDetailsServiceDetails in the default DeleteServiceDetails handler
+type ServicesServiceDetailsWithAfterDeleteServiceDetails interface {
+	AfterDeleteServiceDetails(context.Context, *DeleteServiceDetailsResponse, *gorm1.DB) error
 }
 
 // ListServiceApplication ...
