@@ -277,8 +277,6 @@ func (m *ServiceOffer) Validate() error {
 		}
 	}
 
-	// no validation rules for Description
-
 	if v, ok := interface{}(m.GetProvider()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return ServiceOfferValidationError{
@@ -288,6 +286,12 @@ func (m *ServiceOffer) Validate() error {
 			}
 		}
 	}
+
+	// no validation rules for Description
+
+	// no validation rules for Title
+
+	// no validation rules for PictureUrl
 
 	return nil
 }
@@ -346,17 +350,17 @@ var _ interface {
 	ErrorName() string
 } = ServiceOfferValidationError{}
 
-// Validate checks the field values on ServiceDetailsContact with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ServiceDetailsContact) Validate() error {
+// Validate checks the field values on ServiceEmployment with the rules defined
+// in the proto definition for this message. If any rules are violated, an
+// error is returned.
+func (m *ServiceEmployment) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceDetailsContactValidationError{
+			return ServiceEmploymentValidationError{
 				field:  "Id",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -366,7 +370,7 @@ func (m *ServiceDetailsContact) Validate() error {
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceDetailsContactValidationError{
+			return ServiceEmploymentValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -376,7 +380,7 @@ func (m *ServiceDetailsContact) Validate() error {
 
 	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceDetailsContactValidationError{
+			return ServiceEmploymentValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -392,12 +396,14 @@ func (m *ServiceDetailsContact) Validate() error {
 
 	// no validation rules for Phone
 
+	// no validation rules for CanBeContacted
+
 	return nil
 }
 
-// ServiceDetailsContactValidationError is the validation error returned by
-// ServiceDetailsContact.Validate if the designated constraints aren't met.
-type ServiceDetailsContactValidationError struct {
+// ServiceEmploymentValidationError is the validation error returned by
+// ServiceEmployment.Validate if the designated constraints aren't met.
+type ServiceEmploymentValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -405,24 +411,24 @@ type ServiceDetailsContactValidationError struct {
 }
 
 // Field function returns field value.
-func (e ServiceDetailsContactValidationError) Field() string { return e.field }
+func (e ServiceEmploymentValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ServiceDetailsContactValidationError) Reason() string { return e.reason }
+func (e ServiceEmploymentValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ServiceDetailsContactValidationError) Cause() error { return e.cause }
+func (e ServiceEmploymentValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ServiceDetailsContactValidationError) Key() bool { return e.key }
+func (e ServiceEmploymentValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ServiceDetailsContactValidationError) ErrorName() string {
-	return "ServiceDetailsContactValidationError"
+func (e ServiceEmploymentValidationError) ErrorName() string {
+	return "ServiceEmploymentValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ServiceDetailsContactValidationError) Error() string {
+func (e ServiceEmploymentValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -434,14 +440,14 @@ func (e ServiceDetailsContactValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sServiceDetailsContact.%s: %s%s",
+		"invalid %sServiceEmployment.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ServiceDetailsContactValidationError{}
+var _ error = ServiceEmploymentValidationError{}
 
 var _ interface {
 	Field() string
@@ -449,110 +455,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ServiceDetailsContactValidationError{}
-
-// Validate checks the field values on ServiceDetailsCompany with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, an error is returned.
-func (m *ServiceDetailsCompany) Validate() error {
-	if m == nil {
-		return nil
-	}
-
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceDetailsCompanyValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceDetailsCompanyValidationError{
-				field:  "CreatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceDetailsCompanyValidationError{
-				field:  "UpdatedAt",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for Name
-
-	// no validation rules for Address
-
-	// no validation rules for Phone
-
-	return nil
-}
-
-// ServiceDetailsCompanyValidationError is the validation error returned by
-// ServiceDetailsCompany.Validate if the designated constraints aren't met.
-type ServiceDetailsCompanyValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ServiceDetailsCompanyValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ServiceDetailsCompanyValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ServiceDetailsCompanyValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ServiceDetailsCompanyValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ServiceDetailsCompanyValidationError) ErrorName() string {
-	return "ServiceDetailsCompanyValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e ServiceDetailsCompanyValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sServiceDetailsCompany.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ServiceDetailsCompanyValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ServiceDetailsCompanyValidationError{}
+} = ServiceEmploymentValidationError{}
 
 // Validate checks the field values on ServiceDetails with the rules defined in
 // the proto definition for this message. If any rules are violated, an error
@@ -592,25 +495,15 @@ func (m *ServiceDetails) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetCompany()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceDetailsValidationError{
-				field:  "Company",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Name
 
-	if v, ok := interface{}(m.GetContact()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceDetailsValidationError{
-				field:  "Contact",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Address
+
+	// no validation rules for Phone
+
+	// no validation rules for LogoUrl
+
+	// no validation rules for Email
 
 	return nil
 }
@@ -983,6 +876,21 @@ func (m *ServiceProvider) Validate() error {
 
 	}
 
+	for idx, item := range m.GetEmployments() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceProviderValidationError{
+					field:  fmt.Sprintf("Employments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	return nil
 }
 
@@ -1040,17 +948,17 @@ var _ interface {
 	ErrorName() string
 } = ServiceProviderValidationError{}
 
-// Validate checks the field values on ServiceProviderSessionEvaluation with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, an error is returned.
-func (m *ServiceProviderSessionEvaluation) Validate() error {
+// Validate checks the field values on ServiceSessionEvaluation with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ServiceSessionEvaluation) Validate() error {
 	if m == nil {
 		return nil
 	}
 
 	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceProviderSessionEvaluationValidationError{
+			return ServiceSessionEvaluationValidationError{
 				field:  "Id",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1060,7 +968,7 @@ func (m *ServiceProviderSessionEvaluation) Validate() error {
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceProviderSessionEvaluationValidationError{
+			return ServiceSessionEvaluationValidationError{
 				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1070,7 +978,7 @@ func (m *ServiceProviderSessionEvaluation) Validate() error {
 
 	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceProviderSessionEvaluationValidationError{
+			return ServiceSessionEvaluationValidationError{
 				field:  "UpdatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1080,7 +988,7 @@ func (m *ServiceProviderSessionEvaluation) Validate() error {
 
 	if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return ServiceProviderSessionEvaluationValidationError{
+			return ServiceSessionEvaluationValidationError{
 				field:  "Session",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1095,10 +1003,9 @@ func (m *ServiceProviderSessionEvaluation) Validate() error {
 	return nil
 }
 
-// ServiceProviderSessionEvaluationValidationError is the validation error
-// returned by ServiceProviderSessionEvaluation.Validate if the designated
-// constraints aren't met.
-type ServiceProviderSessionEvaluationValidationError struct {
+// ServiceSessionEvaluationValidationError is the validation error returned by
+// ServiceSessionEvaluation.Validate if the designated constraints aren't met.
+type ServiceSessionEvaluationValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1106,24 +1013,24 @@ type ServiceProviderSessionEvaluationValidationError struct {
 }
 
 // Field function returns field value.
-func (e ServiceProviderSessionEvaluationValidationError) Field() string { return e.field }
+func (e ServiceSessionEvaluationValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ServiceProviderSessionEvaluationValidationError) Reason() string { return e.reason }
+func (e ServiceSessionEvaluationValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ServiceProviderSessionEvaluationValidationError) Cause() error { return e.cause }
+func (e ServiceSessionEvaluationValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ServiceProviderSessionEvaluationValidationError) Key() bool { return e.key }
+func (e ServiceSessionEvaluationValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ServiceProviderSessionEvaluationValidationError) ErrorName() string {
-	return "ServiceProviderSessionEvaluationValidationError"
+func (e ServiceSessionEvaluationValidationError) ErrorName() string {
+	return "ServiceSessionEvaluationValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ServiceProviderSessionEvaluationValidationError) Error() string {
+func (e ServiceSessionEvaluationValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1135,14 +1042,14 @@ func (e ServiceProviderSessionEvaluationValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sServiceProviderSessionEvaluation.%s: %s%s",
+		"invalid %sServiceSessionEvaluation.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ServiceProviderSessionEvaluationValidationError{}
+var _ error = ServiceSessionEvaluationValidationError{}
 
 var _ interface {
 	Field() string
@@ -1150,7 +1057,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ServiceProviderSessionEvaluationValidationError{}
+} = ServiceSessionEvaluationValidationError{}
 
 // Validate checks the field values on ServiceSession with the rules defined in
 // the proto definition for this message. If any rules are violated, an error

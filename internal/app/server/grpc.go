@@ -187,14 +187,13 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 
 		Admin.AddResource(&pb.ServiceORM{})
 		Admin.AddResource(&pb.ServiceSessionORM{})
+		Admin.AddResource(&pb.ServiceSessionEvaluationORM{})
 		Admin.AddResource(&pb.ServiceSessionNoteORM{})
 		Admin.AddResource(&pb.ServiceOfferORM{})
 		Admin.AddResource(&pb.ServiceProviderORM{})
-		Admin.AddResource(&pb.ServiceProviderSessionEvaluationORM{})
 		Admin.AddResource(&pb.ServiceTagORM{})
 		Admin.AddResource(&pb.ServiceDetailsORM{})
-		Admin.AddResource(&pb.ServiceDetailsCompanyORM{})
-		Admin.AddResource(&pb.ServiceDetailsCompanyORM{})
+		Admin.AddResource(&pb.ServiceEmploymentORM{})
 		Admin.AddResource(&pb.ServiceApplicationORM{})
 		Admin.AddResource(&pb.ServiceApplicationFileORM{})
 
