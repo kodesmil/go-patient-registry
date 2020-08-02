@@ -968,6 +968,21 @@ func (m *ServiceProvider) Validate() error {
 		}
 	}
 
+	for idx, item := range m.GetOffers() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceProviderValidationError{
+					field:  fmt.Sprintf("Offers[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	return nil
 }
 

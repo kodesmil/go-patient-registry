@@ -1055,6 +1055,7 @@ type ServiceProviderORM struct {
 	CreatedAt *time.Time
 	Details   *ServiceDetailsORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Id        string             `gorm:"type:uuid;primary_key"`
+	Offers    []*ServiceOfferORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	UpdatedAt *time.Time
 }
 
@@ -1099,6 +1100,17 @@ func (m *ServiceProvider) ToORM(ctx context.Context) (ServiceProviderORM, error)
 		}
 		to.Details = &tempDetails
 	}
+	for _, v := range m.Offers {
+		if v != nil {
+			if tempOffers, cErr := v.ToORM(ctx); cErr == nil {
+				to.Offers = append(to.Offers, &tempOffers)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Offers = append(to.Offers, nil)
+		}
+	}
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return to, err
@@ -1141,6 +1153,17 @@ func (m *ServiceProviderORM) ToPB(ctx context.Context) (ServiceProvider, error) 
 			return to, err
 		}
 		to.Details = &tempDetails
+	}
+	for _, v := range m.Offers {
+		if v != nil {
+			if tempOffers, cErr := v.ToPB(ctx); cErr == nil {
+				to.Offers = append(to.Offers, &tempOffers)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Offers = append(to.Offers, nil)
+		}
 	}
 	if posthook, ok := interface{}(m).(ServiceProviderWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -4911,6 +4934,15 @@ func DefaultStrictUpdateServiceProvider(ctx context.Context, in *ServiceProvider
 	if err = db.Where(filterDetails).Delete(ServiceDetailsORM{}).Error; err != nil {
 		return nil, err
 	}
+	filterOffers := ServiceOfferORM{}
+	if ormObj.Id == "" {
+		return nil, errors1.EmptyIdError
+	}
+	filterOffers.ServiceProviderId = new(string)
+	*filterOffers.ServiceProviderId = ormObj.Id
+	if err = db.Where(filterOffers).Delete(ServiceOfferORM{}).Error; err != nil {
+		return nil, err
+	}
 	if hook, ok := interface{}(&ormObj).(ServiceProviderORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err
@@ -5056,6 +5088,10 @@ func DefaultApplyFieldMaskServiceProvider(ctx context.Context, patchee *ServiceP
 		if f == prefix+"Details" {
 			updatedDetails = true
 			patchee.Details = patcher.Details
+			continue
+		}
+		if f == prefix+"Offers" {
+			patchee.Offers = patcher.Offers
 			continue
 		}
 	}
