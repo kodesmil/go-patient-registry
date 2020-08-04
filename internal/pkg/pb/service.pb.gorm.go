@@ -245,7 +245,7 @@ type ServiceOfferORM struct {
 	CreatedAt         *time.Time
 	Currency          string
 	Description       string
-	Id                string `gorm:"type:uuid;primary_key"`
+	Id                string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	PictureUrl        string
 	Price             float32
 	Provider          *ServiceProviderORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
@@ -639,7 +639,7 @@ type ServiceApplicationORM struct {
 	ApprovedBy        *ProfileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
 	CreatedAt         *time.Time
 	Files             []*ServiceApplicationFileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
-	Id                string                       `gorm:"type:uuid;primary_key"`
+	Id                string                       `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Provider          *ServiceProviderORM          `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	ServiceProviderId *string
 	UpdatedAt         *time.Time
@@ -821,7 +821,7 @@ type ServiceApplicationWithAfterToPB interface {
 type ServiceApplicationFileORM struct {
 	AccountID            string
 	CreatedAt            *time.Time
-	Id                   string `gorm:"type:uuid;primary_key"`
+	Id                   string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	ServiceApplicationId *string
 	UpdatedAt            *time.Time
 	Url                  string
@@ -933,7 +933,7 @@ type ServiceProviderORM struct {
 	CreatedAt   *time.Time
 	Details     *ServiceDetailsORM      `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Employments []*ServiceEmploymentORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
-	Id          string                  `gorm:"type:uuid;primary_key"`
+	Id          string                  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Offers      []*ServiceOfferORM      `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	UpdatedAt   *time.Time
 }
@@ -1228,7 +1228,7 @@ type ServiceSessionORM struct {
 	CreatedAt                  *time.Time
 	Evaluation                 *ServiceSessionEvaluationORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	FinishedAt                 *time.Time
-	Id                         string                   `gorm:"type:uuid;primary_key"`
+	Id                         string                   `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Notes                      []*ServiceSessionNoteORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	Offer                      *ServiceOfferORM         `gorm:"foreignkey:ServiceOfferId;association_foreignkey:Id"`
 	ScheduledAt                *time.Time
@@ -1414,7 +1414,7 @@ type ServiceSessionWithAfterToPB interface {
 type ServiceSessionNoteORM struct {
 	AccountID        string
 	CreatedAt        *time.Time
-	Id               string `gorm:"type:uuid;primary_key"`
+	Id               string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	ServiceSessionId *string
 	Session          []*ServiceSessionORM `gorm:"foreignkey:ServiceSessionNoteId;association_foreignkey:Id"`
 	Text             string
