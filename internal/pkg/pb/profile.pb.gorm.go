@@ -4,218 +4,19 @@
 // Generated with protoc-gen-gorm version: master
 // Anticipating compatibility with atlas-app-toolkit version: master
 
-/*
-Package pb is a generated protocol buffer package.
-
-It is generated from these files:
-	github.com/kodesmil/ks-model/profile.proto
-	github.com/kodesmil/ks-model/log.proto
-	github.com/kodesmil/ks-model/chat.proto
-	github.com/kodesmil/ks-model/group.proto
-	github.com/kodesmil/ks-model/feed.proto
-	github.com/kodesmil/ks-model/journal.proto
-	github.com/kodesmil/ks-model/health.proto
-	github.com/kodesmil/ks-model/service.proto
-	github.com/kodesmil/ks-model/notification.proto
-
-It has these top-level messages:
-	Profile
-	CreateProfileRequest
-	CreateProfileResponse
-	ReadProfileRequest
-	ReadProfileResponse
-	UpdateProfileRequest
-	UpdateProfileResponse
-	DeleteProfileRequest
-	DeleteProfileResponse
-	ListProfileRequest
-	ListProfileResponse
-	LogActivity
-	ChatMessage
-	ChatRoom
-	ChatRoomParticipant
-	StreamChatEvent
-	EventNone
-	EventLoadRoom
-	EventLoadRooms
-	EventLeaveRoom
-	EventLeaveRooms
-	EventSendMessage
-	EventSendMessages
-	EventSendRooms
-	EventInviteProfile
-	EventForceClose
-	ListChatMessageRequest
-	ListChatMessageResponse
-	ListChatRoomRequest
-	ListChatRoomResponse
-	Group
-	CreateGroupRequest
-	CreateGroupResponse
-	ReadGroupRequest
-	ReadGroupResponse
-	UpdateGroupRequest
-	UpdateGroupResponse
-	DeleteGroupRequest
-	DeleteGroupResponse
-	ListGroupRequest
-	ListGroupResponse
-	FeedTag
-	FeedAuthor
-	FeedArticleDetail
-	ReadFeedArticleDetailsRequest
-	ReadFeedArticleDetailsResponse
-	FeedArticle
-	ListFeedArticleRequest
-	ListFeedArticleResponse
-	JournalSubjectType
-	JournalSubject
-	JournalEntry
-	CreateJournalEntryRequest
-	CreateJournalEntryResponse
-	ReadJournalEntryRequest
-	ReadJournalEntryResponse
-	UpdateJournalEntryRequest
-	UpdateJournalEntryResponse
-	DeleteJournalEntryRequest
-	DeleteJournalEntryResponse
-	ListJournalEntryRequest
-	ListJournalEntryResponse
-	HealthMenstruationPersonalInfo
-	HealthMenstruationDailyEntry
-	CreateHealthMenstruationDailyEntryRequest
-	CreateHealthMenstruationDailyEntryResponse
-	ReadHealthMenstruationDailyEntryRequest
-	ReadHealthMenstruationDailyEntryResponse
-	UpdateHealthMenstruationDailyEntryRequest
-	UpdateHealthMenstruationDailyEntryResponse
-	DeleteHealthMenstruationDailyEntryRequest
-	DeleteHealthMenstruationDailyEntryResponse
-	ListHealthMenstruationDailyEntryRequest
-	ListHealthMenstruationDailyEntryResponse
-	CreateHealthMenstruationPersonalInfoRequest
-	CreateHealthMenstruationPersonalInfoResponse
-	ReadHealthMenstruationPersonalInfoRequest
-	ReadHealthMenstruationPersonalInfoResponse
-	UpdateHealthMenstruationPersonalInfoRequest
-	UpdateHealthMenstruationPersonalInfoResponse
-	DeleteHealthMenstruationPersonalInfoRequest
-	DeleteHealthMenstruationPersonalInfoResponse
-	ListHealthMenstruationPersonalInfoRequest
-	ListHealthMenstruationPersonalInfoResponse
-	ServiceTag
-	Service
-	ServiceOffer
-	ServiceInPerson
-	ServiceApplication
-	ServiceApplicationFile
-	ServiceProvider
-	ServiceSession
-	CreateServiceSessionRequest
-	CreateServiceSessionResponse
-	ReadServiceSessionRequest
-	ReadServiceSessionResponse
-	UpdateServiceSessionRequest
-	UpdateServiceSessionResponse
-	DeleteServiceSessionRequest
-	DeleteServiceSessionResponse
-	ListServiceSessionRequest
-	ListServiceSessionResponse
-	CreateServiceProviderRequest
-	CreateServiceProviderResponse
-	ReadServiceProviderRequest
-	ReadServiceProviderResponse
-	UpdateServiceProviderRequest
-	UpdateServiceProviderResponse
-	DeleteServiceProviderRequest
-	DeleteServiceProviderResponse
-	ListServiceProviderRequest
-	ListServiceProviderResponse
-	CreateServiceApplicationRequest
-	CreateServiceApplicationResponse
-	ReadServiceApplicationRequest
-	ReadServiceApplicationResponse
-	UpdateServiceApplicationRequest
-	UpdateServiceApplicationResponse
-	DeleteServiceApplicationRequest
-	DeleteServiceApplicationResponse
-	ListServiceApplicationRequest
-	ListServiceApplicationResponse
-	CreateServiceTagRequest
-	CreateServiceTagResponse
-	ReadServiceTagRequest
-	ReadServiceTagResponse
-	UpdateServiceTagRequest
-	UpdateServiceTagResponse
-	DeleteServiceTagRequest
-	DeleteServiceTagResponse
-	ListServiceTagRequest
-	ListServiceTagResponse
-	CreateServiceApplicationFileRequest
-	CreateServiceApplicationFileResponse
-	ReadServiceApplicationFileRequest
-	ReadServiceApplicationFileResponse
-	UpdateServiceApplicationFileRequest
-	UpdateServiceApplicationFileResponse
-	DeleteServiceApplicationFileRequest
-	DeleteServiceApplicationFileResponse
-	ListServiceApplicationFileRequest
-	ListServiceApplicationFileResponse
-	CreateServiceOfferRequest
-	CreateServiceOfferResponse
-	ReadServiceOfferRequest
-	ReadServiceOfferResponse
-	UpdateServiceOfferRequest
-	UpdateServiceOfferResponse
-	DeleteServiceOfferRequest
-	DeleteServiceOfferResponse
-	ListServiceOfferRequest
-	ListServiceOfferResponse
-	CreateServiceInPersonRequest
-	CreateServiceInPersonResponse
-	ReadServiceInPersonRequest
-	ReadServiceInPersonResponse
-	UpdateServiceInPersonRequest
-	UpdateServiceInPersonResponse
-	DeleteServiceInPersonRequest
-	DeleteServiceInPersonResponse
-	ListServiceInPersonRequest
-	ListServiceInPersonResponse
-	CreateServiceRequest
-	CreateServiceResponse
-	ReadServiceRequest
-	ReadServiceResponse
-	UpdateServiceRequest
-	UpdateServiceResponse
-	DeleteServiceRequest
-	DeleteServiceResponse
-	ListServiceRequest
-	ListServiceResponse
-	NotificationSetting
-	CreateNotificationSettingRequest
-	CreateNotificationSettingResponse
-	ReadNotificationSettingRequest
-	ReadNotificationSettingResponse
-	UpdateNotificationSettingRequest
-	UpdateNotificationSettingResponse
-	DeleteNotificationSettingRequest
-	DeleteNotificationSettingResponse
-	ListNotificationSettingRequest
-	ListNotificationSettingResponse
-	NotificationDevice
-	CreateNotificationDeviceRequest
-	CreateNotificationDeviceResponse
-*/
 package pb
 
 import context "context"
 import fmt "fmt"
+import time "time"
 
 import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
+import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
 
@@ -233,6 +34,7 @@ var _ = math.Inf
 
 type ProfileORM struct {
 	AccountID            string
+	CreatedAt            *time.Time
 	FirstName            string
 	Groups               []*GroupORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	Id                   string      `gorm:"type:text;primary_key;not null"`
@@ -240,8 +42,8 @@ type ProfileORM struct {
 	Notes                string
 	PrimaryEmail         string `gorm:"unique"`
 	ProfilePictureUrl    string
-	ServiceApplicationId *string
-	ServiceSessionId     *string
+	ServiceApplicationId *go_uuid1.UUID
+	UpdatedAt            *time.Time
 }
 
 // TableName overrides the default tablename generated by GORM
@@ -263,6 +65,20 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 		return to, err
 	} else if v != nil {
 		to.Id = v.(string)
+	}
+	if m.CreatedAt != nil {
+		var t time.Time
+		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
+			return to, err
+		}
+		to.CreatedAt = &t
+	}
+	if m.UpdatedAt != nil {
+		var t time.Time
+		if t, err = ptypes1.Timestamp(m.UpdatedAt); err != nil {
+			return to, err
+		}
+		to.UpdatedAt = &t
 	}
 	to.Notes = m.Notes
 	to.FirstName = m.FirstName
@@ -305,6 +121,16 @@ func (m *ProfileORM) ToPB(ctx context.Context) (Profile, error) {
 		return to, err
 	} else {
 		to.Id = v
+	}
+	if m.CreatedAt != nil {
+		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
+			return to, err
+		}
+	}
+	if m.UpdatedAt != nil {
+		if to.UpdatedAt, err = ptypes1.TimestampProto(*m.UpdatedAt); err != nil {
+			return to, err
+		}
 	}
 	to.Notes = m.Notes
 	to.FirstName = m.FirstName
@@ -652,6 +478,14 @@ func DefaultApplyFieldMaskProfile(ctx context.Context, patchee *Profile, patcher
 	for _, f := range updateMask.Paths {
 		if f == prefix+"Id" {
 			patchee.Id = patcher.Id
+			continue
+		}
+		if f == prefix+"CreatedAt" {
+			patchee.CreatedAt = patcher.CreatedAt
+			continue
+		}
+		if f == prefix+"UpdatedAt" {
+			patchee.UpdatedAt = patcher.UpdatedAt
 			continue
 		}
 		if f == prefix+"Notes" {

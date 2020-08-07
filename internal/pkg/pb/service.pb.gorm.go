@@ -14,11 +14,13 @@ import time "time"
 import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
+import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -245,13 +247,13 @@ type ServiceOfferORM struct {
 	CreatedAt         *time.Time
 	Currency          string
 	Description       string
-	Id                string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Id                *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	PictureUrl        string
 	Price             float32
 	Provider          *ServiceProviderORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Service           *ServiceORM         `gorm:"foreignkey:ServiceId;association_foreignkey:Id"`
 	ServiceId         *int64
-	ServiceProviderId *string
+	ServiceProviderId *go_uuid1.UUID
 	Title             string
 	UpdatedAt         *time.Time
 }
@@ -271,10 +273,12 @@ func (m *ServiceOffer) ToORM(ctx context.Context) (ServiceOfferORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceOffer{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -325,10 +329,8 @@ func (m *ServiceOfferORM) ToPB(ctx context.Context) (ServiceOffer, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceOffer{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -397,7 +399,7 @@ type ServiceEmploymentORM struct {
 	Id                int64 `gorm:"type:serial;primary_key"`
 	LastName          string
 	Phone             string
-	ServiceProviderId *string
+	ServiceProviderId *go_uuid1.UUID
 	UpdatedAt         *time.Time
 }
 
@@ -519,7 +521,7 @@ type ServiceDetailsORM struct {
 	LogoUrl           string
 	Name              string
 	Phone             string
-	ServiceProviderId *string
+	ServiceProviderId *go_uuid1.UUID
 	UpdatedAt         *time.Time
 }
 
@@ -639,9 +641,9 @@ type ServiceApplicationORM struct {
 	ApprovedBy        *ProfileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
 	CreatedAt         *time.Time
 	Files             []*ServiceApplicationFileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
-	Id                string                       `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Id                *go_uuid1.UUID               `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Provider          *ServiceProviderORM          `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
-	ServiceProviderId *string
+	ServiceProviderId *go_uuid1.UUID
 	UpdatedAt         *time.Time
 }
 
@@ -660,10 +662,12 @@ func (m *ServiceApplication) ToORM(ctx context.Context) (ServiceApplicationORM, 
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceApplication{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -739,10 +743,8 @@ func (m *ServiceApplicationORM) ToPB(ctx context.Context) (ServiceApplication, e
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceApplication{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -821,8 +823,8 @@ type ServiceApplicationWithAfterToPB interface {
 type ServiceApplicationFileORM struct {
 	AccountID            string
 	CreatedAt            *time.Time
-	Id                   string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	ServiceApplicationId *string
+	Id                   *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	ServiceApplicationId *go_uuid1.UUID
 	UpdatedAt            *time.Time
 	Url                  string
 }
@@ -842,10 +844,12 @@ func (m *ServiceApplicationFile) ToORM(ctx context.Context) (ServiceApplicationF
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceApplicationFile{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -883,10 +887,8 @@ func (m *ServiceApplicationFileORM) ToPB(ctx context.Context) (ServiceApplicatio
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceApplicationFile{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -933,7 +935,7 @@ type ServiceProviderORM struct {
 	CreatedAt   *time.Time
 	Details     *ServiceDetailsORM      `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Employments []*ServiceEmploymentORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
-	Id          string                  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Id          *go_uuid1.UUID          `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Offers      []*ServiceOfferORM      `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	UpdatedAt   *time.Time
 }
@@ -953,10 +955,12 @@ func (m *ServiceProvider) ToORM(ctx context.Context) (ServiceProviderORM, error)
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceProvider{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -1022,10 +1026,8 @@ func (m *ServiceProviderORM) ToPB(ctx context.Context) (ServiceProvider, error) 
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceProvider{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -1101,7 +1103,7 @@ type ServiceSessionEvaluationORM struct {
 	CreatedAt          *time.Time
 	Id                 int64 `gorm:"type:serial;primary_key"`
 	RecommendationRate float64
-	ServiceSessionId   *string
+	ServiceSessionId   *go_uuid1.UUID
 	Session            *ServiceSessionORM `gorm:"foreignkey:ServiceSessionEvaluationId;association_foreignkey:Id"`
 	UpdatedAt          *time.Time
 }
@@ -1228,13 +1230,13 @@ type ServiceSessionORM struct {
 	CreatedAt                  *time.Time
 	Evaluation                 *ServiceSessionEvaluationORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	FinishedAt                 *time.Time
-	Id                         string                   `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Id                         *go_uuid1.UUID           `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Notes                      []*ServiceSessionNoteORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	Offer                      *ServiceOfferORM         `gorm:"foreignkey:ServiceOfferId;association_foreignkey:Id"`
 	ScheduledAt                *time.Time
-	ServiceOfferId             *string
+	ServiceOfferId             *go_uuid1.UUID
 	ServiceSessionEvaluationId *int64
-	ServiceSessionNoteId       *string
+	ServiceSessionNoteId       *go_uuid1.UUID
 	UpdatedAt                  *time.Time
 }
 
@@ -1253,10 +1255,12 @@ func (m *ServiceSession) ToORM(ctx context.Context) (ServiceSessionORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceSession{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -1332,10 +1336,8 @@ func (m *ServiceSessionORM) ToPB(ctx context.Context) (ServiceSession, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceSession{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -1414,8 +1416,8 @@ type ServiceSessionWithAfterToPB interface {
 type ServiceSessionNoteORM struct {
 	AccountID        string
 	CreatedAt        *time.Time
-	Id               string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	ServiceSessionId *string
+	Id               *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	ServiceSessionId *go_uuid1.UUID
 	Session          []*ServiceSessionORM `gorm:"foreignkey:ServiceSessionNoteId;association_foreignkey:Id"`
 	Text             string
 	UpdatedAt        *time.Time
@@ -1436,10 +1438,12 @@ func (m *ServiceSessionNote) ToORM(ctx context.Context) (ServiceSessionNoteORM, 
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ServiceSessionNote{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -1488,10 +1492,8 @@ func (m *ServiceSessionNoteORM) ToPB(ctx context.Context) (ServiceSessionNote, e
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceSessionNote{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -2304,7 +2306,7 @@ func DefaultReadServiceOffer(ctx context.Context, in *ServiceOffer, db *gorm1.DB
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceOfferORMWithBeforeReadApplyQuery); ok {
@@ -2351,7 +2353,7 @@ func DefaultDeleteServiceOffer(ctx context.Context, in *ServiceOffer, db *gorm1.
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceOfferORMWithBeforeDelete_); ok {
@@ -2381,13 +2383,13 @@ func DefaultDeleteServiceOfferSet(ctx context.Context, in []*ServiceOffer, db *g
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -3485,7 +3487,7 @@ func DefaultReadServiceApplication(ctx context.Context, in *ServiceApplication, 
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationORMWithBeforeReadApplyQuery); ok {
@@ -3532,7 +3534,7 @@ func DefaultDeleteServiceApplication(ctx context.Context, in *ServiceApplication
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationORMWithBeforeDelete_); ok {
@@ -3562,13 +3564,13 @@ func DefaultDeleteServiceApplicationSet(ctx context.Context, in []*ServiceApplic
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -3621,20 +3623,20 @@ func DefaultStrictUpdateServiceApplication(ctx context.Context, in *ServiceAppli
 		}
 	}
 	filterApprovedBy := ProfileORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterApprovedBy.ServiceApplicationId = new(string)
-	*filterApprovedBy.ServiceApplicationId = ormObj.Id
+	filterApprovedBy.ServiceApplicationId = new(go_uuid1.UUID)
+	*filterApprovedBy.ServiceApplicationId = *ormObj.Id
 	if err = db.Where(filterApprovedBy).Delete(ProfileORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterFiles := ServiceApplicationFileORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterFiles.ServiceApplicationId = new(string)
-	*filterFiles.ServiceApplicationId = ormObj.Id
+	filterFiles.ServiceApplicationId = new(go_uuid1.UUID)
+	*filterFiles.ServiceApplicationId = *ormObj.Id
 	if err = db.Where(filterFiles).Delete(ServiceApplicationFileORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -3921,7 +3923,7 @@ func DefaultReadServiceApplicationFile(ctx context.Context, in *ServiceApplicati
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationFileORMWithBeforeReadApplyQuery); ok {
@@ -3968,7 +3970,7 @@ func DefaultDeleteServiceApplicationFile(ctx context.Context, in *ServiceApplica
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationFileORMWithBeforeDelete_); ok {
@@ -3998,13 +4000,13 @@ func DefaultDeleteServiceApplicationFileSet(ctx context.Context, in []*ServiceAp
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -4287,7 +4289,7 @@ func DefaultReadServiceProvider(ctx context.Context, in *ServiceProvider, db *go
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceProviderORMWithBeforeReadApplyQuery); ok {
@@ -4334,7 +4336,7 @@ func DefaultDeleteServiceProvider(ctx context.Context, in *ServiceProvider, db *
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceProviderORMWithBeforeDelete_); ok {
@@ -4364,13 +4366,13 @@ func DefaultDeleteServiceProviderSet(ctx context.Context, in []*ServiceProvider,
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -4423,29 +4425,29 @@ func DefaultStrictUpdateServiceProvider(ctx context.Context, in *ServiceProvider
 		}
 	}
 	filterDetails := ServiceDetailsORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterDetails.ServiceProviderId = new(string)
-	*filterDetails.ServiceProviderId = ormObj.Id
+	filterDetails.ServiceProviderId = new(go_uuid1.UUID)
+	*filterDetails.ServiceProviderId = *ormObj.Id
 	if err = db.Where(filterDetails).Delete(ServiceDetailsORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterEmployments := ServiceEmploymentORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterEmployments.ServiceProviderId = new(string)
-	*filterEmployments.ServiceProviderId = ormObj.Id
+	filterEmployments.ServiceProviderId = new(go_uuid1.UUID)
+	*filterEmployments.ServiceProviderId = *ormObj.Id
 	if err = db.Where(filterEmployments).Delete(ServiceEmploymentORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterOffers := ServiceOfferORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterOffers.ServiceProviderId = new(string)
-	*filterOffers.ServiceProviderId = ormObj.Id
+	filterOffers.ServiceProviderId = new(go_uuid1.UUID)
+	*filterOffers.ServiceProviderId = *ormObj.Id
 	if err = db.Where(filterOffers).Delete(ServiceOfferORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -5107,7 +5109,7 @@ func DefaultReadServiceSession(ctx context.Context, in *ServiceSession, db *gorm
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceSessionORMWithBeforeReadApplyQuery); ok {
@@ -5154,7 +5156,7 @@ func DefaultDeleteServiceSession(ctx context.Context, in *ServiceSession, db *go
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceSessionORMWithBeforeDelete_); ok {
@@ -5184,13 +5186,13 @@ func DefaultDeleteServiceSessionSet(ctx context.Context, in []*ServiceSession, d
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -5243,20 +5245,20 @@ func DefaultStrictUpdateServiceSession(ctx context.Context, in *ServiceSession, 
 		}
 	}
 	filterEvaluation := ServiceSessionEvaluationORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterEvaluation.ServiceSessionId = new(string)
-	*filterEvaluation.ServiceSessionId = ormObj.Id
+	filterEvaluation.ServiceSessionId = new(go_uuid1.UUID)
+	*filterEvaluation.ServiceSessionId = *ormObj.Id
 	if err = db.Where(filterEvaluation).Delete(ServiceSessionEvaluationORM{}).Error; err != nil {
 		return nil, err
 	}
 	filterNotes := ServiceSessionNoteORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterNotes.ServiceSessionId = new(string)
-	*filterNotes.ServiceSessionId = ormObj.Id
+	filterNotes.ServiceSessionId = new(go_uuid1.UUID)
+	*filterNotes.ServiceSessionId = *ormObj.Id
 	if err = db.Where(filterNotes).Delete(ServiceSessionNoteORM{}).Error; err != nil {
 		return nil, err
 	}
@@ -5543,7 +5545,7 @@ func DefaultReadServiceSessionNote(ctx context.Context, in *ServiceSessionNote, 
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceSessionNoteORMWithBeforeReadApplyQuery); ok {
@@ -5590,7 +5592,7 @@ func DefaultDeleteServiceSessionNote(ctx context.Context, in *ServiceSessionNote
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ServiceSessionNoteORMWithBeforeDelete_); ok {
@@ -5620,13 +5622,13 @@ func DefaultDeleteServiceSessionNoteSet(ctx context.Context, in []*ServiceSessio
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -5679,11 +5681,11 @@ func DefaultStrictUpdateServiceSessionNote(ctx context.Context, in *ServiceSessi
 		}
 	}
 	filterSession := ServiceSessionORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterSession.ServiceSessionNoteId = new(string)
-	*filterSession.ServiceSessionNoteId = ormObj.Id
+	filterSession.ServiceSessionNoteId = new(go_uuid1.UUID)
+	*filterSession.ServiceSessionNoteId = *ormObj.Id
 	if err = db.Where(filterSession).Delete(ServiceSessionORM{}).Error; err != nil {
 		return nil, err
 	}
