@@ -109,7 +109,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 				Root: &query.Filtering_StringCondition{
 					StringCondition: &query.StringCondition{
 						FieldPath: []string{"chat_rooms", "id"},
-						Value:     room.Room.Id.ResourceId,
+						Value:     room.Room.Id.Value,
 						Type:      query.StringCondition_EQ,
 					},
 				},
@@ -170,7 +170,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			err = s.database.
 				Table("chat_room_participants").
 				Select("profile_id").
-				Where("chat_room_id = ?", out.GetAuthor().ChatRoom.Id.ResourceId).
+				Where("chat_room_id = ?", out.GetAuthor().ChatRoom.Id.Value).
 				Find(&profiles).
 				Error
 
