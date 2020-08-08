@@ -35,7 +35,7 @@ var _ = math.Inf
 
 type ChatMessageORM struct {
 	Author    *ChatRoomParticipantORM `gorm:"foreignkey:AuthorId;association_foreignkey:Id"`
-	AuthorId  *int64
+	AuthorId  *go_uuid1.UUID
 	CreatedAt *time.Time
 	Id        *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Text      string
@@ -87,10 +87,11 @@ func (m *ChatMessage) ToORM(ctx context.Context) (ChatMessageORM, error) {
 		to.Author = &tempAuthor
 	}
 	if m.AuthorId != nil {
-		if v, err := resource1.DecodeInt64(&ChatRoomParticipant{}, m.AuthorId); err != nil {
+		if v, err := resource1.Decode(&ChatRoomParticipant{}, m.AuthorId); err != nil {
 			return to, err
-		} else {
-			to.AuthorId = &v
+		} else if v != nil {
+			vv := v.(go_uuid1.UUID)
+			to.AuthorId = &vv
 		}
 	}
 	if posthook, ok := interface{}(m).(ChatMessageWithAfterToORM); ok {
@@ -296,7 +297,7 @@ type ChatRoomParticipantORM struct {
 	ChatRoom   *ChatRoomORM `gorm:"foreignkey:ChatRoomId;association_foreignkey:Id"`
 	ChatRoomId *go_uuid1.UUID
 	CreatedAt  *time.Time
-	Id         int64 `gorm:"type:serial;primary_key"`
+	Id         *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	LastSeenAt *time.Time
 	Profile    *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
 	ProfileId  *go_uuid1.UUID
@@ -318,10 +319,12 @@ func (m *ChatRoomParticipant) ToORM(ctx context.Context) (ChatRoomParticipantORM
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&ChatRoomParticipant{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -374,10 +377,8 @@ func (m *ChatRoomParticipantORM) ToPB(ctx context.Context) (ChatRoomParticipant,
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ChatRoomParticipant{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -1236,7 +1237,7 @@ func DefaultReadChatRoomParticipant(ctx context.Context, in *ChatRoomParticipant
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == 0 {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatRoomParticipantORMWithBeforeReadApplyQuery); ok {
@@ -1283,7 +1284,7 @@ func DefaultDeleteChatRoomParticipant(ctx context.Context, in *ChatRoomParticipa
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == 0 {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatRoomParticipantORMWithBeforeDelete_); ok {
@@ -1313,13 +1314,13 @@ func DefaultDeleteChatRoomParticipantSet(ctx context.Context, in []*ChatRoomPart
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == 0 {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
