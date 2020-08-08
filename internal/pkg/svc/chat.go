@@ -144,7 +144,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			err = db.Exec(
 				"UPDATE chat_room_participants SET last_seen_at=? WHERE id=?",
 				time.Now(),
-				room.Me.Id.ResourceId,
+				room.Me.Id.Value,
 			).Error
 			if err != nil {
 				return err
