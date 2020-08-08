@@ -4,6 +4,221 @@
 // Generated with protoc-gen-gorm version: master
 // Anticipating compatibility with atlas-app-toolkit version: master
 
+/*
+Package pb is a generated protocol buffer package.
+
+It is generated from these files:
+	github.com/kodesmil/ks-model/group.proto
+	github.com/kodesmil/ks-model/profile.proto
+	github.com/kodesmil/ks-model/service.proto
+	github.com/kodesmil/ks-model/log.proto
+	github.com/kodesmil/ks-model/chat.proto
+	github.com/kodesmil/ks-model/feed.proto
+	github.com/kodesmil/ks-model/journal.proto
+	github.com/kodesmil/ks-model/health.proto
+	github.com/kodesmil/ks-model/notification.proto
+
+It has these top-level messages:
+	Group
+	CreateGroupRequest
+	CreateGroupResponse
+	ReadGroupRequest
+	ReadGroupResponse
+	UpdateGroupRequest
+	UpdateGroupResponse
+	DeleteGroupRequest
+	DeleteGroupResponse
+	ListGroupRequest
+	ListGroupResponse
+	Profile
+	CreateProfileRequest
+	CreateProfileResponse
+	ReadProfileRequest
+	ReadProfileResponse
+	UpdateProfileRequest
+	UpdateProfileResponse
+	DeleteProfileRequest
+	DeleteProfileResponse
+	ListProfileRequest
+	ListProfileResponse
+	ServiceTag
+	Service
+	ServiceOffer
+	ServiceEmployment
+	ServiceDetails
+	ServiceApplication
+	ServiceApplicationFile
+	ServiceProvider
+	ServiceSessionEvaluation
+	ServiceSession
+	ServiceSessionNote
+	CreateServiceSessionRequest
+	CreateServiceSessionResponse
+	ReadServiceSessionRequest
+	ReadServiceSessionResponse
+	UpdateServiceSessionRequest
+	UpdateServiceSessionResponse
+	DeleteServiceSessionRequest
+	DeleteServiceSessionResponse
+	ListServiceSessionRequest
+	ListServiceSessionResponse
+	CreateServiceProviderRequest
+	CreateServiceProviderResponse
+	ReadServiceProviderRequest
+	ReadServiceProviderResponse
+	UpdateServiceProviderRequest
+	UpdateServiceProviderResponse
+	DeleteServiceProviderRequest
+	DeleteServiceProviderResponse
+	ListServiceProviderRequest
+	ListServiceProviderResponse
+	CreateServiceApplicationRequest
+	CreateServiceApplicationResponse
+	ReadServiceApplicationRequest
+	ReadServiceApplicationResponse
+	UpdateServiceApplicationRequest
+	UpdateServiceApplicationResponse
+	DeleteServiceApplicationRequest
+	DeleteServiceApplicationResponse
+	ListServiceApplicationRequest
+	ListServiceApplicationResponse
+	CreateServiceTagRequest
+	CreateServiceTagResponse
+	ReadServiceTagRequest
+	ReadServiceTagResponse
+	UpdateServiceTagRequest
+	UpdateServiceTagResponse
+	DeleteServiceTagRequest
+	DeleteServiceTagResponse
+	ListServiceTagRequest
+	ListServiceTagResponse
+	CreateServiceApplicationFileRequest
+	CreateServiceApplicationFileResponse
+	ReadServiceApplicationFileRequest
+	ReadServiceApplicationFileResponse
+	UpdateServiceApplicationFileRequest
+	UpdateServiceApplicationFileResponse
+	DeleteServiceApplicationFileRequest
+	DeleteServiceApplicationFileResponse
+	ListServiceApplicationFileRequest
+	ListServiceApplicationFileResponse
+	CreateServiceOfferRequest
+	CreateServiceOfferResponse
+	ReadServiceOfferRequest
+	ReadServiceOfferResponse
+	UpdateServiceOfferRequest
+	UpdateServiceOfferResponse
+	DeleteServiceOfferRequest
+	DeleteServiceOfferResponse
+	ListServiceOfferRequest
+	ListServiceOfferResponse
+	CreateServiceDetailsRequest
+	CreateServiceDetailsResponse
+	ReadServiceDetailsRequest
+	ReadServiceDetailsResponse
+	UpdateServiceDetailsRequest
+	UpdateServiceDetailsResponse
+	DeleteServiceDetailsRequest
+	DeleteServiceDetailsResponse
+	ListServiceDetailsRequest
+	ListServiceDetailsResponse
+	CreateServiceEmploymentRequest
+	CreateServiceEmploymentResponse
+	ReadServiceEmploymentRequest
+	ReadServiceEmploymentResponse
+	UpdateServiceEmploymentRequest
+	UpdateServiceEmploymentResponse
+	DeleteServiceEmploymentRequest
+	DeleteServiceEmploymentResponse
+	ListServiceEmploymentRequest
+	ListServiceEmploymentResponse
+	CreateServiceRequest
+	CreateServiceResponse
+	ReadServiceRequest
+	ReadServiceResponse
+	UpdateServiceRequest
+	UpdateServiceResponse
+	DeleteServiceRequest
+	DeleteServiceResponse
+	ListServiceRequest
+	ListServiceResponse
+	LogActivity
+	ChatMessage
+	ChatRoom
+	ChatRoomParticipant
+	StreamChatEvent
+	EventNone
+	EventLoadRoom
+	EventLoadRooms
+	EventLeaveRoom
+	EventLeaveRooms
+	EventSendMessage
+	EventSendMessages
+	EventSendRooms
+	EventInviteProfile
+	EventForceClose
+	ListChatMessageRequest
+	ListChatMessageResponse
+	ListChatRoomRequest
+	ListChatRoomResponse
+	FeedTag
+	FeedAuthor
+	FeedArticleDetail
+	ReadFeedArticleDetailsRequest
+	ReadFeedArticleDetailsResponse
+	FeedArticle
+	ListFeedArticleRequest
+	ListFeedArticleResponse
+	JournalSubjectType
+	JournalSubject
+	JournalEntry
+	CreateJournalEntryRequest
+	CreateJournalEntryResponse
+	ReadJournalEntryRequest
+	ReadJournalEntryResponse
+	UpdateJournalEntryRequest
+	UpdateJournalEntryResponse
+	DeleteJournalEntryRequest
+	DeleteJournalEntryResponse
+	ListJournalEntryRequest
+	ListJournalEntryResponse
+	HealthMenstruationPersonalInfo
+	HealthMenstruationDailyEntry
+	CreateHealthMenstruationDailyEntryRequest
+	CreateHealthMenstruationDailyEntryResponse
+	ReadHealthMenstruationDailyEntryRequest
+	ReadHealthMenstruationDailyEntryResponse
+	UpdateHealthMenstruationDailyEntryRequest
+	UpdateHealthMenstruationDailyEntryResponse
+	DeleteHealthMenstruationDailyEntryRequest
+	DeleteHealthMenstruationDailyEntryResponse
+	ListHealthMenstruationDailyEntryRequest
+	ListHealthMenstruationDailyEntryResponse
+	CreateHealthMenstruationPersonalInfoRequest
+	CreateHealthMenstruationPersonalInfoResponse
+	ReadHealthMenstruationPersonalInfoRequest
+	ReadHealthMenstruationPersonalInfoResponse
+	UpdateHealthMenstruationPersonalInfoRequest
+	UpdateHealthMenstruationPersonalInfoResponse
+	DeleteHealthMenstruationPersonalInfoRequest
+	DeleteHealthMenstruationPersonalInfoResponse
+	ListHealthMenstruationPersonalInfoRequest
+	ListHealthMenstruationPersonalInfoResponse
+	NotificationSetting
+	CreateNotificationSettingRequest
+	CreateNotificationSettingResponse
+	ReadNotificationSettingRequest
+	ReadNotificationSettingResponse
+	UpdateNotificationSettingRequest
+	UpdateNotificationSettingResponse
+	DeleteNotificationSettingRequest
+	DeleteNotificationSettingResponse
+	ListNotificationSettingRequest
+	ListNotificationSettingResponse
+	NotificationDevice
+	CreateNotificationDeviceRequest
+	CreateNotificationDeviceResponse
+*/
 package pb
 
 import context "context"
@@ -12,10 +227,12 @@ import fmt "fmt"
 import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
+import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -31,10 +248,10 @@ var _ = math.Inf
 
 type GroupORM struct {
 	AccountID string
-	Id        int64 `gorm:"type:serial;primary_key"`
+	Id        *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Name      string
 	Notes     string
-	ProfileId *string
+	ProfileId *go_uuid1.UUID
 }
 
 // TableName overrides the default tablename generated by GORM
@@ -52,10 +269,12 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&Group{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -63,7 +282,7 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 		if v, err := resource1.Decode(&Profile{}, m.ProfileId); err != nil {
 			return to, err
 		} else if v != nil {
-			vv := v.(string)
+			vv := v.(go_uuid1.UUID)
 			to.ProfileId = &vv
 		}
 	}
@@ -88,10 +307,8 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&Group{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -173,7 +390,7 @@ func DefaultReadGroup(ctx context.Context, in *Group, db *gorm1.DB) (*Group, err
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == 0 {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(GroupORMWithBeforeReadApplyQuery); ok {
@@ -220,7 +437,7 @@ func DefaultDeleteGroup(ctx context.Context, in *Group, db *gorm1.DB) error {
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == 0 {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(GroupORMWithBeforeDelete_); ok {
@@ -250,13 +467,13 @@ func DefaultDeleteGroupSet(ctx context.Context, in []*Group, db *gorm1.DB) error
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == 0 {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)

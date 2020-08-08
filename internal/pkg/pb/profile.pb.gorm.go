@@ -18,7 +18,7 @@ import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -36,8 +36,8 @@ type ProfileORM struct {
 	AccountID            string
 	CreatedAt            *time.Time
 	FirstName            string
-	Groups               []*GroupORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	Id                   string      `gorm:"type:text;primary_key;not null"`
+	Groups               []*GroupORM    `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
+	Id                   *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	LastName             string
 	Notes                string
 	PrimaryEmail         string `gorm:"unique"`
@@ -61,10 +61,12 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&Profile{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -117,10 +119,8 @@ func (m *ProfileORM) ToPB(ctx context.Context) (Profile, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&Profile{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -219,7 +219,7 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeReadApplyQuery); ok {
@@ -266,7 +266,7 @@ func DefaultDeleteProfile(ctx context.Context, in *Profile, db *gorm1.DB) error 
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeDelete_); ok {
@@ -296,13 +296,13 @@ func DefaultDeleteProfileSet(ctx context.Context, in []*Profile, db *gorm1.DB) e
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -355,11 +355,11 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 		}
 	}
 	filterGroups := GroupORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterGroups.ProfileId = new(string)
-	*filterGroups.ProfileId = ormObj.Id
+	filterGroups.ProfileId = new(go_uuid1.UUID)
+	*filterGroups.ProfileId = *ormObj.Id
 	if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
 		return nil, err
 	}

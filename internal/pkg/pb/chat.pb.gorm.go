@@ -13,11 +13,13 @@ import time "time"
 
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
+import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -35,7 +37,7 @@ type ChatMessageORM struct {
 	Author    *ChatRoomParticipantORM `gorm:"foreignkey:AuthorId;association_foreignkey:Id"`
 	AuthorId  *int64
 	CreatedAt *time.Time
-	Id        string `gorm:"type:uuid;primary_key"`
+	Id        *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Text      string
 	UpdatedAt *time.Time
 }
@@ -55,10 +57,12 @@ func (m *ChatMessage) ToORM(ctx context.Context) (ChatMessageORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ChatMessage{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -105,10 +109,8 @@ func (m *ChatMessageORM) ToPB(ctx context.Context) (ChatMessage, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ChatMessage{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -166,7 +168,7 @@ type ChatMessageWithAfterToPB interface {
 
 type ChatRoomORM struct {
 	CreatedAt    *time.Time
-	Id           string `gorm:"type:uuid;primary_key"`
+	Id           *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Name         string
 	Participants []*ChatRoomParticipantORM `gorm:"foreignkey:ChatRoomId;association_foreignkey:Id"`
 	UpdatedAt    *time.Time
@@ -187,10 +189,12 @@ func (m *ChatRoom) ToORM(ctx context.Context) (ChatRoomORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Decode(&ChatRoom{}, m.Id); err != nil {
-		return to, err
-	} else if v != nil {
-		to.Id = v.(string)
+	if m.Id != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.Id = &tempUUID
 	}
 	if m.CreatedAt != nil {
 		var t time.Time
@@ -234,10 +238,8 @@ func (m *ChatRoomORM) ToPB(ctx context.Context) (ChatRoom, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ChatRoom{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
+	if m.Id != nil {
+		to.Id = &types1.UUIDValue{Value: m.Id.String()}
 	}
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
@@ -292,12 +294,12 @@ type ChatRoomWithAfterToPB interface {
 
 type ChatRoomParticipantORM struct {
 	ChatRoom   *ChatRoomORM `gorm:"foreignkey:ChatRoomId;association_foreignkey:Id"`
-	ChatRoomId *string
+	ChatRoomId *go_uuid1.UUID
 	CreatedAt  *time.Time
 	Id         int64 `gorm:"type:serial;primary_key"`
 	LastSeenAt *time.Time
 	Profile    *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	ProfileId  *string
+	ProfileId  *go_uuid1.UUID
 	UpdatedAt  *time.Time
 }
 
@@ -477,7 +479,7 @@ func DefaultReadChatMessage(ctx context.Context, in *ChatMessage, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatMessageORMWithBeforeReadApplyQuery); ok {
@@ -524,7 +526,7 @@ func DefaultDeleteChatMessage(ctx context.Context, in *ChatMessage, db *gorm1.DB
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatMessageORMWithBeforeDelete_); ok {
@@ -554,13 +556,13 @@ func DefaultDeleteChatMessageSet(ctx context.Context, in []*ChatMessage, db *gor
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -864,7 +866,7 @@ func DefaultReadChatRoom(ctx context.Context, in *ChatRoom, db *gorm1.DB) (*Chat
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatRoomORMWithBeforeReadApplyQuery); ok {
@@ -911,7 +913,7 @@ func DefaultDeleteChatRoom(ctx context.Context, in *ChatRoom, db *gorm1.DB) erro
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ChatRoomORMWithBeforeDelete_); ok {
@@ -941,13 +943,13 @@ func DefaultDeleteChatRoomSet(ctx context.Context, in []*ChatRoom, db *gorm1.DB)
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []string{}
+	keys := []*go_uuid1.UUID{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == "" {
+		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -991,11 +993,11 @@ func DefaultStrictUpdateChatRoom(ctx context.Context, in *ChatRoom, db *gorm1.DB
 		}
 	}
 	filterParticipants := ChatRoomParticipantORM{}
-	if ormObj.Id == "" {
+	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
 		return nil, errors1.EmptyIdError
 	}
-	filterParticipants.ChatRoomId = new(string)
-	*filterParticipants.ChatRoomId = ormObj.Id
+	filterParticipants.ChatRoomId = new(go_uuid1.UUID)
+	*filterParticipants.ChatRoomId = *ormObj.Id
 	if err = db.Where(filterParticipants).Delete(ChatRoomParticipantORM{}).Error; err != nil {
 		return nil, err
 	}
