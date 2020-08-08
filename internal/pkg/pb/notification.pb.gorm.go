@@ -15,9 +15,10 @@ import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import trace1 "go.opencensus.io/trace"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -37,7 +38,7 @@ type NotificationSettingORM struct {
 	CronJournalReminder   string
 	EnableJournalReminder bool
 	EnableNotifications   bool
-	Id                    int64 `gorm:"type:serial;primary_key"`
+	Id                    uint64 `gorm:"type:serial;primary_key"`
 	UpdatedAt             *time.Time
 }
 
@@ -56,11 +57,7 @@ func (m *NotificationSetting) ToORM(ctx context.Context) (NotificationSettingORM
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&NotificationSetting{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -99,11 +96,7 @@ func (m *NotificationSettingORM) ToPB(ctx context.Context) (NotificationSetting,
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&NotificationSetting{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -150,7 +143,7 @@ type NotificationDeviceORM struct {
 	AccountID   string
 	CreatedAt   *time.Time
 	DeviceToken string `gorm:"unique"`
-	Id          int64  `gorm:"type:serial;primary_key;not null"`
+	Id          uint64 `gorm:"type:serial;primary_key"`
 	UpdatedAt   *time.Time
 }
 
@@ -169,11 +162,7 @@ func (m *NotificationDevice) ToORM(ctx context.Context) (NotificationDeviceORM, 
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&NotificationDevice{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -210,11 +199,7 @@ func (m *NotificationDeviceORM) ToPB(ctx context.Context) (NotificationDevice, e
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&NotificationDevice{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -374,7 +359,7 @@ func DefaultDeleteNotificationSettingSet(ctx context.Context, in []*Notification
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -748,7 +733,7 @@ func DefaultDeleteNotificationDeviceSet(ctx context.Context, in []*NotificationD
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -1168,25 +1153,63 @@ type NotificationDevicesDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *NotificationDevicesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("NotificationDevicesDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *NotificationDevicesDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *NotificationDevicesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // Create ...
 func (m *NotificationDevicesDefaultServer) Create(ctx context.Context, in *CreateNotificationDeviceRequest) (*CreateNotificationDeviceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Create")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(NotificationDevicesNotificationDeviceWithBeforeCreate); ok {
 		var err error
 		if db, err = custom.BeforeCreate(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateNotificationDevice(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateNotificationDeviceResponse{Result: res}
 	if custom, ok := interface{}(in).(NotificationDevicesNotificationDeviceWithAfterCreate); ok {
 		var err error
 		if err = custom.AfterCreate(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }

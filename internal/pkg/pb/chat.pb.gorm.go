@@ -16,9 +16,10 @@ import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import trace1 "go.opencensus.io/trace"
 import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
@@ -86,14 +87,6 @@ func (m *ChatMessage) ToORM(ctx context.Context) (ChatMessageORM, error) {
 		}
 		to.Author = &tempAuthor
 	}
-	if m.AuthorId != nil {
-		if v, err := resource1.Decode(&ChatRoomParticipant{}, m.AuthorId); err != nil {
-			return to, err
-		} else if v != nil {
-			vv := v.(go_uuid1.UUID)
-			to.AuthorId = &vv
-		}
-	}
 	if posthook, ok := interface{}(m).(ChatMessageWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -130,13 +123,6 @@ func (m *ChatMessageORM) ToPB(ctx context.Context) (ChatMessage, error) {
 			return to, err
 		}
 		to.Author = &tempAuthor
-	}
-	if m.AuthorId != nil {
-		if v, err := resource1.Encode(&ChatRoomParticipant{}, *m.AuthorId); err != nil {
-			return to, err
-		} else {
-			to.AuthorId = v
-		}
 	}
 	if posthook, ok := interface{}(m).(ChatMessageWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -755,10 +741,6 @@ func DefaultApplyFieldMaskChatMessage(ctx context.Context, patchee *ChatMessage,
 		if f == prefix+"Author" {
 			updatedAuthor = true
 			patchee.Author = patcher.Author
-			continue
-		}
-		if f == prefix+"AuthorId" {
-			patchee.AuthorId = patcher.AuthorId
 			continue
 		}
 		if f == prefix+"Status" {
@@ -1635,25 +1617,63 @@ type ChatRoomsDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *ChatRoomsDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("ChatRoomsDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *ChatRoomsDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *ChatRoomsDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // List ...
 func (m *ChatRoomsDefaultServer) List(ctx context.Context, in *ListChatRoomRequest) (*ListChatRoomResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "List")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ChatRoomsChatRoomWithBeforeList); ok {
 		var err error
 		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListChatRoom(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListChatRoomResponse{Results: res}
 	if custom, ok := interface{}(in).(ChatRoomsChatRoomWithAfterList); ok {
 		var err error
 		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }

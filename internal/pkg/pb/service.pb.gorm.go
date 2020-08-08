@@ -17,9 +17,10 @@ import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import trace1 "go.opencensus.io/trace"
 import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
@@ -28,14 +29,13 @@ import _ "github.com/golang/protobuf/ptypes/timestamp"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 import _ "github.com/envoyproxy/protoc-gen-validate/validate"
 import _ "github.com/infobloxopen/atlas-app-toolkit/query"
-import _ "github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = fmt.Errorf
 var _ = math.Inf
 
 type ServiceTagORM struct {
-	Id   int64  `gorm:"type:serial;primary_key"`
+	Id   uint64 `gorm:"type:serial;primary_key"`
 	Key  string `gorm:"unique"`
 	Name string
 }
@@ -55,11 +55,7 @@ func (m *ServiceTag) ToORM(ctx context.Context) (ServiceTagORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&ServiceTag{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	to.Key = m.Key
 	to.Name = m.Name
 	if posthook, ok := interface{}(m).(ServiceTagWithAfterToORM); ok {
@@ -78,11 +74,7 @@ func (m *ServiceTagORM) ToPB(ctx context.Context) (ServiceTag, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceTag{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	to.Key = m.Key
 	to.Name = m.Name
 	if posthook, ok := interface{}(m).(ServiceTagWithAfterToPB); ok {
@@ -116,7 +108,7 @@ type ServiceTagWithAfterToPB interface {
 
 type ServiceORM struct {
 	CreatedAt *time.Time
-	Id        int64 `gorm:"type:serial;primary_key"`
+	Id        uint64 `gorm:"type:serial;primary_key"`
 	Name      string
 	Tags      []*ServiceTagORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:service_service_tags;jointable_foreignkey:service_id;association_jointable_foreignkey:service_tag_id"`
 	Type      int32
@@ -138,11 +130,7 @@ func (m *Service) ToORM(ctx context.Context) (ServiceORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&Service{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -186,11 +174,7 @@ func (m *ServiceORM) ToPB(ctx context.Context) (Service, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&Service{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -252,7 +236,7 @@ type ServiceOfferORM struct {
 	Price             float32
 	Provider          *ServiceProviderORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Service           *ServiceORM         `gorm:"foreignkey:ServiceId;association_foreignkey:Id"`
-	ServiceId         *int64
+	ServiceId         *uint64
 	ServiceProviderId *go_uuid1.UUID
 	Title             string
 	UpdatedAt         *time.Time
@@ -396,7 +380,7 @@ type ServiceEmploymentORM struct {
 	CreatedAt         *time.Time
 	Email             string
 	FirstName         string
-	Id                int64 `gorm:"type:serial;primary_key"`
+	Id                uint64 `gorm:"type:serial;primary_key"`
 	LastName          string
 	Phone             string
 	ServiceProviderId *go_uuid1.UUID
@@ -418,11 +402,7 @@ func (m *ServiceEmployment) ToORM(ctx context.Context) (ServiceEmploymentORM, er
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&ServiceEmployment{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -442,6 +422,13 @@ func (m *ServiceEmployment) ToORM(ctx context.Context) (ServiceEmploymentORM, er
 	to.Email = m.Email
 	to.Phone = m.Phone
 	to.CanBeContacted = m.CanBeContacted
+	if m.ServiceProviderId != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.ServiceProviderId.Value)
+		if uErr != nil {
+			return to, uErr
+		}
+		to.ServiceProviderId = &tempUUID
+	}
 	accountID, err := auth1.GetAccountID(ctx, nil)
 	if err != nil {
 		return to, err
@@ -463,11 +450,7 @@ func (m *ServiceEmploymentORM) ToPB(ctx context.Context) (ServiceEmployment, err
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceEmployment{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -483,6 +466,9 @@ func (m *ServiceEmploymentORM) ToPB(ctx context.Context) (ServiceEmployment, err
 	to.Email = m.Email
 	to.Phone = m.Phone
 	to.CanBeContacted = m.CanBeContacted
+	if m.ServiceProviderId != nil {
+		to.ServiceProviderId = &types1.UUIDValue{Value: m.ServiceProviderId.String()}
+	}
 	if posthook, ok := interface{}(m).(ServiceEmploymentWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -517,7 +503,7 @@ type ServiceDetailsORM struct {
 	Address           string
 	CreatedAt         *time.Time
 	Email             string
-	Id                int64 `gorm:"type:serial;primary_key"`
+	Id                uint64 `gorm:"type:serial;primary_key"`
 	LogoUrl           string
 	Name              string
 	Phone             string
@@ -540,11 +526,7 @@ func (m *ServiceDetails) ToORM(ctx context.Context) (ServiceDetailsORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&ServiceDetails{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -585,11 +567,7 @@ func (m *ServiceDetailsORM) ToPB(ctx context.Context) (ServiceDetails, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceDetails{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -1101,7 +1079,7 @@ type ServiceSessionEvaluationORM struct {
 	AccountID          string
 	Comment            string
 	CreatedAt          *time.Time
-	Id                 int64 `gorm:"type:serial;primary_key"`
+	Id                 uint64 `gorm:"type:serial;primary_key"`
 	RecommendationRate float64
 	ServiceSessionId   *go_uuid1.UUID
 	Session            *ServiceSessionORM `gorm:"foreignkey:ServiceSessionEvaluationId;association_foreignkey:Id"`
@@ -1123,11 +1101,7 @@ func (m *ServiceSessionEvaluation) ToORM(ctx context.Context) (ServiceSessionEva
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&ServiceSessionEvaluation{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -1172,11 +1146,7 @@ func (m *ServiceSessionEvaluationORM) ToPB(ctx context.Context) (ServiceSessionE
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&ServiceSessionEvaluation{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -1235,7 +1205,7 @@ type ServiceSessionORM struct {
 	Offer                      *ServiceOfferORM         `gorm:"foreignkey:ServiceOfferId;association_foreignkey:Id"`
 	ScheduledAt                *time.Time
 	ServiceOfferId             *go_uuid1.UUID
-	ServiceSessionEvaluationId *int64
+	ServiceSessionEvaluationId *uint64
 	ServiceSessionNoteId       *go_uuid1.UUID
 	UpdatedAt                  *time.Time
 }
@@ -1665,7 +1635,7 @@ func DefaultDeleteServiceTagSet(ctx context.Context, in []*ServiceTag, db *gorm1
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -2018,7 +1988,7 @@ func DefaultDeleteServiceSet(ctx context.Context, in []*Service, db *gorm1.DB) e
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -2800,7 +2770,7 @@ func DefaultDeleteServiceEmploymentSet(ctx context.Context, in []*ServiceEmploym
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -3003,6 +2973,10 @@ func DefaultApplyFieldMaskServiceEmployment(ctx context.Context, patchee *Servic
 			patchee.CanBeContacted = patcher.CanBeContacted
 			continue
 		}
+		if f == prefix+"ServiceProviderId" {
+			patchee.ServiceProviderId = patcher.ServiceProviderId
+			continue
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -3182,7 +3156,7 @@ func DefaultDeleteServiceDetailsSet(ctx context.Context, in []*ServiceDetails, d
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -4785,7 +4759,7 @@ func DefaultDeleteServiceSessionEvaluationSet(ctx context.Context, in []*Service
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -4847,7 +4821,7 @@ func DefaultStrictUpdateServiceSessionEvaluation(ctx context.Context, in *Servic
 	if ormObj.Id == 0 {
 		return nil, errors1.EmptyIdError
 	}
-	filterSession.ServiceSessionEvaluationId = new(int64)
+	filterSession.ServiceSessionEvaluationId = new(uint64)
 	*filterSession.ServiceSessionEvaluationId = ormObj.Id
 	if err = db.Where(filterSession).Delete(ServiceSessionORM{}).Error; err != nil {
 		return nil, err
@@ -5885,25 +5859,63 @@ type ServicesDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *ServicesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("ServicesDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *ServicesDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *ServicesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // ListService ...
 func (m *ServicesDefaultServer) ListService(ctx context.Context, in *ListServiceRequest) (*ListServiceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListService")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceWithBeforeListService); ok {
 		var err error
 		if db, err = custom.BeforeListService(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListService(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceWithAfterListService); ok {
 		var err error
 		if err = custom.AfterListService(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -5920,23 +5932,32 @@ type ServicesServiceWithAfterListService interface {
 
 // CreateService ...
 func (m *ServicesDefaultServer) CreateService(ctx context.Context, in *CreateServiceRequest) (*CreateServiceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateService")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceWithBeforeCreateService); ok {
 		var err error
 		if db, err = custom.BeforeCreateService(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateService(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceWithAfterCreateService); ok {
 		var err error
 		if err = custom.AfterCreateService(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -5953,23 +5974,32 @@ type ServicesServiceWithAfterCreateService interface {
 
 // ReadService ...
 func (m *ServicesDefaultServer) ReadService(ctx context.Context, in *ReadServiceRequest) (*ReadServiceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadService")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceWithBeforeReadService); ok {
 		var err error
 		if db, err = custom.BeforeReadService(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadService(ctx, &Service{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceWithAfterReadService); ok {
 		var err error
 		if err = custom.AfterReadService(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -5986,25 +6016,34 @@ type ServicesServiceWithAfterReadService interface {
 
 // UpdateService ...
 func (m *ServicesDefaultServer) UpdateService(ctx context.Context, in *UpdateServiceRequest) (*UpdateServiceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateService")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *Service
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceWithBeforeUpdateService); ok {
 		var err error
 		if db, err = custom.BeforeUpdateService(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateService(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceWithAfterUpdateService); ok {
 		var err error
 		if err = custom.AfterUpdateService(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6021,23 +6060,32 @@ type ServicesServiceWithAfterUpdateService interface {
 
 // DeleteService ...
 func (m *ServicesDefaultServer) DeleteService(ctx context.Context, in *DeleteServiceRequest) (*DeleteServiceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteService")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceWithBeforeDeleteService); ok {
 		var err error
 		if db, err = custom.BeforeDeleteService(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteService(ctx, &Service{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceWithAfterDeleteService); ok {
 		var err error
 		if err = custom.AfterDeleteService(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6054,23 +6102,32 @@ type ServicesServiceWithAfterDeleteService interface {
 
 // ListServiceSession ...
 func (m *ServicesDefaultServer) ListServiceSession(ctx context.Context, in *ListServiceSessionRequest) (*ListServiceSessionResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceSession")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithBeforeListServiceSession); ok {
 		var err error
 		if db, err = custom.BeforeListServiceSession(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceSession(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceSessionResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithAfterListServiceSession); ok {
 		var err error
 		if err = custom.AfterListServiceSession(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6087,23 +6144,32 @@ type ServicesServiceSessionWithAfterListServiceSession interface {
 
 // CreateServiceSession ...
 func (m *ServicesDefaultServer) CreateServiceSession(ctx context.Context, in *CreateServiceSessionRequest) (*CreateServiceSessionResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceSession")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithBeforeCreateServiceSession); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceSession(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceSession(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceSessionResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithAfterCreateServiceSession); ok {
 		var err error
 		if err = custom.AfterCreateServiceSession(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6120,23 +6186,32 @@ type ServicesServiceSessionWithAfterCreateServiceSession interface {
 
 // ReadServiceSession ...
 func (m *ServicesDefaultServer) ReadServiceSession(ctx context.Context, in *ReadServiceSessionRequest) (*ReadServiceSessionResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceSession")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithBeforeReadServiceSession); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceSession(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceSession(ctx, &ServiceSession{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceSessionResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithAfterReadServiceSession); ok {
 		var err error
 		if err = custom.AfterReadServiceSession(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6153,25 +6228,34 @@ type ServicesServiceSessionWithAfterReadServiceSession interface {
 
 // UpdateServiceSession ...
 func (m *ServicesDefaultServer) UpdateServiceSession(ctx context.Context, in *UpdateServiceSessionRequest) (*UpdateServiceSessionResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceSession")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceSession
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithBeforeUpdateServiceSession); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceSession(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceSession(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceSessionResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithAfterUpdateServiceSession); ok {
 		var err error
 		if err = custom.AfterUpdateServiceSession(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6188,23 +6272,32 @@ type ServicesServiceSessionWithAfterUpdateServiceSession interface {
 
 // DeleteServiceSession ...
 func (m *ServicesDefaultServer) DeleteServiceSession(ctx context.Context, in *DeleteServiceSessionRequest) (*DeleteServiceSessionResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceSession")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithBeforeDeleteServiceSession); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceSession(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceSession(ctx, &ServiceSession{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceSessionResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceSessionWithAfterDeleteServiceSession); ok {
 		var err error
 		if err = custom.AfterDeleteServiceSession(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6221,23 +6314,32 @@ type ServicesServiceSessionWithAfterDeleteServiceSession interface {
 
 // ListServiceTag ...
 func (m *ServicesDefaultServer) ListServiceTag(ctx context.Context, in *ListServiceTagRequest) (*ListServiceTagResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceTag")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceTagWithBeforeListServiceTag); ok {
 		var err error
 		if db, err = custom.BeforeListServiceTag(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceTag(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceTagResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceTagWithAfterListServiceTag); ok {
 		var err error
 		if err = custom.AfterListServiceTag(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6254,23 +6356,32 @@ type ServicesServiceTagWithAfterListServiceTag interface {
 
 // CreateServiceTag ...
 func (m *ServicesDefaultServer) CreateServiceTag(ctx context.Context, in *CreateServiceTagRequest) (*CreateServiceTagResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceTag")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceTagWithBeforeCreateServiceTag); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceTag(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceTag(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceTagResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceTagWithAfterCreateServiceTag); ok {
 		var err error
 		if err = custom.AfterCreateServiceTag(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6287,23 +6398,32 @@ type ServicesServiceTagWithAfterCreateServiceTag interface {
 
 // ReadServiceTag ...
 func (m *ServicesDefaultServer) ReadServiceTag(ctx context.Context, in *ReadServiceTagRequest) (*ReadServiceTagResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceTag")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceTagWithBeforeReadServiceTag); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceTag(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceTag(ctx, &ServiceTag{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceTagResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceTagWithAfterReadServiceTag); ok {
 		var err error
 		if err = custom.AfterReadServiceTag(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6320,25 +6440,34 @@ type ServicesServiceTagWithAfterReadServiceTag interface {
 
 // UpdateServiceTag ...
 func (m *ServicesDefaultServer) UpdateServiceTag(ctx context.Context, in *UpdateServiceTagRequest) (*UpdateServiceTagResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceTag")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceTag
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceTagWithBeforeUpdateServiceTag); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceTag(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceTag(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceTagResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceTagWithAfterUpdateServiceTag); ok {
 		var err error
 		if err = custom.AfterUpdateServiceTag(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6355,23 +6484,32 @@ type ServicesServiceTagWithAfterUpdateServiceTag interface {
 
 // DeleteServiceTag ...
 func (m *ServicesDefaultServer) DeleteServiceTag(ctx context.Context, in *DeleteServiceTagRequest) (*DeleteServiceTagResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceTag")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceTagWithBeforeDeleteServiceTag); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceTag(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceTag(ctx, &ServiceTag{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceTagResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceTagWithAfterDeleteServiceTag); ok {
 		var err error
 		if err = custom.AfterDeleteServiceTag(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6388,23 +6526,32 @@ type ServicesServiceTagWithAfterDeleteServiceTag interface {
 
 // ListServiceOffer ...
 func (m *ServicesDefaultServer) ListServiceOffer(ctx context.Context, in *ListServiceOfferRequest) (*ListServiceOfferResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceOffer")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithBeforeListServiceOffer); ok {
 		var err error
 		if db, err = custom.BeforeListServiceOffer(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceOffer(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceOfferResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithAfterListServiceOffer); ok {
 		var err error
 		if err = custom.AfterListServiceOffer(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6421,23 +6568,32 @@ type ServicesServiceOfferWithAfterListServiceOffer interface {
 
 // CreateServiceOffer ...
 func (m *ServicesDefaultServer) CreateServiceOffer(ctx context.Context, in *CreateServiceOfferRequest) (*CreateServiceOfferResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceOffer")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithBeforeCreateServiceOffer); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceOffer(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceOffer(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceOfferResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithAfterCreateServiceOffer); ok {
 		var err error
 		if err = custom.AfterCreateServiceOffer(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6454,23 +6610,32 @@ type ServicesServiceOfferWithAfterCreateServiceOffer interface {
 
 // ReadServiceOffer ...
 func (m *ServicesDefaultServer) ReadServiceOffer(ctx context.Context, in *ReadServiceOfferRequest) (*ReadServiceOfferResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceOffer")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithBeforeReadServiceOffer); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceOffer(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceOffer(ctx, &ServiceOffer{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceOfferResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithAfterReadServiceOffer); ok {
 		var err error
 		if err = custom.AfterReadServiceOffer(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6487,25 +6652,34 @@ type ServicesServiceOfferWithAfterReadServiceOffer interface {
 
 // UpdateServiceOffer ...
 func (m *ServicesDefaultServer) UpdateServiceOffer(ctx context.Context, in *UpdateServiceOfferRequest) (*UpdateServiceOfferResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceOffer")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceOffer
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithBeforeUpdateServiceOffer); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceOffer(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceOffer(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceOfferResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithAfterUpdateServiceOffer); ok {
 		var err error
 		if err = custom.AfterUpdateServiceOffer(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6522,23 +6696,32 @@ type ServicesServiceOfferWithAfterUpdateServiceOffer interface {
 
 // DeleteServiceOffer ...
 func (m *ServicesDefaultServer) DeleteServiceOffer(ctx context.Context, in *DeleteServiceOfferRequest) (*DeleteServiceOfferResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceOffer")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithBeforeDeleteServiceOffer); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceOffer(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceOffer(ctx, &ServiceOffer{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceOfferResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceOfferWithAfterDeleteServiceOffer); ok {
 		var err error
 		if err = custom.AfterDeleteServiceOffer(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6555,23 +6738,32 @@ type ServicesServiceOfferWithAfterDeleteServiceOffer interface {
 
 // ListServiceEmployment ...
 func (m *ServicesDefaultServer) ListServiceEmployment(ctx context.Context, in *ListServiceEmploymentRequest) (*ListServiceEmploymentResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceEmployment")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeListServiceEmployment); ok {
 		var err error
 		if db, err = custom.BeforeListServiceEmployment(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceEmployment(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceEmploymentResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterListServiceEmployment); ok {
 		var err error
 		if err = custom.AfterListServiceEmployment(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6588,23 +6780,32 @@ type ServicesServiceEmploymentWithAfterListServiceEmployment interface {
 
 // CreateServiceEmployment ...
 func (m *ServicesDefaultServer) CreateServiceEmployment(ctx context.Context, in *CreateServiceEmploymentRequest) (*CreateServiceEmploymentResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceEmployment")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeCreateServiceEmployment); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceEmployment(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceEmployment(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceEmploymentResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterCreateServiceEmployment); ok {
 		var err error
 		if err = custom.AfterCreateServiceEmployment(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6621,23 +6822,32 @@ type ServicesServiceEmploymentWithAfterCreateServiceEmployment interface {
 
 // ReadServiceEmployment ...
 func (m *ServicesDefaultServer) ReadServiceEmployment(ctx context.Context, in *ReadServiceEmploymentRequest) (*ReadServiceEmploymentResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceEmployment")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeReadServiceEmployment); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceEmployment(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceEmployment(ctx, &ServiceEmployment{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceEmploymentResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterReadServiceEmployment); ok {
 		var err error
 		if err = custom.AfterReadServiceEmployment(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6654,25 +6864,34 @@ type ServicesServiceEmploymentWithAfterReadServiceEmployment interface {
 
 // UpdateServiceEmployment ...
 func (m *ServicesDefaultServer) UpdateServiceEmployment(ctx context.Context, in *UpdateServiceEmploymentRequest) (*UpdateServiceEmploymentResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceEmployment")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceEmployment
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeUpdateServiceEmployment); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceEmployment(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceEmployment(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceEmploymentResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterUpdateServiceEmployment); ok {
 		var err error
 		if err = custom.AfterUpdateServiceEmployment(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6689,23 +6908,32 @@ type ServicesServiceEmploymentWithAfterUpdateServiceEmployment interface {
 
 // DeleteServiceEmployment ...
 func (m *ServicesDefaultServer) DeleteServiceEmployment(ctx context.Context, in *DeleteServiceEmploymentRequest) (*DeleteServiceEmploymentResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceEmployment")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithBeforeDeleteServiceEmployment); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceEmployment(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceEmployment(ctx, &ServiceEmployment{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceEmploymentResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceEmploymentWithAfterDeleteServiceEmployment); ok {
 		var err error
 		if err = custom.AfterDeleteServiceEmployment(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6722,23 +6950,32 @@ type ServicesServiceEmploymentWithAfterDeleteServiceEmployment interface {
 
 // ListServiceDetails ...
 func (m *ServicesDefaultServer) ListServiceDetails(ctx context.Context, in *ListServiceDetailsRequest) (*ListServiceDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceDetails")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeListServiceDetails); ok {
 		var err error
 		if db, err = custom.BeforeListServiceDetails(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceDetails(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceDetailsResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterListServiceDetails); ok {
 		var err error
 		if err = custom.AfterListServiceDetails(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6755,23 +6992,32 @@ type ServicesServiceDetailsWithAfterListServiceDetails interface {
 
 // CreateServiceDetails ...
 func (m *ServicesDefaultServer) CreateServiceDetails(ctx context.Context, in *CreateServiceDetailsRequest) (*CreateServiceDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceDetails")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeCreateServiceDetails); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceDetails(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceDetails(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceDetailsResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterCreateServiceDetails); ok {
 		var err error
 		if err = custom.AfterCreateServiceDetails(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6788,23 +7034,32 @@ type ServicesServiceDetailsWithAfterCreateServiceDetails interface {
 
 // ReadServiceDetails ...
 func (m *ServicesDefaultServer) ReadServiceDetails(ctx context.Context, in *ReadServiceDetailsRequest) (*ReadServiceDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceDetails")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeReadServiceDetails); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceDetails(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceDetails(ctx, &ServiceDetails{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceDetailsResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterReadServiceDetails); ok {
 		var err error
 		if err = custom.AfterReadServiceDetails(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6821,25 +7076,34 @@ type ServicesServiceDetailsWithAfterReadServiceDetails interface {
 
 // UpdateServiceDetails ...
 func (m *ServicesDefaultServer) UpdateServiceDetails(ctx context.Context, in *UpdateServiceDetailsRequest) (*UpdateServiceDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceDetails")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceDetails
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeUpdateServiceDetails); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceDetails(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceDetails(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceDetailsResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterUpdateServiceDetails); ok {
 		var err error
 		if err = custom.AfterUpdateServiceDetails(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6856,23 +7120,32 @@ type ServicesServiceDetailsWithAfterUpdateServiceDetails interface {
 
 // DeleteServiceDetails ...
 func (m *ServicesDefaultServer) DeleteServiceDetails(ctx context.Context, in *DeleteServiceDetailsRequest) (*DeleteServiceDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceDetails")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithBeforeDeleteServiceDetails); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceDetails(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceDetails(ctx, &ServiceDetails{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceDetailsResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceDetailsWithAfterDeleteServiceDetails); ok {
 		var err error
 		if err = custom.AfterDeleteServiceDetails(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6889,23 +7162,32 @@ type ServicesServiceDetailsWithAfterDeleteServiceDetails interface {
 
 // ListServiceApplication ...
 func (m *ServicesDefaultServer) ListServiceApplication(ctx context.Context, in *ListServiceApplicationRequest) (*ListServiceApplicationResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceApplication")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithBeforeListServiceApplication); ok {
 		var err error
 		if db, err = custom.BeforeListServiceApplication(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceApplication(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceApplicationResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithAfterListServiceApplication); ok {
 		var err error
 		if err = custom.AfterListServiceApplication(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6922,23 +7204,32 @@ type ServicesServiceApplicationWithAfterListServiceApplication interface {
 
 // CreateServiceApplication ...
 func (m *ServicesDefaultServer) CreateServiceApplication(ctx context.Context, in *CreateServiceApplicationRequest) (*CreateServiceApplicationResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceApplication")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithBeforeCreateServiceApplication); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceApplication(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceApplication(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceApplicationResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithAfterCreateServiceApplication); ok {
 		var err error
 		if err = custom.AfterCreateServiceApplication(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6955,23 +7246,32 @@ type ServicesServiceApplicationWithAfterCreateServiceApplication interface {
 
 // ReadServiceApplication ...
 func (m *ServicesDefaultServer) ReadServiceApplication(ctx context.Context, in *ReadServiceApplicationRequest) (*ReadServiceApplicationResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceApplication")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithBeforeReadServiceApplication); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceApplication(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceApplication(ctx, &ServiceApplication{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceApplicationResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithAfterReadServiceApplication); ok {
 		var err error
 		if err = custom.AfterReadServiceApplication(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -6988,25 +7288,34 @@ type ServicesServiceApplicationWithAfterReadServiceApplication interface {
 
 // UpdateServiceApplication ...
 func (m *ServicesDefaultServer) UpdateServiceApplication(ctx context.Context, in *UpdateServiceApplicationRequest) (*UpdateServiceApplicationResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceApplication")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceApplication
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithBeforeUpdateServiceApplication); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceApplication(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceApplication(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceApplicationResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithAfterUpdateServiceApplication); ok {
 		var err error
 		if err = custom.AfterUpdateServiceApplication(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7023,23 +7332,32 @@ type ServicesServiceApplicationWithAfterUpdateServiceApplication interface {
 
 // DeleteServiceApplication ...
 func (m *ServicesDefaultServer) DeleteServiceApplication(ctx context.Context, in *DeleteServiceApplicationRequest) (*DeleteServiceApplicationResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceApplication")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithBeforeDeleteServiceApplication); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceApplication(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceApplication(ctx, &ServiceApplication{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceApplicationResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceApplicationWithAfterDeleteServiceApplication); ok {
 		var err error
 		if err = custom.AfterDeleteServiceApplication(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7056,23 +7374,32 @@ type ServicesServiceApplicationWithAfterDeleteServiceApplication interface {
 
 // ListServiceProvider ...
 func (m *ServicesDefaultServer) ListServiceProvider(ctx context.Context, in *ListServiceProviderRequest) (*ListServiceProviderResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListServiceProvider")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithBeforeListServiceProvider); ok {
 		var err error
 		if db, err = custom.BeforeListServiceProvider(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListServiceProvider(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListServiceProviderResponse{Results: res}
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithAfterListServiceProvider); ok {
 		var err error
 		if err = custom.AfterListServiceProvider(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7089,23 +7416,32 @@ type ServicesServiceProviderWithAfterListServiceProvider interface {
 
 // CreateServiceProvider ...
 func (m *ServicesDefaultServer) CreateServiceProvider(ctx context.Context, in *CreateServiceProviderRequest) (*CreateServiceProviderResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateServiceProvider")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithBeforeCreateServiceProvider); ok {
 		var err error
 		if db, err = custom.BeforeCreateServiceProvider(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateServiceProvider(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateServiceProviderResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithAfterCreateServiceProvider); ok {
 		var err error
 		if err = custom.AfterCreateServiceProvider(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7122,23 +7458,32 @@ type ServicesServiceProviderWithAfterCreateServiceProvider interface {
 
 // ReadServiceProvider ...
 func (m *ServicesDefaultServer) ReadServiceProvider(ctx context.Context, in *ReadServiceProviderRequest) (*ReadServiceProviderResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadServiceProvider")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithBeforeReadServiceProvider); ok {
 		var err error
 		if db, err = custom.BeforeReadServiceProvider(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadServiceProvider(ctx, &ServiceProvider{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadServiceProviderResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithAfterReadServiceProvider); ok {
 		var err error
 		if err = custom.AfterReadServiceProvider(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7155,25 +7500,34 @@ type ServicesServiceProviderWithAfterReadServiceProvider interface {
 
 // UpdateServiceProvider ...
 func (m *ServicesDefaultServer) UpdateServiceProvider(ctx context.Context, in *UpdateServiceProviderRequest) (*UpdateServiceProviderResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateServiceProvider")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *ServiceProvider
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithBeforeUpdateServiceProvider); ok {
 		var err error
 		if db, err = custom.BeforeUpdateServiceProvider(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateServiceProvider(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateServiceProviderResponse{Result: res}
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithAfterUpdateServiceProvider); ok {
 		var err error
 		if err = custom.AfterUpdateServiceProvider(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -7190,23 +7544,32 @@ type ServicesServiceProviderWithAfterUpdateServiceProvider interface {
 
 // DeleteServiceProvider ...
 func (m *ServicesDefaultServer) DeleteServiceProvider(ctx context.Context, in *DeleteServiceProviderRequest) (*DeleteServiceProviderResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteServiceProvider")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithBeforeDeleteServiceProvider); ok {
 		var err error
 		if db, err = custom.BeforeDeleteServiceProvider(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteServiceProvider(ctx, &ServiceProvider{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteServiceProviderResponse{}
 	if custom, ok := interface{}(in).(ServicesServiceProviderWithAfterDeleteServiceProvider); ok {
 		var err error
 		if err = custom.AfterDeleteServiceProvider(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }

@@ -42,15 +42,7 @@ func (m *HealthMenstruationPersonalInfo) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return HealthMenstruationPersonalInfoValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -144,15 +136,7 @@ func (m *HealthMenstruationDailyEntry) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return HealthMenstruationDailyEntryValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -416,15 +400,7 @@ func (m *ReadHealthMenstruationDailyEntryRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ReadHealthMenstruationDailyEntryRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }
@@ -728,15 +704,7 @@ func (m *DeleteHealthMenstruationDailyEntryRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DeleteHealthMenstruationDailyEntryRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }
@@ -1222,15 +1190,7 @@ func (m *ReadHealthMenstruationPersonalInfoRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ReadHealthMenstruationPersonalInfoRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }
@@ -1535,15 +1495,7 @@ func (m *DeleteHealthMenstruationPersonalInfoRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DeleteHealthMenstruationPersonalInfoRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }

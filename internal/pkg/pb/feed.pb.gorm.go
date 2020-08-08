@@ -15,9 +15,11 @@ import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import trace1 "go.opencensus.io/trace"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -1972,25 +1974,63 @@ type FeedArticlesDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *FeedArticlesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("FeedArticlesDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *FeedArticlesDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *FeedArticlesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // List ...
 func (m *FeedArticlesDefaultServer) List(ctx context.Context, in *ListFeedArticleRequest) (*ListFeedArticleResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "List")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(FeedArticlesFeedArticleWithBeforeList); ok {
 		var err error
 		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListFeedArticle(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListFeedArticleResponse{Results: res}
 	if custom, ok := interface{}(in).(FeedArticlesFeedArticleWithAfterList); ok {
 		var err error
 		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -2008,25 +2048,63 @@ type FeedArticleDetailsDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *FeedArticleDetailsDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("FeedArticleDetailsDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *FeedArticleDetailsDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *FeedArticleDetailsDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // Read ...
 func (m *FeedArticleDetailsDefaultServer) Read(ctx context.Context, in *ReadFeedArticleDetailsRequest) (*ReadFeedArticleDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Read")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(FeedArticleDetailsFeedArticleDetailWithBeforeRead); ok {
 		var err error
 		if db, err = custom.BeforeRead(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadFeedArticleDetail(ctx, &FeedArticleDetail{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadFeedArticleDetailsResponse{Result: res}
 	if custom, ok := interface{}(in).(FeedArticleDetailsFeedArticleDetailWithAfterRead); ok {
 		var err error
 		if err = custom.AfterRead(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }

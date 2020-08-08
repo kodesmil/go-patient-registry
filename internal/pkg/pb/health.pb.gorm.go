@@ -15,9 +15,10 @@ import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
+import trace1 "go.opencensus.io/trace"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -35,7 +36,7 @@ type HealthMenstruationPersonalInfoORM struct {
 	AccountID          string
 	CreatedAt          *time.Time
 	CycleLengthInDays  int32
-	Id                 int64 `gorm:"type:serial;primary_key"`
+	Id                 uint64 `gorm:"type:serial;primary_key"`
 	PeriodLengthInDays int32
 	UpdatedAt          *time.Time
 }
@@ -55,11 +56,7 @@ func (m *HealthMenstruationPersonalInfo) ToORM(ctx context.Context) (HealthMenst
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&HealthMenstruationPersonalInfo{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -97,11 +94,7 @@ func (m *HealthMenstruationPersonalInfoORM) ToPB(ctx context.Context) (HealthMen
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&HealthMenstruationPersonalInfo{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -148,7 +141,7 @@ type HealthMenstruationDailyEntryORM struct {
 	BasedOnPrediction   bool
 	CreatedAt           *time.Time
 	Day                 *time.Time
-	Id                  int64 `gorm:"type:serial;primary_key"`
+	Id                  uint64 `gorm:"type:serial;primary_key"`
 	IntensityPercentage int32
 	Manual              bool
 	Type                int32
@@ -170,11 +163,7 @@ func (m *HealthMenstruationDailyEntry) ToORM(ctx context.Context) (HealthMenstru
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&HealthMenstruationDailyEntry{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -221,11 +210,7 @@ func (m *HealthMenstruationDailyEntryORM) ToPB(ctx context.Context) (HealthMenst
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&HealthMenstruationDailyEntry{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -393,7 +378,7 @@ func DefaultDeleteHealthMenstruationPersonalInfoSet(ctx context.Context, in []*H
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -763,7 +748,7 @@ func DefaultDeleteHealthMenstruationDailyEntrySet(ctx context.Context, in []*Hea
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
@@ -1029,25 +1014,63 @@ type HealthDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *HealthDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("HealthDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *HealthDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *HealthDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // CreateHealthMenstruationDailyEntry ...
 func (m *HealthDefaultServer) CreateHealthMenstruationDailyEntry(ctx context.Context, in *CreateHealthMenstruationDailyEntryRequest) (*CreateHealthMenstruationDailyEntryResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateHealthMenstruationDailyEntry")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithBeforeCreateHealthMenstruationDailyEntry); ok {
 		var err error
 		if db, err = custom.BeforeCreateHealthMenstruationDailyEntry(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateHealthMenstruationDailyEntry(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateHealthMenstruationDailyEntryResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithAfterCreateHealthMenstruationDailyEntry); ok {
 		var err error
 		if err = custom.AfterCreateHealthMenstruationDailyEntry(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1064,23 +1087,32 @@ type HealthHealthMenstruationDailyEntryWithAfterCreateHealthMenstruationDailyEnt
 
 // ReadHealthMenstruationDailyEntry ...
 func (m *HealthDefaultServer) ReadHealthMenstruationDailyEntry(ctx context.Context, in *ReadHealthMenstruationDailyEntryRequest) (*ReadHealthMenstruationDailyEntryResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadHealthMenstruationDailyEntry")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithBeforeReadHealthMenstruationDailyEntry); ok {
 		var err error
 		if db, err = custom.BeforeReadHealthMenstruationDailyEntry(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadHealthMenstruationDailyEntry(ctx, &HealthMenstruationDailyEntry{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadHealthMenstruationDailyEntryResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithAfterReadHealthMenstruationDailyEntry); ok {
 		var err error
 		if err = custom.AfterReadHealthMenstruationDailyEntry(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1097,25 +1129,34 @@ type HealthHealthMenstruationDailyEntryWithAfterReadHealthMenstruationDailyEntry
 
 // UpdateHealthMenstruationDailyEntry ...
 func (m *HealthDefaultServer) UpdateHealthMenstruationDailyEntry(ctx context.Context, in *UpdateHealthMenstruationDailyEntryRequest) (*UpdateHealthMenstruationDailyEntryResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateHealthMenstruationDailyEntry")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *HealthMenstruationDailyEntry
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithBeforeUpdateHealthMenstruationDailyEntry); ok {
 		var err error
 		if db, err = custom.BeforeUpdateHealthMenstruationDailyEntry(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateHealthMenstruationDailyEntry(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateHealthMenstruationDailyEntryResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithAfterUpdateHealthMenstruationDailyEntry); ok {
 		var err error
 		if err = custom.AfterUpdateHealthMenstruationDailyEntry(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1132,23 +1173,32 @@ type HealthHealthMenstruationDailyEntryWithAfterUpdateHealthMenstruationDailyEnt
 
 // DeleteHealthMenstruationDailyEntry ...
 func (m *HealthDefaultServer) DeleteHealthMenstruationDailyEntry(ctx context.Context, in *DeleteHealthMenstruationDailyEntryRequest) (*DeleteHealthMenstruationDailyEntryResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteHealthMenstruationDailyEntry")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithBeforeDeleteHealthMenstruationDailyEntry); ok {
 		var err error
 		if db, err = custom.BeforeDeleteHealthMenstruationDailyEntry(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteHealthMenstruationDailyEntry(ctx, &HealthMenstruationDailyEntry{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteHealthMenstruationDailyEntryResponse{}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithAfterDeleteHealthMenstruationDailyEntry); ok {
 		var err error
 		if err = custom.AfterDeleteHealthMenstruationDailyEntry(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1165,23 +1215,32 @@ type HealthHealthMenstruationDailyEntryWithAfterDeleteHealthMenstruationDailyEnt
 
 // ListHealthMenstruationDailyEntry ...
 func (m *HealthDefaultServer) ListHealthMenstruationDailyEntry(ctx context.Context, in *ListHealthMenstruationDailyEntryRequest) (*ListHealthMenstruationDailyEntryResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListHealthMenstruationDailyEntry")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithBeforeListHealthMenstruationDailyEntry); ok {
 		var err error
 		if db, err = custom.BeforeListHealthMenstruationDailyEntry(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListHealthMenstruationDailyEntry(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListHealthMenstruationDailyEntryResponse{Results: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationDailyEntryWithAfterListHealthMenstruationDailyEntry); ok {
 		var err error
 		if err = custom.AfterListHealthMenstruationDailyEntry(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1198,23 +1257,32 @@ type HealthHealthMenstruationDailyEntryWithAfterListHealthMenstruationDailyEntry
 
 // CreateHealthMenstruationPersonalInfo ...
 func (m *HealthDefaultServer) CreateHealthMenstruationPersonalInfo(ctx context.Context, in *CreateHealthMenstruationPersonalInfoRequest) (*CreateHealthMenstruationPersonalInfoResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateHealthMenstruationPersonalInfo")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithBeforeCreateHealthMenstruationPersonalInfo); ok {
 		var err error
 		if db, err = custom.BeforeCreateHealthMenstruationPersonalInfo(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateHealthMenstruationPersonalInfo(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateHealthMenstruationPersonalInfoResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithAfterCreateHealthMenstruationPersonalInfo); ok {
 		var err error
 		if err = custom.AfterCreateHealthMenstruationPersonalInfo(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1231,23 +1299,32 @@ type HealthHealthMenstruationPersonalInfoWithAfterCreateHealthMenstruationPerson
 
 // ReadHealthMenstruationPersonalInfo ...
 func (m *HealthDefaultServer) ReadHealthMenstruationPersonalInfo(ctx context.Context, in *ReadHealthMenstruationPersonalInfoRequest) (*ReadHealthMenstruationPersonalInfoResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadHealthMenstruationPersonalInfo")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithBeforeReadHealthMenstruationPersonalInfo); ok {
 		var err error
 		if db, err = custom.BeforeReadHealthMenstruationPersonalInfo(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadHealthMenstruationPersonalInfo(ctx, &HealthMenstruationPersonalInfo{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadHealthMenstruationPersonalInfoResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithAfterReadHealthMenstruationPersonalInfo); ok {
 		var err error
 		if err = custom.AfterReadHealthMenstruationPersonalInfo(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1264,25 +1341,34 @@ type HealthHealthMenstruationPersonalInfoWithAfterReadHealthMenstruationPersonal
 
 // UpdateHealthMenstruationPersonalInfo ...
 func (m *HealthDefaultServer) UpdateHealthMenstruationPersonalInfo(ctx context.Context, in *UpdateHealthMenstruationPersonalInfoRequest) (*UpdateHealthMenstruationPersonalInfoResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateHealthMenstruationPersonalInfo")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *HealthMenstruationPersonalInfo
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithBeforeUpdateHealthMenstruationPersonalInfo); ok {
 		var err error
 		if db, err = custom.BeforeUpdateHealthMenstruationPersonalInfo(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateHealthMenstruationPersonalInfo(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateHealthMenstruationPersonalInfoResponse{Result: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithAfterUpdateHealthMenstruationPersonalInfo); ok {
 		var err error
 		if err = custom.AfterUpdateHealthMenstruationPersonalInfo(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1299,23 +1385,32 @@ type HealthHealthMenstruationPersonalInfoWithAfterUpdateHealthMenstruationPerson
 
 // DeleteHealthMenstruationPersonalInfo ...
 func (m *HealthDefaultServer) DeleteHealthMenstruationPersonalInfo(ctx context.Context, in *DeleteHealthMenstruationPersonalInfoRequest) (*DeleteHealthMenstruationPersonalInfoResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteHealthMenstruationPersonalInfo")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithBeforeDeleteHealthMenstruationPersonalInfo); ok {
 		var err error
 		if db, err = custom.BeforeDeleteHealthMenstruationPersonalInfo(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteHealthMenstruationPersonalInfo(ctx, &HealthMenstruationPersonalInfo{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteHealthMenstruationPersonalInfoResponse{}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithAfterDeleteHealthMenstruationPersonalInfo); ok {
 		var err error
 		if err = custom.AfterDeleteHealthMenstruationPersonalInfo(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -1332,23 +1427,32 @@ type HealthHealthMenstruationPersonalInfoWithAfterDeleteHealthMenstruationPerson
 
 // ListHealthMenstruationPersonalInfo ...
 func (m *HealthDefaultServer) ListHealthMenstruationPersonalInfo(ctx context.Context, in *ListHealthMenstruationPersonalInfoRequest) (*ListHealthMenstruationPersonalInfoResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListHealthMenstruationPersonalInfo")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithBeforeListHealthMenstruationPersonalInfo); ok {
 		var err error
 		if db, err = custom.BeforeListHealthMenstruationPersonalInfo(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListHealthMenstruationPersonalInfo(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListHealthMenstruationPersonalInfoResponse{Results: res}
 	if custom, ok := interface{}(in).(HealthHealthMenstruationPersonalInfoWithAfterListHealthMenstruationPersonalInfo); ok {
 		var err error
 		if err = custom.AfterListHealthMenstruationPersonalInfo(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }

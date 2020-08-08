@@ -16,7 +16,6 @@ import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import ptypes1 "github.com/golang/protobuf/ptypes"
-import resource1 "github.com/infobloxopen/atlas-app-toolkit/gorm/resource"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -33,7 +32,7 @@ var _ = math.Inf
 type LogActivityORM struct {
 	AccountID string
 	CreatedAt *time.Time
-	Id        int64 `gorm:"type:serial;primary_key"`
+	Id        uint64 `gorm:"type:serial;primary_key"`
 	Ip        string
 	UpdatedAt *time.Time
 }
@@ -53,11 +52,7 @@ func (m *LogActivity) ToORM(ctx context.Context) (LogActivityORM, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.DecodeInt64(&LogActivity{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -94,11 +89,7 @@ func (m *LogActivityORM) ToPB(ctx context.Context) (LogActivity, error) {
 			return to, err
 		}
 	}
-	if v, err := resource1.Encode(&LogActivity{}, m.Id); err != nil {
-		return to, err
-	} else {
-		to.Id = v
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -258,7 +249,7 @@ func DefaultDeleteLogActivitySet(ctx context.Context, in []*LogActivity, db *gor
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []int64{}
+	keys := []uint64{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {

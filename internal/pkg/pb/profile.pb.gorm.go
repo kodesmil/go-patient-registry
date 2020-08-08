@@ -16,8 +16,10 @@ import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
+import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
+import trace1 "go.opencensus.io/trace"
 import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
@@ -575,25 +577,63 @@ type ProfilesDefaultServer struct {
 	DB *gorm1.DB
 }
 
+func (m *ProfilesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("ProfilesDefaultServer.", methodName))
+	raw, err := json1.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
+	return span, nil
+}
+
+// spanError ...
+func (m *ProfilesDefaultServer) spanError(span *trace1.Span, err error) error {
+	span.SetStatus(trace1.Status{
+		Code:    trace1.StatusCodeUnknown,
+		Message: err.Error(),
+	})
+	return err
+}
+
+// spanResult ...
+func (m *ProfilesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+	raw, err := json1.Marshal(out)
+	if err != nil {
+		return err
+	}
+	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
+	return nil
+}
+
 // Create ...
 func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileRequest) (*CreateProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Create")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeCreate); ok {
 		var err error
 		if db, err = custom.BeforeCreate(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultCreateProfile(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &CreateProfileResponse{Result: res}
 	if custom, ok := interface{}(in).(ProfilesProfileWithAfterCreate); ok {
 		var err error
 		if err = custom.AfterCreate(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -610,23 +650,32 @@ type ProfilesProfileWithAfterCreate interface {
 
 // Read ...
 func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest) (*ReadProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Read")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeRead); ok {
 		var err error
 		if db, err = custom.BeforeRead(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultReadProfile(ctx, &Profile{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ReadProfileResponse{Result: res}
 	if custom, ok := interface{}(in).(ProfilesProfileWithAfterRead); ok {
 		var err error
 		if err = custom.AfterRead(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -643,25 +692,34 @@ type ProfilesProfileWithAfterRead interface {
 
 // Update ...
 func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileRequest) (*UpdateProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Update")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	var err error
 	var res *Profile
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeUpdate); ok {
 		var err error
 		if db, err = custom.BeforeUpdate(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err = DefaultStrictUpdateProfile(ctx, in.GetPayload(), db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &UpdateProfileResponse{Result: res}
 	if custom, ok := interface{}(in).(ProfilesProfileWithAfterUpdate); ok {
 		var err error
 		if err = custom.AfterUpdate(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -678,23 +736,32 @@ type ProfilesProfileWithAfterUpdate interface {
 
 // Delete ...
 func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileRequest) (*DeleteProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "Delete")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeDelete); ok {
 		var err error
 		if db, err = custom.BeforeDelete(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	err := DefaultDeleteProfile(ctx, &Profile{Id: in.GetId()}, db)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &DeleteProfileResponse{}
 	if custom, ok := interface{}(in).(ProfilesProfileWithAfterDelete); ok {
 		var err error
 		if err = custom.AfterDelete(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
@@ -711,23 +778,32 @@ type ProfilesProfileWithAfterDelete interface {
 
 // List ...
 func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest) (*ListProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "List")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
 	db := m.DB
 	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeList); ok {
 		var err error
 		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
 	}
 	res, err := DefaultListProfile(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, err
+		return nil, m.spanError(span, err)
 	}
 	out := &ListProfileResponse{Results: res}
 	if custom, ok := interface{}(in).(ProfilesProfileWithAfterList); ok {
 		var err error
 		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, err
+			return nil, m.spanError(span, err)
 		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
