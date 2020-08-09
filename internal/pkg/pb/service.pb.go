@@ -303,12 +303,13 @@ type ServiceEmployment struct {
 	Id                   uint64               `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	FirstName            string               `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName             string               `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Email                string               `protobuf:"bytes,6,opt,name=email,proto3" json:"email,omitempty"`
-	Phone                string               `protobuf:"bytes,7,opt,name=phone,proto3" json:"phone,omitempty"`
-	CanBeContacted       bool                 `protobuf:"varint,8,opt,name=can_be_contacted,json=canBeContacted,proto3" json:"can_be_contacted,omitempty"`
-	ServiceProviderId    *types.UUIDValue     `protobuf:"bytes,9,opt,name=service_provider_id,json=serviceProviderId,proto3" json:"service_provider_id,omitempty"`
+	ProfileId            string               `protobuf:"bytes,4,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	FirstName            string               `protobuf:"bytes,5,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName             string               `protobuf:"bytes,6,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Email                string               `protobuf:"bytes,7,opt,name=email,proto3" json:"email,omitempty"`
+	Phone                string               `protobuf:"bytes,8,opt,name=phone,proto3" json:"phone,omitempty"`
+	CanBeContacted       bool                 `protobuf:"varint,9,opt,name=can_be_contacted,json=canBeContacted,proto3" json:"can_be_contacted,omitempty"`
+	ServiceProviderId    *types.UUIDValue     `protobuf:"bytes,10,opt,name=service_provider_id,json=serviceProviderId,proto3" json:"service_provider_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -358,6 +359,13 @@ func (m *ServiceEmployment) GetUpdatedAt() *timestamp.Timestamp {
 		return m.UpdatedAt
 	}
 	return nil
+}
+
+func (m *ServiceEmployment) GetProfileId() string {
+	if m != nil {
+		return m.ProfileId
+	}
+	return ""
 }
 
 func (m *ServiceEmployment) GetFirstName() string {
@@ -505,7 +513,7 @@ type ServiceApplication struct {
 	Files                []*ServiceApplicationFile `protobuf:"bytes,5,rep,name=files,proto3" json:"files,omitempty"`
 	AppliedAt            *timestamp.Timestamp      `protobuf:"bytes,6,opt,name=applied_at,json=appliedAt,proto3" json:"applied_at,omitempty"`
 	ApprovedAt           *timestamp.Timestamp      `protobuf:"bytes,7,opt,name=approved_at,json=approvedAt,proto3" json:"approved_at,omitempty"`
-	ApprovedBy           *Profile                  `protobuf:"bytes,8,opt,name=approved_by,json=approvedBy,proto3" json:"approved_by,omitempty"`
+	ReviewerId           *types.UUIDValue          `protobuf:"bytes,8,opt,name=reviewer_id,json=reviewerId,proto3" json:"reviewer_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                  `json:"-"`
 	XXX_unrecognized     []byte                    `json:"-"`
 	XXX_sizecache        int32                     `json:"-"`
@@ -585,9 +593,9 @@ func (m *ServiceApplication) GetApprovedAt() *timestamp.Timestamp {
 	return nil
 }
 
-func (m *ServiceApplication) GetApprovedBy() *Profile {
+func (m *ServiceApplication) GetReviewerId() *types.UUIDValue {
 	if m != nil {
-		return m.ApprovedBy
+		return m.ReviewerId
 	}
 	return nil
 }
@@ -734,6 +742,3254 @@ func (m *ServiceProvider) GetEmployments() []*ServiceEmployment {
 	return nil
 }
 
+type CreateServiceProviderRequest struct {
+	Payload              *ServiceProvider `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *CreateServiceProviderRequest) Reset()         { *m = CreateServiceProviderRequest{} }
+func (m *CreateServiceProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceProviderRequest) ProtoMessage()    {}
+func (*CreateServiceProviderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{8}
+}
+
+func (m *CreateServiceProviderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceProviderRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceProviderRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceProviderRequest.Merge(m, src)
+}
+func (m *CreateServiceProviderRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceProviderRequest.Size(m)
+}
+func (m *CreateServiceProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceProviderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceProviderRequest proto.InternalMessageInfo
+
+func (m *CreateServiceProviderRequest) GetPayload() *ServiceProvider {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceProviderResponse struct {
+	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *CreateServiceProviderResponse) Reset()         { *m = CreateServiceProviderResponse{} }
+func (m *CreateServiceProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceProviderResponse) ProtoMessage()    {}
+func (*CreateServiceProviderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{9}
+}
+
+func (m *CreateServiceProviderResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceProviderResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceProviderResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceProviderResponse.Merge(m, src)
+}
+func (m *CreateServiceProviderResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceProviderResponse.Size(m)
+}
+func (m *CreateServiceProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceProviderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceProviderResponse proto.InternalMessageInfo
+
+func (m *CreateServiceProviderResponse) GetResult() *ServiceProvider {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceProviderRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ReadServiceProviderRequest) Reset()         { *m = ReadServiceProviderRequest{} }
+func (m *ReadServiceProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceProviderRequest) ProtoMessage()    {}
+func (*ReadServiceProviderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{10}
+}
+
+func (m *ReadServiceProviderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceProviderRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceProviderRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceProviderRequest.Merge(m, src)
+}
+func (m *ReadServiceProviderRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceProviderRequest.Size(m)
+}
+func (m *ReadServiceProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceProviderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceProviderRequest proto.InternalMessageInfo
+
+func (m *ReadServiceProviderRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type ReadServiceProviderResponse struct {
+	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ReadServiceProviderResponse) Reset()         { *m = ReadServiceProviderResponse{} }
+func (m *ReadServiceProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceProviderResponse) ProtoMessage()    {}
+func (*ReadServiceProviderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{11}
+}
+
+func (m *ReadServiceProviderResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceProviderResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceProviderResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceProviderResponse.Merge(m, src)
+}
+func (m *ReadServiceProviderResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceProviderResponse.Size(m)
+}
+func (m *ReadServiceProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceProviderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceProviderResponse proto.InternalMessageInfo
+
+func (m *ReadServiceProviderResponse) GetResult() *ServiceProvider {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceProviderRequest struct {
+	Payload              *ServiceProvider `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *UpdateServiceProviderRequest) Reset()         { *m = UpdateServiceProviderRequest{} }
+func (m *UpdateServiceProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceProviderRequest) ProtoMessage()    {}
+func (*UpdateServiceProviderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{12}
+}
+
+func (m *UpdateServiceProviderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceProviderRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceProviderRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceProviderRequest.Merge(m, src)
+}
+func (m *UpdateServiceProviderRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceProviderRequest.Size(m)
+}
+func (m *UpdateServiceProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceProviderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceProviderRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceProviderRequest) GetPayload() *ServiceProvider {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceProviderResponse struct {
+	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *UpdateServiceProviderResponse) Reset()         { *m = UpdateServiceProviderResponse{} }
+func (m *UpdateServiceProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceProviderResponse) ProtoMessage()    {}
+func (*UpdateServiceProviderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{13}
+}
+
+func (m *UpdateServiceProviderResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceProviderResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceProviderResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceProviderResponse.Merge(m, src)
+}
+func (m *UpdateServiceProviderResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceProviderResponse.Size(m)
+}
+func (m *UpdateServiceProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceProviderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceProviderResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceProviderResponse) GetResult() *ServiceProvider {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceProviderRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *DeleteServiceProviderRequest) Reset()         { *m = DeleteServiceProviderRequest{} }
+func (m *DeleteServiceProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceProviderRequest) ProtoMessage()    {}
+func (*DeleteServiceProviderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{14}
+}
+
+func (m *DeleteServiceProviderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceProviderRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceProviderRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceProviderRequest.Merge(m, src)
+}
+func (m *DeleteServiceProviderRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceProviderRequest.Size(m)
+}
+func (m *DeleteServiceProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceProviderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceProviderRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceProviderRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type DeleteServiceProviderResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceProviderResponse) Reset()         { *m = DeleteServiceProviderResponse{} }
+func (m *DeleteServiceProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceProviderResponse) ProtoMessage()    {}
+func (*DeleteServiceProviderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{15}
+}
+
+func (m *DeleteServiceProviderResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceProviderResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceProviderResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceProviderResponse.Merge(m, src)
+}
+func (m *DeleteServiceProviderResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceProviderResponse.Size(m)
+}
+func (m *DeleteServiceProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceProviderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceProviderResponse proto.InternalMessageInfo
+
+type ListServiceProviderRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceProviderRequest) Reset()         { *m = ListServiceProviderRequest{} }
+func (m *ListServiceProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceProviderRequest) ProtoMessage()    {}
+func (*ListServiceProviderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{16}
+}
+
+func (m *ListServiceProviderRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceProviderRequest.Unmarshal(m, b)
+}
+func (m *ListServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceProviderRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceProviderRequest.Merge(m, src)
+}
+func (m *ListServiceProviderRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceProviderRequest.Size(m)
+}
+func (m *ListServiceProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceProviderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceProviderRequest proto.InternalMessageInfo
+
+func (m *ListServiceProviderRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceProviderRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceProviderRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceProviderRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceProviderResponse struct {
+	Results              []*ServiceProvider `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *ListServiceProviderResponse) Reset()         { *m = ListServiceProviderResponse{} }
+func (m *ListServiceProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceProviderResponse) ProtoMessage()    {}
+func (*ListServiceProviderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{17}
+}
+
+func (m *ListServiceProviderResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceProviderResponse.Unmarshal(m, b)
+}
+func (m *ListServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceProviderResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceProviderResponse.Merge(m, src)
+}
+func (m *ListServiceProviderResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceProviderResponse.Size(m)
+}
+func (m *ListServiceProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceProviderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceProviderResponse proto.InternalMessageInfo
+
+func (m *ListServiceProviderResponse) GetResults() []*ServiceProvider {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceApplicationRequest struct {
+	Payload              *ServiceApplication `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *CreateServiceApplicationRequest) Reset()         { *m = CreateServiceApplicationRequest{} }
+func (m *CreateServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceApplicationRequest) ProtoMessage()    {}
+func (*CreateServiceApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{18}
+}
+
+func (m *CreateServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceApplicationRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceApplicationRequest.Merge(m, src)
+}
+func (m *CreateServiceApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceApplicationRequest.Size(m)
+}
+func (m *CreateServiceApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceApplicationRequest proto.InternalMessageInfo
+
+func (m *CreateServiceApplicationRequest) GetPayload() *ServiceApplication {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceApplicationResponse struct {
+	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *CreateServiceApplicationResponse) Reset()         { *m = CreateServiceApplicationResponse{} }
+func (m *CreateServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceApplicationResponse) ProtoMessage()    {}
+func (*CreateServiceApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{19}
+}
+
+func (m *CreateServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceApplicationResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceApplicationResponse.Merge(m, src)
+}
+func (m *CreateServiceApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceApplicationResponse.Size(m)
+}
+func (m *CreateServiceApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceApplicationResponse proto.InternalMessageInfo
+
+func (m *CreateServiceApplicationResponse) GetResult() *ServiceApplication {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceApplicationRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ReadServiceApplicationRequest) Reset()         { *m = ReadServiceApplicationRequest{} }
+func (m *ReadServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceApplicationRequest) ProtoMessage()    {}
+func (*ReadServiceApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{20}
+}
+
+func (m *ReadServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceApplicationRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceApplicationRequest.Merge(m, src)
+}
+func (m *ReadServiceApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceApplicationRequest.Size(m)
+}
+func (m *ReadServiceApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceApplicationRequest proto.InternalMessageInfo
+
+func (m *ReadServiceApplicationRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type ReadServiceApplicationResponse struct {
+	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *ReadServiceApplicationResponse) Reset()         { *m = ReadServiceApplicationResponse{} }
+func (m *ReadServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceApplicationResponse) ProtoMessage()    {}
+func (*ReadServiceApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{21}
+}
+
+func (m *ReadServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceApplicationResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceApplicationResponse.Merge(m, src)
+}
+func (m *ReadServiceApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceApplicationResponse.Size(m)
+}
+func (m *ReadServiceApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceApplicationResponse proto.InternalMessageInfo
+
+func (m *ReadServiceApplicationResponse) GetResult() *ServiceApplication {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceApplicationRequest struct {
+	Payload              *ServiceApplication `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *UpdateServiceApplicationRequest) Reset()         { *m = UpdateServiceApplicationRequest{} }
+func (m *UpdateServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceApplicationRequest) ProtoMessage()    {}
+func (*UpdateServiceApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{22}
+}
+
+func (m *UpdateServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceApplicationRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceApplicationRequest.Merge(m, src)
+}
+func (m *UpdateServiceApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceApplicationRequest.Size(m)
+}
+func (m *UpdateServiceApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceApplicationRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceApplicationRequest) GetPayload() *ServiceApplication {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceApplicationResponse struct {
+	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
+	XXX_unrecognized     []byte              `json:"-"`
+	XXX_sizecache        int32               `json:"-"`
+}
+
+func (m *UpdateServiceApplicationResponse) Reset()         { *m = UpdateServiceApplicationResponse{} }
+func (m *UpdateServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceApplicationResponse) ProtoMessage()    {}
+func (*UpdateServiceApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{23}
+}
+
+func (m *UpdateServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceApplicationResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceApplicationResponse.Merge(m, src)
+}
+func (m *UpdateServiceApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceApplicationResponse.Size(m)
+}
+func (m *UpdateServiceApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceApplicationResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceApplicationResponse) GetResult() *ServiceApplication {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceApplicationRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *DeleteServiceApplicationRequest) Reset()         { *m = DeleteServiceApplicationRequest{} }
+func (m *DeleteServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceApplicationRequest) ProtoMessage()    {}
+func (*DeleteServiceApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{24}
+}
+
+func (m *DeleteServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceApplicationRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceApplicationRequest.Merge(m, src)
+}
+func (m *DeleteServiceApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceApplicationRequest.Size(m)
+}
+func (m *DeleteServiceApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceApplicationRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceApplicationRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type DeleteServiceApplicationResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceApplicationResponse) Reset()         { *m = DeleteServiceApplicationResponse{} }
+func (m *DeleteServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceApplicationResponse) ProtoMessage()    {}
+func (*DeleteServiceApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{25}
+}
+
+func (m *DeleteServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceApplicationResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceApplicationResponse.Merge(m, src)
+}
+func (m *DeleteServiceApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceApplicationResponse.Size(m)
+}
+func (m *DeleteServiceApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceApplicationResponse proto.InternalMessageInfo
+
+type ListServiceApplicationRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceApplicationRequest) Reset()         { *m = ListServiceApplicationRequest{} }
+func (m *ListServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceApplicationRequest) ProtoMessage()    {}
+func (*ListServiceApplicationRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{26}
+}
+
+func (m *ListServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceApplicationRequest.Unmarshal(m, b)
+}
+func (m *ListServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceApplicationRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceApplicationRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceApplicationRequest.Merge(m, src)
+}
+func (m *ListServiceApplicationRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceApplicationRequest.Size(m)
+}
+func (m *ListServiceApplicationRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceApplicationRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceApplicationRequest proto.InternalMessageInfo
+
+func (m *ListServiceApplicationRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceApplicationResponse struct {
+	Results              []*ServiceApplication `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceApplicationResponse) Reset()         { *m = ListServiceApplicationResponse{} }
+func (m *ListServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceApplicationResponse) ProtoMessage()    {}
+func (*ListServiceApplicationResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{27}
+}
+
+func (m *ListServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceApplicationResponse.Unmarshal(m, b)
+}
+func (m *ListServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceApplicationResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceApplicationResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceApplicationResponse.Merge(m, src)
+}
+func (m *ListServiceApplicationResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceApplicationResponse.Size(m)
+}
+func (m *ListServiceApplicationResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceApplicationResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceApplicationResponse proto.InternalMessageInfo
+
+func (m *ListServiceApplicationResponse) GetResults() []*ServiceApplication {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceTagRequest struct {
+	Payload              *ServiceTag `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *CreateServiceTagRequest) Reset()         { *m = CreateServiceTagRequest{} }
+func (m *CreateServiceTagRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceTagRequest) ProtoMessage()    {}
+func (*CreateServiceTagRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{28}
+}
+
+func (m *CreateServiceTagRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceTagRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceTagRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceTagRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceTagRequest.Merge(m, src)
+}
+func (m *CreateServiceTagRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceTagRequest.Size(m)
+}
+func (m *CreateServiceTagRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceTagRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceTagRequest proto.InternalMessageInfo
+
+func (m *CreateServiceTagRequest) GetPayload() *ServiceTag {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceTagResponse struct {
+	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *CreateServiceTagResponse) Reset()         { *m = CreateServiceTagResponse{} }
+func (m *CreateServiceTagResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceTagResponse) ProtoMessage()    {}
+func (*CreateServiceTagResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{29}
+}
+
+func (m *CreateServiceTagResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceTagResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceTagResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceTagResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceTagResponse.Merge(m, src)
+}
+func (m *CreateServiceTagResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceTagResponse.Size(m)
+}
+func (m *CreateServiceTagResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceTagResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceTagResponse proto.InternalMessageInfo
+
+func (m *CreateServiceTagResponse) GetResult() *ServiceTag {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceTagRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadServiceTagRequest) Reset()         { *m = ReadServiceTagRequest{} }
+func (m *ReadServiceTagRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceTagRequest) ProtoMessage()    {}
+func (*ReadServiceTagRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{30}
+}
+
+func (m *ReadServiceTagRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceTagRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceTagRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceTagRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceTagRequest.Merge(m, src)
+}
+func (m *ReadServiceTagRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceTagRequest.Size(m)
+}
+func (m *ReadServiceTagRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceTagRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceTagRequest proto.InternalMessageInfo
+
+func (m *ReadServiceTagRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type ReadServiceTagResponse struct {
+	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *ReadServiceTagResponse) Reset()         { *m = ReadServiceTagResponse{} }
+func (m *ReadServiceTagResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceTagResponse) ProtoMessage()    {}
+func (*ReadServiceTagResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{31}
+}
+
+func (m *ReadServiceTagResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceTagResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceTagResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceTagResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceTagResponse.Merge(m, src)
+}
+func (m *ReadServiceTagResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceTagResponse.Size(m)
+}
+func (m *ReadServiceTagResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceTagResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceTagResponse proto.InternalMessageInfo
+
+func (m *ReadServiceTagResponse) GetResult() *ServiceTag {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceTagRequest struct {
+	Payload              *ServiceTag `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *UpdateServiceTagRequest) Reset()         { *m = UpdateServiceTagRequest{} }
+func (m *UpdateServiceTagRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceTagRequest) ProtoMessage()    {}
+func (*UpdateServiceTagRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{32}
+}
+
+func (m *UpdateServiceTagRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceTagRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceTagRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceTagRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceTagRequest.Merge(m, src)
+}
+func (m *UpdateServiceTagRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceTagRequest.Size(m)
+}
+func (m *UpdateServiceTagRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceTagRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceTagRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceTagRequest) GetPayload() *ServiceTag {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceTagResponse struct {
+	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *UpdateServiceTagResponse) Reset()         { *m = UpdateServiceTagResponse{} }
+func (m *UpdateServiceTagResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceTagResponse) ProtoMessage()    {}
+func (*UpdateServiceTagResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{33}
+}
+
+func (m *UpdateServiceTagResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceTagResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceTagResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceTagResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceTagResponse.Merge(m, src)
+}
+func (m *UpdateServiceTagResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceTagResponse.Size(m)
+}
+func (m *UpdateServiceTagResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceTagResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceTagResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceTagResponse) GetResult() *ServiceTag {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceTagRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceTagRequest) Reset()         { *m = DeleteServiceTagRequest{} }
+func (m *DeleteServiceTagRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceTagRequest) ProtoMessage()    {}
+func (*DeleteServiceTagRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{34}
+}
+
+func (m *DeleteServiceTagRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceTagRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceTagRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceTagRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceTagRequest.Merge(m, src)
+}
+func (m *DeleteServiceTagRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceTagRequest.Size(m)
+}
+func (m *DeleteServiceTagRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceTagRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceTagRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceTagRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type DeleteServiceTagResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceTagResponse) Reset()         { *m = DeleteServiceTagResponse{} }
+func (m *DeleteServiceTagResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceTagResponse) ProtoMessage()    {}
+func (*DeleteServiceTagResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{35}
+}
+
+func (m *DeleteServiceTagResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceTagResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceTagResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceTagResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceTagResponse.Merge(m, src)
+}
+func (m *DeleteServiceTagResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceTagResponse.Size(m)
+}
+func (m *DeleteServiceTagResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceTagResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceTagResponse proto.InternalMessageInfo
+
+type ListServiceTagRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceTagRequest) Reset()         { *m = ListServiceTagRequest{} }
+func (m *ListServiceTagRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceTagRequest) ProtoMessage()    {}
+func (*ListServiceTagRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{36}
+}
+
+func (m *ListServiceTagRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceTagRequest.Unmarshal(m, b)
+}
+func (m *ListServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceTagRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceTagRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceTagRequest.Merge(m, src)
+}
+func (m *ListServiceTagRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceTagRequest.Size(m)
+}
+func (m *ListServiceTagRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceTagRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceTagRequest proto.InternalMessageInfo
+
+func (m *ListServiceTagRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceTagRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceTagRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceTagRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceTagResponse struct {
+	Results              []*ServiceTag `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *ListServiceTagResponse) Reset()         { *m = ListServiceTagResponse{} }
+func (m *ListServiceTagResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceTagResponse) ProtoMessage()    {}
+func (*ListServiceTagResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{37}
+}
+
+func (m *ListServiceTagResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceTagResponse.Unmarshal(m, b)
+}
+func (m *ListServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceTagResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceTagResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceTagResponse.Merge(m, src)
+}
+func (m *ListServiceTagResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceTagResponse.Size(m)
+}
+func (m *ListServiceTagResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceTagResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceTagResponse proto.InternalMessageInfo
+
+func (m *ListServiceTagResponse) GetResults() []*ServiceTag {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceApplicationFileRequest struct {
+	Payload              *ServiceApplicationFile `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *CreateServiceApplicationFileRequest) Reset()         { *m = CreateServiceApplicationFileRequest{} }
+func (m *CreateServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceApplicationFileRequest) ProtoMessage()    {}
+func (*CreateServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{38}
+}
+
+func (m *CreateServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceApplicationFileRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceApplicationFileRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceApplicationFileRequest.Merge(m, src)
+}
+func (m *CreateServiceApplicationFileRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceApplicationFileRequest.Size(m)
+}
+func (m *CreateServiceApplicationFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceApplicationFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceApplicationFileRequest proto.InternalMessageInfo
+
+func (m *CreateServiceApplicationFileRequest) GetPayload() *ServiceApplicationFile {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceApplicationFileResponse struct {
+	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *CreateServiceApplicationFileResponse) Reset()         { *m = CreateServiceApplicationFileResponse{} }
+func (m *CreateServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceApplicationFileResponse) ProtoMessage()    {}
+func (*CreateServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{39}
+}
+
+func (m *CreateServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceApplicationFileResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceApplicationFileResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceApplicationFileResponse.Merge(m, src)
+}
+func (m *CreateServiceApplicationFileResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceApplicationFileResponse.Size(m)
+}
+func (m *CreateServiceApplicationFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceApplicationFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceApplicationFileResponse proto.InternalMessageInfo
+
+func (m *CreateServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceApplicationFileRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ReadServiceApplicationFileRequest) Reset()         { *m = ReadServiceApplicationFileRequest{} }
+func (m *ReadServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceApplicationFileRequest) ProtoMessage()    {}
+func (*ReadServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{40}
+}
+
+func (m *ReadServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceApplicationFileRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceApplicationFileRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceApplicationFileRequest.Merge(m, src)
+}
+func (m *ReadServiceApplicationFileRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceApplicationFileRequest.Size(m)
+}
+func (m *ReadServiceApplicationFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceApplicationFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceApplicationFileRequest proto.InternalMessageInfo
+
+func (m *ReadServiceApplicationFileRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type ReadServiceApplicationFileResponse struct {
+	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *ReadServiceApplicationFileResponse) Reset()         { *m = ReadServiceApplicationFileResponse{} }
+func (m *ReadServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceApplicationFileResponse) ProtoMessage()    {}
+func (*ReadServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{41}
+}
+
+func (m *ReadServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceApplicationFileResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceApplicationFileResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceApplicationFileResponse.Merge(m, src)
+}
+func (m *ReadServiceApplicationFileResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceApplicationFileResponse.Size(m)
+}
+func (m *ReadServiceApplicationFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceApplicationFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceApplicationFileResponse proto.InternalMessageInfo
+
+func (m *ReadServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceApplicationFileRequest struct {
+	Payload              *ServiceApplicationFile `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *UpdateServiceApplicationFileRequest) Reset()         { *m = UpdateServiceApplicationFileRequest{} }
+func (m *UpdateServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceApplicationFileRequest) ProtoMessage()    {}
+func (*UpdateServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{42}
+}
+
+func (m *UpdateServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceApplicationFileRequest.Merge(m, src)
+}
+func (m *UpdateServiceApplicationFileRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Size(m)
+}
+func (m *UpdateServiceApplicationFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceApplicationFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceApplicationFileRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceApplicationFileRequest) GetPayload() *ServiceApplicationFile {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceApplicationFileResponse struct {
+	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *UpdateServiceApplicationFileResponse) Reset()         { *m = UpdateServiceApplicationFileResponse{} }
+func (m *UpdateServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceApplicationFileResponse) ProtoMessage()    {}
+func (*UpdateServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{43}
+}
+
+func (m *UpdateServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceApplicationFileResponse.Merge(m, src)
+}
+func (m *UpdateServiceApplicationFileResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Size(m)
+}
+func (m *UpdateServiceApplicationFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceApplicationFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceApplicationFileResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceApplicationFileRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *DeleteServiceApplicationFileRequest) Reset()         { *m = DeleteServiceApplicationFileRequest{} }
+func (m *DeleteServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceApplicationFileRequest) ProtoMessage()    {}
+func (*DeleteServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{44}
+}
+
+func (m *DeleteServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceApplicationFileRequest.Merge(m, src)
+}
+func (m *DeleteServiceApplicationFileRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Size(m)
+}
+func (m *DeleteServiceApplicationFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceApplicationFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceApplicationFileRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceApplicationFileRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type DeleteServiceApplicationFileResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceApplicationFileResponse) Reset()         { *m = DeleteServiceApplicationFileResponse{} }
+func (m *DeleteServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceApplicationFileResponse) ProtoMessage()    {}
+func (*DeleteServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{45}
+}
+
+func (m *DeleteServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceApplicationFileResponse.Merge(m, src)
+}
+func (m *DeleteServiceApplicationFileResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Size(m)
+}
+func (m *DeleteServiceApplicationFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceApplicationFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceApplicationFileResponse proto.InternalMessageInfo
+
+type ListServiceApplicationFileRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceApplicationFileRequest) Reset()         { *m = ListServiceApplicationFileRequest{} }
+func (m *ListServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceApplicationFileRequest) ProtoMessage()    {}
+func (*ListServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{46}
+}
+
+func (m *ListServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceApplicationFileRequest.Unmarshal(m, b)
+}
+func (m *ListServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceApplicationFileRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceApplicationFileRequest.Merge(m, src)
+}
+func (m *ListServiceApplicationFileRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceApplicationFileRequest.Size(m)
+}
+func (m *ListServiceApplicationFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceApplicationFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceApplicationFileRequest proto.InternalMessageInfo
+
+func (m *ListServiceApplicationFileRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationFileRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationFileRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceApplicationFileRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceApplicationFileResponse struct {
+	Results              []*ServiceApplicationFile `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                  `json:"-"`
+	XXX_unrecognized     []byte                    `json:"-"`
+	XXX_sizecache        int32                     `json:"-"`
+}
+
+func (m *ListServiceApplicationFileResponse) Reset()         { *m = ListServiceApplicationFileResponse{} }
+func (m *ListServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceApplicationFileResponse) ProtoMessage()    {}
+func (*ListServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{47}
+}
+
+func (m *ListServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceApplicationFileResponse.Unmarshal(m, b)
+}
+func (m *ListServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceApplicationFileResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceApplicationFileResponse.Merge(m, src)
+}
+func (m *ListServiceApplicationFileResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceApplicationFileResponse.Size(m)
+}
+func (m *ListServiceApplicationFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceApplicationFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceApplicationFileResponse proto.InternalMessageInfo
+
+func (m *ListServiceApplicationFileResponse) GetResults() []*ServiceApplicationFile {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceOfferRequest struct {
+	Payload              *ServiceOffer `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *CreateServiceOfferRequest) Reset()         { *m = CreateServiceOfferRequest{} }
+func (m *CreateServiceOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceOfferRequest) ProtoMessage()    {}
+func (*CreateServiceOfferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{48}
+}
+
+func (m *CreateServiceOfferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceOfferRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceOfferRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceOfferRequest.Merge(m, src)
+}
+func (m *CreateServiceOfferRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceOfferRequest.Size(m)
+}
+func (m *CreateServiceOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceOfferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceOfferRequest proto.InternalMessageInfo
+
+func (m *CreateServiceOfferRequest) GetPayload() *ServiceOffer {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceOfferResponse struct {
+	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *CreateServiceOfferResponse) Reset()         { *m = CreateServiceOfferResponse{} }
+func (m *CreateServiceOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceOfferResponse) ProtoMessage()    {}
+func (*CreateServiceOfferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{49}
+}
+
+func (m *CreateServiceOfferResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceOfferResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceOfferResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceOfferResponse.Merge(m, src)
+}
+func (m *CreateServiceOfferResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceOfferResponse.Size(m)
+}
+func (m *CreateServiceOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceOfferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceOfferResponse proto.InternalMessageInfo
+
+func (m *CreateServiceOfferResponse) GetResult() *ServiceOffer {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceOfferRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ReadServiceOfferRequest) Reset()         { *m = ReadServiceOfferRequest{} }
+func (m *ReadServiceOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceOfferRequest) ProtoMessage()    {}
+func (*ReadServiceOfferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{50}
+}
+
+func (m *ReadServiceOfferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceOfferRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceOfferRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceOfferRequest.Merge(m, src)
+}
+func (m *ReadServiceOfferRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceOfferRequest.Size(m)
+}
+func (m *ReadServiceOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceOfferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceOfferRequest proto.InternalMessageInfo
+
+func (m *ReadServiceOfferRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type ReadServiceOfferResponse struct {
+	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *ReadServiceOfferResponse) Reset()         { *m = ReadServiceOfferResponse{} }
+func (m *ReadServiceOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceOfferResponse) ProtoMessage()    {}
+func (*ReadServiceOfferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{51}
+}
+
+func (m *ReadServiceOfferResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceOfferResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceOfferResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceOfferResponse.Merge(m, src)
+}
+func (m *ReadServiceOfferResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceOfferResponse.Size(m)
+}
+func (m *ReadServiceOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceOfferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceOfferResponse proto.InternalMessageInfo
+
+func (m *ReadServiceOfferResponse) GetResult() *ServiceOffer {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceOfferRequest struct {
+	Payload              *ServiceOffer `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *UpdateServiceOfferRequest) Reset()         { *m = UpdateServiceOfferRequest{} }
+func (m *UpdateServiceOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceOfferRequest) ProtoMessage()    {}
+func (*UpdateServiceOfferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{52}
+}
+
+func (m *UpdateServiceOfferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceOfferRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceOfferRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceOfferRequest.Merge(m, src)
+}
+func (m *UpdateServiceOfferRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceOfferRequest.Size(m)
+}
+func (m *UpdateServiceOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceOfferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceOfferRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceOfferRequest) GetPayload() *ServiceOffer {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceOfferResponse struct {
+	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *UpdateServiceOfferResponse) Reset()         { *m = UpdateServiceOfferResponse{} }
+func (m *UpdateServiceOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceOfferResponse) ProtoMessage()    {}
+func (*UpdateServiceOfferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{53}
+}
+
+func (m *UpdateServiceOfferResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceOfferResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceOfferResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceOfferResponse.Merge(m, src)
+}
+func (m *UpdateServiceOfferResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceOfferResponse.Size(m)
+}
+func (m *UpdateServiceOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceOfferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceOfferResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceOfferResponse) GetResult() *ServiceOffer {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceOfferRequest struct {
+	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *DeleteServiceOfferRequest) Reset()         { *m = DeleteServiceOfferRequest{} }
+func (m *DeleteServiceOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceOfferRequest) ProtoMessage()    {}
+func (*DeleteServiceOfferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{54}
+}
+
+func (m *DeleteServiceOfferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceOfferRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceOfferRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceOfferRequest.Merge(m, src)
+}
+func (m *DeleteServiceOfferRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceOfferRequest.Size(m)
+}
+func (m *DeleteServiceOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceOfferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceOfferRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceOfferRequest) GetId() *types.UUIDValue {
+	if m != nil {
+		return m.Id
+	}
+	return nil
+}
+
+type DeleteServiceOfferResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceOfferResponse) Reset()         { *m = DeleteServiceOfferResponse{} }
+func (m *DeleteServiceOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceOfferResponse) ProtoMessage()    {}
+func (*DeleteServiceOfferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{55}
+}
+
+func (m *DeleteServiceOfferResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceOfferResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceOfferResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceOfferResponse.Merge(m, src)
+}
+func (m *DeleteServiceOfferResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceOfferResponse.Size(m)
+}
+func (m *DeleteServiceOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceOfferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceOfferResponse proto.InternalMessageInfo
+
+type ListServiceOfferRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceOfferRequest) Reset()         { *m = ListServiceOfferRequest{} }
+func (m *ListServiceOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceOfferRequest) ProtoMessage()    {}
+func (*ListServiceOfferRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{56}
+}
+
+func (m *ListServiceOfferRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceOfferRequest.Unmarshal(m, b)
+}
+func (m *ListServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceOfferRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceOfferRequest.Merge(m, src)
+}
+func (m *ListServiceOfferRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceOfferRequest.Size(m)
+}
+func (m *ListServiceOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceOfferRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceOfferRequest proto.InternalMessageInfo
+
+func (m *ListServiceOfferRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceOfferRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceOfferRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceOfferRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceOfferResponse struct {
+	Results              []*ServiceOffer `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *ListServiceOfferResponse) Reset()         { *m = ListServiceOfferResponse{} }
+func (m *ListServiceOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceOfferResponse) ProtoMessage()    {}
+func (*ListServiceOfferResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{57}
+}
+
+func (m *ListServiceOfferResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceOfferResponse.Unmarshal(m, b)
+}
+func (m *ListServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceOfferResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceOfferResponse.Merge(m, src)
+}
+func (m *ListServiceOfferResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceOfferResponse.Size(m)
+}
+func (m *ListServiceOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceOfferResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceOfferResponse proto.InternalMessageInfo
+
+func (m *ListServiceOfferResponse) GetResults() []*ServiceOffer {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceDetailsRequest struct {
+	Payload              *ServiceDetails `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *CreateServiceDetailsRequest) Reset()         { *m = CreateServiceDetailsRequest{} }
+func (m *CreateServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceDetailsRequest) ProtoMessage()    {}
+func (*CreateServiceDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{58}
+}
+
+func (m *CreateServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceDetailsRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceDetailsRequest.Merge(m, src)
+}
+func (m *CreateServiceDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceDetailsRequest.Size(m)
+}
+func (m *CreateServiceDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceDetailsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceDetailsRequest proto.InternalMessageInfo
+
+func (m *CreateServiceDetailsRequest) GetPayload() *ServiceDetails {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceDetailsResponse struct {
+	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *CreateServiceDetailsResponse) Reset()         { *m = CreateServiceDetailsResponse{} }
+func (m *CreateServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceDetailsResponse) ProtoMessage()    {}
+func (*CreateServiceDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{59}
+}
+
+func (m *CreateServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceDetailsResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceDetailsResponse.Merge(m, src)
+}
+func (m *CreateServiceDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceDetailsResponse.Size(m)
+}
+func (m *CreateServiceDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceDetailsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceDetailsResponse proto.InternalMessageInfo
+
+func (m *CreateServiceDetailsResponse) GetResult() *ServiceDetails {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceDetailsRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadServiceDetailsRequest) Reset()         { *m = ReadServiceDetailsRequest{} }
+func (m *ReadServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceDetailsRequest) ProtoMessage()    {}
+func (*ReadServiceDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{60}
+}
+
+func (m *ReadServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceDetailsRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceDetailsRequest.Merge(m, src)
+}
+func (m *ReadServiceDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceDetailsRequest.Size(m)
+}
+func (m *ReadServiceDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceDetailsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceDetailsRequest proto.InternalMessageInfo
+
+func (m *ReadServiceDetailsRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type ReadServiceDetailsResponse struct {
+	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *ReadServiceDetailsResponse) Reset()         { *m = ReadServiceDetailsResponse{} }
+func (m *ReadServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceDetailsResponse) ProtoMessage()    {}
+func (*ReadServiceDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{61}
+}
+
+func (m *ReadServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceDetailsResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceDetailsResponse.Merge(m, src)
+}
+func (m *ReadServiceDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceDetailsResponse.Size(m)
+}
+func (m *ReadServiceDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceDetailsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceDetailsResponse proto.InternalMessageInfo
+
+func (m *ReadServiceDetailsResponse) GetResult() *ServiceDetails {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceDetailsRequest struct {
+	Payload              *ServiceDetails `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *UpdateServiceDetailsRequest) Reset()         { *m = UpdateServiceDetailsRequest{} }
+func (m *UpdateServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceDetailsRequest) ProtoMessage()    {}
+func (*UpdateServiceDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{62}
+}
+
+func (m *UpdateServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceDetailsRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceDetailsRequest.Merge(m, src)
+}
+func (m *UpdateServiceDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceDetailsRequest.Size(m)
+}
+func (m *UpdateServiceDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceDetailsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceDetailsRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceDetailsRequest) GetPayload() *ServiceDetails {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceDetailsResponse struct {
+	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *UpdateServiceDetailsResponse) Reset()         { *m = UpdateServiceDetailsResponse{} }
+func (m *UpdateServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceDetailsResponse) ProtoMessage()    {}
+func (*UpdateServiceDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{63}
+}
+
+func (m *UpdateServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceDetailsResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceDetailsResponse.Merge(m, src)
+}
+func (m *UpdateServiceDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceDetailsResponse.Size(m)
+}
+func (m *UpdateServiceDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceDetailsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceDetailsResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceDetailsResponse) GetResult() *ServiceDetails {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceDetailsRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceDetailsRequest) Reset()         { *m = DeleteServiceDetailsRequest{} }
+func (m *DeleteServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceDetailsRequest) ProtoMessage()    {}
+func (*DeleteServiceDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{64}
+}
+
+func (m *DeleteServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceDetailsRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceDetailsRequest.Merge(m, src)
+}
+func (m *DeleteServiceDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceDetailsRequest.Size(m)
+}
+func (m *DeleteServiceDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceDetailsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceDetailsRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceDetailsRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type DeleteServiceDetailsResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceDetailsResponse) Reset()         { *m = DeleteServiceDetailsResponse{} }
+func (m *DeleteServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceDetailsResponse) ProtoMessage()    {}
+func (*DeleteServiceDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{65}
+}
+
+func (m *DeleteServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceDetailsResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceDetailsResponse.Merge(m, src)
+}
+func (m *DeleteServiceDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceDetailsResponse.Size(m)
+}
+func (m *DeleteServiceDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceDetailsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceDetailsResponse proto.InternalMessageInfo
+
+type ListServiceDetailsRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceDetailsRequest) Reset()         { *m = ListServiceDetailsRequest{} }
+func (m *ListServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceDetailsRequest) ProtoMessage()    {}
+func (*ListServiceDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{66}
+}
+
+func (m *ListServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceDetailsRequest.Unmarshal(m, b)
+}
+func (m *ListServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceDetailsRequest.Merge(m, src)
+}
+func (m *ListServiceDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceDetailsRequest.Size(m)
+}
+func (m *ListServiceDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceDetailsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceDetailsRequest proto.InternalMessageInfo
+
+func (m *ListServiceDetailsRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceDetailsRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceDetailsRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceDetailsRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceDetailsResponse struct {
+	Results              []*ServiceDetails `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
+}
+
+func (m *ListServiceDetailsResponse) Reset()         { *m = ListServiceDetailsResponse{} }
+func (m *ListServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceDetailsResponse) ProtoMessage()    {}
+func (*ListServiceDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{67}
+}
+
+func (m *ListServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceDetailsResponse.Unmarshal(m, b)
+}
+func (m *ListServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceDetailsResponse.Merge(m, src)
+}
+func (m *ListServiceDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceDetailsResponse.Size(m)
+}
+func (m *ListServiceDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceDetailsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceDetailsResponse proto.InternalMessageInfo
+
+func (m *ListServiceDetailsResponse) GetResults() []*ServiceDetails {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceEmploymentRequest struct {
+	Payload              *ServiceEmployment `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *CreateServiceEmploymentRequest) Reset()         { *m = CreateServiceEmploymentRequest{} }
+func (m *CreateServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceEmploymentRequest) ProtoMessage()    {}
+func (*CreateServiceEmploymentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{68}
+}
+
+func (m *CreateServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceEmploymentRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceEmploymentRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceEmploymentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceEmploymentRequest.Merge(m, src)
+}
+func (m *CreateServiceEmploymentRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceEmploymentRequest.Size(m)
+}
+func (m *CreateServiceEmploymentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceEmploymentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceEmploymentRequest proto.InternalMessageInfo
+
+func (m *CreateServiceEmploymentRequest) GetPayload() *ServiceEmployment {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceEmploymentResponse struct {
+	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *CreateServiceEmploymentResponse) Reset()         { *m = CreateServiceEmploymentResponse{} }
+func (m *CreateServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceEmploymentResponse) ProtoMessage()    {}
+func (*CreateServiceEmploymentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{69}
+}
+
+func (m *CreateServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceEmploymentResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceEmploymentResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceEmploymentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceEmploymentResponse.Merge(m, src)
+}
+func (m *CreateServiceEmploymentResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceEmploymentResponse.Size(m)
+}
+func (m *CreateServiceEmploymentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceEmploymentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceEmploymentResponse proto.InternalMessageInfo
+
+func (m *CreateServiceEmploymentResponse) GetResult() *ServiceEmployment {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceEmploymentRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadServiceEmploymentRequest) Reset()         { *m = ReadServiceEmploymentRequest{} }
+func (m *ReadServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceEmploymentRequest) ProtoMessage()    {}
+func (*ReadServiceEmploymentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{70}
+}
+
+func (m *ReadServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceEmploymentRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceEmploymentRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceEmploymentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceEmploymentRequest.Merge(m, src)
+}
+func (m *ReadServiceEmploymentRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceEmploymentRequest.Size(m)
+}
+func (m *ReadServiceEmploymentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceEmploymentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceEmploymentRequest proto.InternalMessageInfo
+
+func (m *ReadServiceEmploymentRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type ReadServiceEmploymentResponse struct {
+	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *ReadServiceEmploymentResponse) Reset()         { *m = ReadServiceEmploymentResponse{} }
+func (m *ReadServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceEmploymentResponse) ProtoMessage()    {}
+func (*ReadServiceEmploymentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{71}
+}
+
+func (m *ReadServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceEmploymentResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceEmploymentResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceEmploymentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceEmploymentResponse.Merge(m, src)
+}
+func (m *ReadServiceEmploymentResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceEmploymentResponse.Size(m)
+}
+func (m *ReadServiceEmploymentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceEmploymentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceEmploymentResponse proto.InternalMessageInfo
+
+func (m *ReadServiceEmploymentResponse) GetResult() *ServiceEmployment {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceEmploymentRequest struct {
+	Payload              *ServiceEmployment `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *UpdateServiceEmploymentRequest) Reset()         { *m = UpdateServiceEmploymentRequest{} }
+func (m *UpdateServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceEmploymentRequest) ProtoMessage()    {}
+func (*UpdateServiceEmploymentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{72}
+}
+
+func (m *UpdateServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceEmploymentRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceEmploymentRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceEmploymentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceEmploymentRequest.Merge(m, src)
+}
+func (m *UpdateServiceEmploymentRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceEmploymentRequest.Size(m)
+}
+func (m *UpdateServiceEmploymentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceEmploymentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceEmploymentRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceEmploymentRequest) GetPayload() *ServiceEmployment {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceEmploymentResponse struct {
+	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *UpdateServiceEmploymentResponse) Reset()         { *m = UpdateServiceEmploymentResponse{} }
+func (m *UpdateServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceEmploymentResponse) ProtoMessage()    {}
+func (*UpdateServiceEmploymentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{73}
+}
+
+func (m *UpdateServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceEmploymentResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceEmploymentResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceEmploymentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceEmploymentResponse.Merge(m, src)
+}
+func (m *UpdateServiceEmploymentResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceEmploymentResponse.Size(m)
+}
+func (m *UpdateServiceEmploymentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceEmploymentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceEmploymentResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceEmploymentResponse) GetResult() *ServiceEmployment {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceEmploymentRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceEmploymentRequest) Reset()         { *m = DeleteServiceEmploymentRequest{} }
+func (m *DeleteServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceEmploymentRequest) ProtoMessage()    {}
+func (*DeleteServiceEmploymentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{74}
+}
+
+func (m *DeleteServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceEmploymentRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceEmploymentRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceEmploymentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceEmploymentRequest.Merge(m, src)
+}
+func (m *DeleteServiceEmploymentRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceEmploymentRequest.Size(m)
+}
+func (m *DeleteServiceEmploymentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceEmploymentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceEmploymentRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceEmploymentRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type DeleteServiceEmploymentResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceEmploymentResponse) Reset()         { *m = DeleteServiceEmploymentResponse{} }
+func (m *DeleteServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceEmploymentResponse) ProtoMessage()    {}
+func (*DeleteServiceEmploymentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{75}
+}
+
+func (m *DeleteServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceEmploymentResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceEmploymentResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceEmploymentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceEmploymentResponse.Merge(m, src)
+}
+func (m *DeleteServiceEmploymentResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceEmploymentResponse.Size(m)
+}
+func (m *DeleteServiceEmploymentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceEmploymentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceEmploymentResponse proto.InternalMessageInfo
+
+type ListServiceEmploymentRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceEmploymentRequest) Reset()         { *m = ListServiceEmploymentRequest{} }
+func (m *ListServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceEmploymentRequest) ProtoMessage()    {}
+func (*ListServiceEmploymentRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{76}
+}
+
+func (m *ListServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceEmploymentRequest.Unmarshal(m, b)
+}
+func (m *ListServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceEmploymentRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceEmploymentRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceEmploymentRequest.Merge(m, src)
+}
+func (m *ListServiceEmploymentRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceEmploymentRequest.Size(m)
+}
+func (m *ListServiceEmploymentRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceEmploymentRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceEmploymentRequest proto.InternalMessageInfo
+
+func (m *ListServiceEmploymentRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceEmploymentRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceEmploymentRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceEmploymentRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceEmploymentResponse struct {
+	Results              []*ServiceEmployment `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
+}
+
+func (m *ListServiceEmploymentResponse) Reset()         { *m = ListServiceEmploymentResponse{} }
+func (m *ListServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceEmploymentResponse) ProtoMessage()    {}
+func (*ListServiceEmploymentResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{77}
+}
+
+func (m *ListServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceEmploymentResponse.Unmarshal(m, b)
+}
+func (m *ListServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceEmploymentResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceEmploymentResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceEmploymentResponse.Merge(m, src)
+}
+func (m *ListServiceEmploymentResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceEmploymentResponse.Size(m)
+}
+func (m *ListServiceEmploymentResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceEmploymentResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceEmploymentResponse proto.InternalMessageInfo
+
+func (m *ListServiceEmploymentResponse) GetResults() []*ServiceEmployment {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
+type CreateServiceRequest struct {
+	Payload              *Service `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateServiceRequest) Reset()         { *m = CreateServiceRequest{} }
+func (m *CreateServiceRequest) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceRequest) ProtoMessage()    {}
+func (*CreateServiceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{78}
+}
+
+func (m *CreateServiceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceRequest.Unmarshal(m, b)
+}
+func (m *CreateServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceRequest.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceRequest.Merge(m, src)
+}
+func (m *CreateServiceRequest) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceRequest.Size(m)
+}
+func (m *CreateServiceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceRequest proto.InternalMessageInfo
+
+func (m *CreateServiceRequest) GetPayload() *Service {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type CreateServiceResponse struct {
+	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CreateServiceResponse) Reset()         { *m = CreateServiceResponse{} }
+func (m *CreateServiceResponse) String() string { return proto.CompactTextString(m) }
+func (*CreateServiceResponse) ProtoMessage()    {}
+func (*CreateServiceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{79}
+}
+
+func (m *CreateServiceResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CreateServiceResponse.Unmarshal(m, b)
+}
+func (m *CreateServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CreateServiceResponse.Marshal(b, m, deterministic)
+}
+func (m *CreateServiceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CreateServiceResponse.Merge(m, src)
+}
+func (m *CreateServiceResponse) XXX_Size() int {
+	return xxx_messageInfo_CreateServiceResponse.Size(m)
+}
+func (m *CreateServiceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CreateServiceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CreateServiceResponse proto.InternalMessageInfo
+
+func (m *CreateServiceResponse) GetResult() *Service {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type ReadServiceRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadServiceRequest) Reset()         { *m = ReadServiceRequest{} }
+func (m *ReadServiceRequest) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceRequest) ProtoMessage()    {}
+func (*ReadServiceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{80}
+}
+
+func (m *ReadServiceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceRequest.Unmarshal(m, b)
+}
+func (m *ReadServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceRequest.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceRequest.Merge(m, src)
+}
+func (m *ReadServiceRequest) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceRequest.Size(m)
+}
+func (m *ReadServiceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceRequest proto.InternalMessageInfo
+
+func (m *ReadServiceRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type ReadServiceResponse struct {
+	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReadServiceResponse) Reset()         { *m = ReadServiceResponse{} }
+func (m *ReadServiceResponse) String() string { return proto.CompactTextString(m) }
+func (*ReadServiceResponse) ProtoMessage()    {}
+func (*ReadServiceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{81}
+}
+
+func (m *ReadServiceResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReadServiceResponse.Unmarshal(m, b)
+}
+func (m *ReadServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReadServiceResponse.Marshal(b, m, deterministic)
+}
+func (m *ReadServiceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadServiceResponse.Merge(m, src)
+}
+func (m *ReadServiceResponse) XXX_Size() int {
+	return xxx_messageInfo_ReadServiceResponse.Size(m)
+}
+func (m *ReadServiceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadServiceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReadServiceResponse proto.InternalMessageInfo
+
+func (m *ReadServiceResponse) GetResult() *Service {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type UpdateServiceRequest struct {
+	Payload              *Service `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateServiceRequest) Reset()         { *m = UpdateServiceRequest{} }
+func (m *UpdateServiceRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceRequest) ProtoMessage()    {}
+func (*UpdateServiceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{82}
+}
+
+func (m *UpdateServiceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceRequest.Unmarshal(m, b)
+}
+func (m *UpdateServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceRequest.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceRequest.Merge(m, src)
+}
+func (m *UpdateServiceRequest) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceRequest.Size(m)
+}
+func (m *UpdateServiceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceRequest proto.InternalMessageInfo
+
+func (m *UpdateServiceRequest) GetPayload() *Service {
+	if m != nil {
+		return m.Payload
+	}
+	return nil
+}
+
+type UpdateServiceResponse struct {
+	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateServiceResponse) Reset()         { *m = UpdateServiceResponse{} }
+func (m *UpdateServiceResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateServiceResponse) ProtoMessage()    {}
+func (*UpdateServiceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{83}
+}
+
+func (m *UpdateServiceResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateServiceResponse.Unmarshal(m, b)
+}
+func (m *UpdateServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateServiceResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateServiceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateServiceResponse.Merge(m, src)
+}
+func (m *UpdateServiceResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateServiceResponse.Size(m)
+}
+func (m *UpdateServiceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateServiceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateServiceResponse proto.InternalMessageInfo
+
+func (m *UpdateServiceResponse) GetResult() *Service {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+type DeleteServiceRequest struct {
+	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceRequest) Reset()         { *m = DeleteServiceRequest{} }
+func (m *DeleteServiceRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceRequest) ProtoMessage()    {}
+func (*DeleteServiceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{84}
+}
+
+func (m *DeleteServiceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceRequest.Unmarshal(m, b)
+}
+func (m *DeleteServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceRequest.Merge(m, src)
+}
+func (m *DeleteServiceRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceRequest.Size(m)
+}
+func (m *DeleteServiceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceRequest proto.InternalMessageInfo
+
+func (m *DeleteServiceRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type DeleteServiceResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeleteServiceResponse) Reset()         { *m = DeleteServiceResponse{} }
+func (m *DeleteServiceResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteServiceResponse) ProtoMessage()    {}
+func (*DeleteServiceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{85}
+}
+
+func (m *DeleteServiceResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteServiceResponse.Unmarshal(m, b)
+}
+func (m *DeleteServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteServiceResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteServiceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteServiceResponse.Merge(m, src)
+}
+func (m *DeleteServiceResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteServiceResponse.Size(m)
+}
+func (m *DeleteServiceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteServiceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteServiceResponse proto.InternalMessageInfo
+
+type ListServiceRequest struct {
+	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
+	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
+	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListServiceRequest) Reset()         { *m = ListServiceRequest{} }
+func (m *ListServiceRequest) String() string { return proto.CompactTextString(m) }
+func (*ListServiceRequest) ProtoMessage()    {}
+func (*ListServiceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{86}
+}
+
+func (m *ListServiceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceRequest.Unmarshal(m, b)
+}
+func (m *ListServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceRequest.Marshal(b, m, deterministic)
+}
+func (m *ListServiceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceRequest.Merge(m, src)
+}
+func (m *ListServiceRequest) XXX_Size() int {
+	return xxx_messageInfo_ListServiceRequest.Size(m)
+}
+func (m *ListServiceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceRequest proto.InternalMessageInfo
+
+func (m *ListServiceRequest) GetFilter() *query.Filtering {
+	if m != nil {
+		return m.Filter
+	}
+	return nil
+}
+
+func (m *ListServiceRequest) GetOrderBy() *query.Sorting {
+	if m != nil {
+		return m.OrderBy
+	}
+	return nil
+}
+
+func (m *ListServiceRequest) GetFields() *query.FieldSelection {
+	if m != nil {
+		return m.Fields
+	}
+	return nil
+}
+
+func (m *ListServiceRequest) GetPaging() *query.Pagination {
+	if m != nil {
+		return m.Paging
+	}
+	return nil
+}
+
+type ListServiceResponse struct {
+	Results              []*Service `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *ListServiceResponse) Reset()         { *m = ListServiceResponse{} }
+func (m *ListServiceResponse) String() string { return proto.CompactTextString(m) }
+func (*ListServiceResponse) ProtoMessage()    {}
+func (*ListServiceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{87}
+}
+
+func (m *ListServiceResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListServiceResponse.Unmarshal(m, b)
+}
+func (m *ListServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListServiceResponse.Marshal(b, m, deterministic)
+}
+func (m *ListServiceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListServiceResponse.Merge(m, src)
+}
+func (m *ListServiceResponse) XXX_Size() int {
+	return xxx_messageInfo_ListServiceResponse.Size(m)
+}
+func (m *ListServiceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListServiceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListServiceResponse proto.InternalMessageInfo
+
+func (m *ListServiceResponse) GetResults() []*Service {
+	if m != nil {
+		return m.Results
+	}
+	return nil
+}
+
 type ServiceSessionEvaluation struct {
 	Id                   uint64               `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -750,7 +4006,7 @@ func (m *ServiceSessionEvaluation) Reset()         { *m = ServiceSessionEvaluati
 func (m *ServiceSessionEvaluation) String() string { return proto.CompactTextString(m) }
 func (*ServiceSessionEvaluation) ProtoMessage()    {}
 func (*ServiceSessionEvaluation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{8}
+	return fileDescriptor_3c62a9da5f95a834, []int{88}
 }
 
 func (m *ServiceSessionEvaluation) XXX_Unmarshal(b []byte) error {
@@ -817,11 +4073,12 @@ type ServiceSession struct {
 	Id                   *types.UUIDValue          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	CreatedAt            *timestamp.Timestamp      `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt            *timestamp.Timestamp      `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	ScheduledAt          *timestamp.Timestamp      `protobuf:"bytes,4,opt,name=scheduled_at,json=scheduledAt,proto3" json:"scheduled_at,omitempty"`
-	FinishedAt           *timestamp.Timestamp      `protobuf:"bytes,5,opt,name=finished_at,json=finishedAt,proto3" json:"finished_at,omitempty"`
-	Offer                *ServiceOffer             `protobuf:"bytes,6,opt,name=offer,proto3" json:"offer,omitempty"`
-	Notes                []*ServiceSessionNote     `protobuf:"bytes,7,rep,name=notes,proto3" json:"notes,omitempty"`
-	Evaluation           *ServiceSessionEvaluation `protobuf:"bytes,8,opt,name=evaluation,proto3" json:"evaluation,omitempty"`
+	ProfileId            string                    `protobuf:"bytes,4,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	ScheduledAt          *timestamp.Timestamp      `protobuf:"bytes,5,opt,name=scheduled_at,json=scheduledAt,proto3" json:"scheduled_at,omitempty"`
+	FinishedAt           *timestamp.Timestamp      `protobuf:"bytes,6,opt,name=finished_at,json=finishedAt,proto3" json:"finished_at,omitempty"`
+	Offer                *ServiceOffer             `protobuf:"bytes,7,opt,name=offer,proto3" json:"offer,omitempty"`
+	Notes                []*ServiceSessionNote     `protobuf:"bytes,8,rep,name=notes,proto3" json:"notes,omitempty"`
+	Evaluation           *ServiceSessionEvaluation `protobuf:"bytes,9,opt,name=evaluation,proto3" json:"evaluation,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                  `json:"-"`
 	XXX_unrecognized     []byte                    `json:"-"`
 	XXX_sizecache        int32                     `json:"-"`
@@ -831,7 +4088,7 @@ func (m *ServiceSession) Reset()         { *m = ServiceSession{} }
 func (m *ServiceSession) String() string { return proto.CompactTextString(m) }
 func (*ServiceSession) ProtoMessage()    {}
 func (*ServiceSession) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{9}
+	return fileDescriptor_3c62a9da5f95a834, []int{89}
 }
 
 func (m *ServiceSession) XXX_Unmarshal(b []byte) error {
@@ -873,6 +4130,13 @@ func (m *ServiceSession) GetUpdatedAt() *timestamp.Timestamp {
 	return nil
 }
 
+func (m *ServiceSession) GetProfileId() string {
+	if m != nil {
+		return m.ProfileId
+	}
+	return ""
+}
+
 func (m *ServiceSession) GetScheduledAt() *timestamp.Timestamp {
 	if m != nil {
 		return m.ScheduledAt
@@ -912,7 +4176,7 @@ type ServiceSessionNote struct {
 	Id                   *types.UUIDValue     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,2,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	Session              []*ServiceSession    `protobuf:"bytes,4,rep,name=session,proto3" json:"session,omitempty"`
+	Session              *ServiceSession      `protobuf:"bytes,4,opt,name=session,proto3" json:"session,omitempty"`
 	Text                 string               `protobuf:"bytes,5,opt,name=text,proto3" json:"text,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
@@ -923,7 +4187,7 @@ func (m *ServiceSessionNote) Reset()         { *m = ServiceSessionNote{} }
 func (m *ServiceSessionNote) String() string { return proto.CompactTextString(m) }
 func (*ServiceSessionNote) ProtoMessage()    {}
 func (*ServiceSessionNote) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{10}
+	return fileDescriptor_3c62a9da5f95a834, []int{90}
 }
 
 func (m *ServiceSessionNote) XXX_Unmarshal(b []byte) error {
@@ -965,7 +4229,7 @@ func (m *ServiceSessionNote) GetUpdatedAt() *timestamp.Timestamp {
 	return nil
 }
 
-func (m *ServiceSessionNote) GetSession() []*ServiceSession {
+func (m *ServiceSessionNote) GetSession() *ServiceSession {
 	if m != nil {
 		return m.Session
 	}
@@ -990,7 +4254,7 @@ func (m *CreateServiceSessionRequest) Reset()         { *m = CreateServiceSessio
 func (m *CreateServiceSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateServiceSessionRequest) ProtoMessage()    {}
 func (*CreateServiceSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{11}
+	return fileDescriptor_3c62a9da5f95a834, []int{91}
 }
 
 func (m *CreateServiceSessionRequest) XXX_Unmarshal(b []byte) error {
@@ -1029,7 +4293,7 @@ func (m *CreateServiceSessionResponse) Reset()         { *m = CreateServiceSessi
 func (m *CreateServiceSessionResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateServiceSessionResponse) ProtoMessage()    {}
 func (*CreateServiceSessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{12}
+	return fileDescriptor_3c62a9da5f95a834, []int{92}
 }
 
 func (m *CreateServiceSessionResponse) XXX_Unmarshal(b []byte) error {
@@ -1068,7 +4332,7 @@ func (m *ReadServiceSessionRequest) Reset()         { *m = ReadServiceSessionReq
 func (m *ReadServiceSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadServiceSessionRequest) ProtoMessage()    {}
 func (*ReadServiceSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{13}
+	return fileDescriptor_3c62a9da5f95a834, []int{93}
 }
 
 func (m *ReadServiceSessionRequest) XXX_Unmarshal(b []byte) error {
@@ -1107,7 +4371,7 @@ func (m *ReadServiceSessionResponse) Reset()         { *m = ReadServiceSessionRe
 func (m *ReadServiceSessionResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadServiceSessionResponse) ProtoMessage()    {}
 func (*ReadServiceSessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{14}
+	return fileDescriptor_3c62a9da5f95a834, []int{94}
 }
 
 func (m *ReadServiceSessionResponse) XXX_Unmarshal(b []byte) error {
@@ -1146,7 +4410,7 @@ func (m *UpdateServiceSessionRequest) Reset()         { *m = UpdateServiceSessio
 func (m *UpdateServiceSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateServiceSessionRequest) ProtoMessage()    {}
 func (*UpdateServiceSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{15}
+	return fileDescriptor_3c62a9da5f95a834, []int{95}
 }
 
 func (m *UpdateServiceSessionRequest) XXX_Unmarshal(b []byte) error {
@@ -1185,7 +4449,7 @@ func (m *UpdateServiceSessionResponse) Reset()         { *m = UpdateServiceSessi
 func (m *UpdateServiceSessionResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateServiceSessionResponse) ProtoMessage()    {}
 func (*UpdateServiceSessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{16}
+	return fileDescriptor_3c62a9da5f95a834, []int{96}
 }
 
 func (m *UpdateServiceSessionResponse) XXX_Unmarshal(b []byte) error {
@@ -1224,7 +4488,7 @@ func (m *DeleteServiceSessionRequest) Reset()         { *m = DeleteServiceSessio
 func (m *DeleteServiceSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteServiceSessionRequest) ProtoMessage()    {}
 func (*DeleteServiceSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{17}
+	return fileDescriptor_3c62a9da5f95a834, []int{97}
 }
 
 func (m *DeleteServiceSessionRequest) XXX_Unmarshal(b []byte) error {
@@ -1262,7 +4526,7 @@ func (m *DeleteServiceSessionResponse) Reset()         { *m = DeleteServiceSessi
 func (m *DeleteServiceSessionResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteServiceSessionResponse) ProtoMessage()    {}
 func (*DeleteServiceSessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{18}
+	return fileDescriptor_3c62a9da5f95a834, []int{98}
 }
 
 func (m *DeleteServiceSessionResponse) XXX_Unmarshal(b []byte) error {
@@ -1297,7 +4561,7 @@ func (m *ListServiceSessionRequest) Reset()         { *m = ListServiceSessionReq
 func (m *ListServiceSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*ListServiceSessionRequest) ProtoMessage()    {}
 func (*ListServiceSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{19}
+	return fileDescriptor_3c62a9da5f95a834, []int{99}
 }
 
 func (m *ListServiceSessionRequest) XXX_Unmarshal(b []byte) error {
@@ -1357,7 +4621,7 @@ func (m *ListServiceSessionResponse) Reset()         { *m = ListServiceSessionRe
 func (m *ListServiceSessionResponse) String() string { return proto.CompactTextString(m) }
 func (*ListServiceSessionResponse) ProtoMessage()    {}
 func (*ListServiceSessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{20}
+	return fileDescriptor_3c62a9da5f95a834, []int{100}
 }
 
 func (m *ListServiceSessionResponse) XXX_Unmarshal(b []byte) error {
@@ -1385,3250 +4649,480 @@ func (m *ListServiceSessionResponse) GetResults() []*ServiceSession {
 	return nil
 }
 
-type CreateServiceProviderRequest struct {
-	Payload              *ServiceProvider `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+type StreamSessionInputEvent struct {
+	// Types that are valid to be assigned to Event:
+	//	*StreamSessionInputEvent_RequestSession
+	//	*StreamSessionInputEvent_JoinSession
+	//	*StreamSessionInputEvent_LeaveSession
+	Event                isStreamSessionInputEvent_Event `protobuf_oneof:"event"`
+	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
+	XXX_unrecognized     []byte                          `json:"-"`
+	XXX_sizecache        int32                           `json:"-"`
 }
 
-func (m *CreateServiceProviderRequest) Reset()         { *m = CreateServiceProviderRequest{} }
-func (m *CreateServiceProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceProviderRequest) ProtoMessage()    {}
-func (*CreateServiceProviderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{21}
+func (m *StreamSessionInputEvent) Reset()         { *m = StreamSessionInputEvent{} }
+func (m *StreamSessionInputEvent) String() string { return proto.CompactTextString(m) }
+func (*StreamSessionInputEvent) ProtoMessage()    {}
+func (*StreamSessionInputEvent) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{101}
 }
 
-func (m *CreateServiceProviderRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceProviderRequest.Unmarshal(m, b)
+func (m *StreamSessionInputEvent) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamSessionInputEvent.Unmarshal(m, b)
 }
-func (m *CreateServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceProviderRequest.Marshal(b, m, deterministic)
+func (m *StreamSessionInputEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamSessionInputEvent.Marshal(b, m, deterministic)
 }
-func (m *CreateServiceProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceProviderRequest.Merge(m, src)
+func (m *StreamSessionInputEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamSessionInputEvent.Merge(m, src)
 }
-func (m *CreateServiceProviderRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceProviderRequest.Size(m)
+func (m *StreamSessionInputEvent) XXX_Size() int {
+	return xxx_messageInfo_StreamSessionInputEvent.Size(m)
 }
-func (m *CreateServiceProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceProviderRequest.DiscardUnknown(m)
+func (m *StreamSessionInputEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamSessionInputEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateServiceProviderRequest proto.InternalMessageInfo
+var xxx_messageInfo_StreamSessionInputEvent proto.InternalMessageInfo
 
-func (m *CreateServiceProviderRequest) GetPayload() *ServiceProvider {
+type isStreamSessionInputEvent_Event interface {
+	isStreamSessionInputEvent_Event()
+}
+
+type StreamSessionInputEvent_RequestSession struct {
+	RequestSession *EventRequestSession `protobuf:"bytes,1,opt,name=request_session,json=requestSession,proto3,oneof"`
+}
+
+type StreamSessionInputEvent_JoinSession struct {
+	JoinSession *EventJoinSession `protobuf:"bytes,2,opt,name=join_session,json=joinSession,proto3,oneof"`
+}
+
+type StreamSessionInputEvent_LeaveSession struct {
+	LeaveSession *EventLeaveSession `protobuf:"bytes,3,opt,name=leave_session,json=leaveSession,proto3,oneof"`
+}
+
+func (*StreamSessionInputEvent_RequestSession) isStreamSessionInputEvent_Event() {}
+
+func (*StreamSessionInputEvent_JoinSession) isStreamSessionInputEvent_Event() {}
+
+func (*StreamSessionInputEvent_LeaveSession) isStreamSessionInputEvent_Event() {}
+
+func (m *StreamSessionInputEvent) GetEvent() isStreamSessionInputEvent_Event {
 	if m != nil {
-		return m.Payload
+		return m.Event
 	}
 	return nil
 }
 
-type CreateServiceProviderResponse struct {
-	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *CreateServiceProviderResponse) Reset()         { *m = CreateServiceProviderResponse{} }
-func (m *CreateServiceProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceProviderResponse) ProtoMessage()    {}
-func (*CreateServiceProviderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{22}
-}
-
-func (m *CreateServiceProviderResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceProviderResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceProviderResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceProviderResponse.Merge(m, src)
-}
-func (m *CreateServiceProviderResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceProviderResponse.Size(m)
-}
-func (m *CreateServiceProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceProviderResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceProviderResponse proto.InternalMessageInfo
-
-func (m *CreateServiceProviderResponse) GetResult() *ServiceProvider {
-	if m != nil {
-		return m.Result
+func (m *StreamSessionInputEvent) GetRequestSession() *EventRequestSession {
+	if x, ok := m.GetEvent().(*StreamSessionInputEvent_RequestSession); ok {
+		return x.RequestSession
 	}
 	return nil
 }
 
-type ReadServiceProviderRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *ReadServiceProviderRequest) Reset()         { *m = ReadServiceProviderRequest{} }
-func (m *ReadServiceProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceProviderRequest) ProtoMessage()    {}
-func (*ReadServiceProviderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{23}
-}
-
-func (m *ReadServiceProviderRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceProviderRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceProviderRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceProviderRequest.Merge(m, src)
-}
-func (m *ReadServiceProviderRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceProviderRequest.Size(m)
-}
-func (m *ReadServiceProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceProviderRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceProviderRequest proto.InternalMessageInfo
-
-func (m *ReadServiceProviderRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
+func (m *StreamSessionInputEvent) GetJoinSession() *EventJoinSession {
+	if x, ok := m.GetEvent().(*StreamSessionInputEvent_JoinSession); ok {
+		return x.JoinSession
 	}
 	return nil
 }
 
-type ReadServiceProviderResponse struct {
-	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *ReadServiceProviderResponse) Reset()         { *m = ReadServiceProviderResponse{} }
-func (m *ReadServiceProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceProviderResponse) ProtoMessage()    {}
-func (*ReadServiceProviderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{24}
-}
-
-func (m *ReadServiceProviderResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceProviderResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceProviderResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceProviderResponse.Merge(m, src)
-}
-func (m *ReadServiceProviderResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceProviderResponse.Size(m)
-}
-func (m *ReadServiceProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceProviderResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceProviderResponse proto.InternalMessageInfo
-
-func (m *ReadServiceProviderResponse) GetResult() *ServiceProvider {
-	if m != nil {
-		return m.Result
+func (m *StreamSessionInputEvent) GetLeaveSession() *EventLeaveSession {
+	if x, ok := m.GetEvent().(*StreamSessionInputEvent_LeaveSession); ok {
+		return x.LeaveSession
 	}
 	return nil
 }
 
-type UpdateServiceProviderRequest struct {
-	Payload              *ServiceProvider `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *UpdateServiceProviderRequest) Reset()         { *m = UpdateServiceProviderRequest{} }
-func (m *UpdateServiceProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceProviderRequest) ProtoMessage()    {}
-func (*UpdateServiceProviderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{25}
-}
-
-func (m *UpdateServiceProviderRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceProviderRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceProviderRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceProviderRequest.Merge(m, src)
-}
-func (m *UpdateServiceProviderRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceProviderRequest.Size(m)
-}
-func (m *UpdateServiceProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceProviderRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceProviderRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceProviderRequest) GetPayload() *ServiceProvider {
-	if m != nil {
-		return m.Payload
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*StreamSessionInputEvent) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*StreamSessionInputEvent_RequestSession)(nil),
+		(*StreamSessionInputEvent_JoinSession)(nil),
+		(*StreamSessionInputEvent_LeaveSession)(nil),
 	}
-	return nil
 }
 
-type UpdateServiceProviderResponse struct {
-	Result               *ServiceProvider `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *UpdateServiceProviderResponse) Reset()         { *m = UpdateServiceProviderResponse{} }
-func (m *UpdateServiceProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceProviderResponse) ProtoMessage()    {}
-func (*UpdateServiceProviderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{26}
-}
-
-func (m *UpdateServiceProviderResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceProviderResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceProviderResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceProviderResponse.Merge(m, src)
-}
-func (m *UpdateServiceProviderResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceProviderResponse.Size(m)
-}
-func (m *UpdateServiceProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceProviderResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceProviderResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceProviderResponse) GetResult() *ServiceProvider {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceProviderRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *DeleteServiceProviderRequest) Reset()         { *m = DeleteServiceProviderRequest{} }
-func (m *DeleteServiceProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceProviderRequest) ProtoMessage()    {}
-func (*DeleteServiceProviderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{27}
-}
-
-func (m *DeleteServiceProviderRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceProviderRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceProviderRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceProviderRequest.Merge(m, src)
-}
-func (m *DeleteServiceProviderRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceProviderRequest.Size(m)
-}
-func (m *DeleteServiceProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceProviderRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceProviderRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceProviderRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type DeleteServiceProviderResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceProviderResponse) Reset()         { *m = DeleteServiceProviderResponse{} }
-func (m *DeleteServiceProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceProviderResponse) ProtoMessage()    {}
-func (*DeleteServiceProviderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{28}
-}
-
-func (m *DeleteServiceProviderResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceProviderResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceProviderResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceProviderResponse.Merge(m, src)
-}
-func (m *DeleteServiceProviderResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceProviderResponse.Size(m)
-}
-func (m *DeleteServiceProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceProviderResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceProviderResponse proto.InternalMessageInfo
-
-type ListServiceProviderRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceProviderRequest) Reset()         { *m = ListServiceProviderRequest{} }
-func (m *ListServiceProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceProviderRequest) ProtoMessage()    {}
-func (*ListServiceProviderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{29}
-}
-
-func (m *ListServiceProviderRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceProviderRequest.Unmarshal(m, b)
-}
-func (m *ListServiceProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceProviderRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceProviderRequest.Merge(m, src)
-}
-func (m *ListServiceProviderRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceProviderRequest.Size(m)
-}
-func (m *ListServiceProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceProviderRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceProviderRequest proto.InternalMessageInfo
-
-func (m *ListServiceProviderRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceProviderRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceProviderRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceProviderRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceProviderResponse struct {
-	Results              []*ServiceProvider `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *ListServiceProviderResponse) Reset()         { *m = ListServiceProviderResponse{} }
-func (m *ListServiceProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceProviderResponse) ProtoMessage()    {}
-func (*ListServiceProviderResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{30}
-}
-
-func (m *ListServiceProviderResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceProviderResponse.Unmarshal(m, b)
-}
-func (m *ListServiceProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceProviderResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceProviderResponse.Merge(m, src)
-}
-func (m *ListServiceProviderResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceProviderResponse.Size(m)
-}
-func (m *ListServiceProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceProviderResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceProviderResponse proto.InternalMessageInfo
-
-func (m *ListServiceProviderResponse) GetResults() []*ServiceProvider {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceApplicationRequest struct {
-	Payload              *ServiceApplication `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *CreateServiceApplicationRequest) Reset()         { *m = CreateServiceApplicationRequest{} }
-func (m *CreateServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceApplicationRequest) ProtoMessage()    {}
-func (*CreateServiceApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{31}
-}
-
-func (m *CreateServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceApplicationRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceApplicationRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceApplicationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceApplicationRequest.Merge(m, src)
-}
-func (m *CreateServiceApplicationRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceApplicationRequest.Size(m)
-}
-func (m *CreateServiceApplicationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceApplicationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceApplicationRequest proto.InternalMessageInfo
-
-func (m *CreateServiceApplicationRequest) GetPayload() *ServiceApplication {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceApplicationResponse struct {
-	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *CreateServiceApplicationResponse) Reset()         { *m = CreateServiceApplicationResponse{} }
-func (m *CreateServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceApplicationResponse) ProtoMessage()    {}
-func (*CreateServiceApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{32}
-}
-
-func (m *CreateServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceApplicationResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceApplicationResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceApplicationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceApplicationResponse.Merge(m, src)
-}
-func (m *CreateServiceApplicationResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceApplicationResponse.Size(m)
-}
-func (m *CreateServiceApplicationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceApplicationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceApplicationResponse proto.InternalMessageInfo
-
-func (m *CreateServiceApplicationResponse) GetResult() *ServiceApplication {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceApplicationRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *ReadServiceApplicationRequest) Reset()         { *m = ReadServiceApplicationRequest{} }
-func (m *ReadServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceApplicationRequest) ProtoMessage()    {}
-func (*ReadServiceApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{33}
-}
-
-func (m *ReadServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceApplicationRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceApplicationRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceApplicationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceApplicationRequest.Merge(m, src)
-}
-func (m *ReadServiceApplicationRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceApplicationRequest.Size(m)
-}
-func (m *ReadServiceApplicationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceApplicationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceApplicationRequest proto.InternalMessageInfo
-
-func (m *ReadServiceApplicationRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type ReadServiceApplicationResponse struct {
-	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *ReadServiceApplicationResponse) Reset()         { *m = ReadServiceApplicationResponse{} }
-func (m *ReadServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceApplicationResponse) ProtoMessage()    {}
-func (*ReadServiceApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{34}
-}
-
-func (m *ReadServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceApplicationResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceApplicationResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceApplicationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceApplicationResponse.Merge(m, src)
-}
-func (m *ReadServiceApplicationResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceApplicationResponse.Size(m)
-}
-func (m *ReadServiceApplicationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceApplicationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceApplicationResponse proto.InternalMessageInfo
-
-func (m *ReadServiceApplicationResponse) GetResult() *ServiceApplication {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceApplicationRequest struct {
-	Payload              *ServiceApplication `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *UpdateServiceApplicationRequest) Reset()         { *m = UpdateServiceApplicationRequest{} }
-func (m *UpdateServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceApplicationRequest) ProtoMessage()    {}
-func (*UpdateServiceApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{35}
-}
-
-func (m *UpdateServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceApplicationRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceApplicationRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceApplicationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceApplicationRequest.Merge(m, src)
-}
-func (m *UpdateServiceApplicationRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceApplicationRequest.Size(m)
-}
-func (m *UpdateServiceApplicationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceApplicationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceApplicationRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceApplicationRequest) GetPayload() *ServiceApplication {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceApplicationResponse struct {
-	Result               *ServiceApplication `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *UpdateServiceApplicationResponse) Reset()         { *m = UpdateServiceApplicationResponse{} }
-func (m *UpdateServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceApplicationResponse) ProtoMessage()    {}
-func (*UpdateServiceApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{36}
-}
-
-func (m *UpdateServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceApplicationResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceApplicationResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceApplicationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceApplicationResponse.Merge(m, src)
-}
-func (m *UpdateServiceApplicationResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceApplicationResponse.Size(m)
-}
-func (m *UpdateServiceApplicationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceApplicationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceApplicationResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceApplicationResponse) GetResult() *ServiceApplication {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceApplicationRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *DeleteServiceApplicationRequest) Reset()         { *m = DeleteServiceApplicationRequest{} }
-func (m *DeleteServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceApplicationRequest) ProtoMessage()    {}
-func (*DeleteServiceApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{37}
-}
-
-func (m *DeleteServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceApplicationRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceApplicationRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceApplicationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceApplicationRequest.Merge(m, src)
-}
-func (m *DeleteServiceApplicationRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceApplicationRequest.Size(m)
-}
-func (m *DeleteServiceApplicationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceApplicationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceApplicationRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceApplicationRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type DeleteServiceApplicationResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceApplicationResponse) Reset()         { *m = DeleteServiceApplicationResponse{} }
-func (m *DeleteServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceApplicationResponse) ProtoMessage()    {}
-func (*DeleteServiceApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{38}
-}
-
-func (m *DeleteServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceApplicationResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceApplicationResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceApplicationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceApplicationResponse.Merge(m, src)
-}
-func (m *DeleteServiceApplicationResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceApplicationResponse.Size(m)
-}
-func (m *DeleteServiceApplicationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceApplicationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceApplicationResponse proto.InternalMessageInfo
-
-type ListServiceApplicationRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceApplicationRequest) Reset()         { *m = ListServiceApplicationRequest{} }
-func (m *ListServiceApplicationRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceApplicationRequest) ProtoMessage()    {}
-func (*ListServiceApplicationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{39}
-}
-
-func (m *ListServiceApplicationRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceApplicationRequest.Unmarshal(m, b)
-}
-func (m *ListServiceApplicationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceApplicationRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceApplicationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceApplicationRequest.Merge(m, src)
-}
-func (m *ListServiceApplicationRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceApplicationRequest.Size(m)
-}
-func (m *ListServiceApplicationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceApplicationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceApplicationRequest proto.InternalMessageInfo
-
-func (m *ListServiceApplicationRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceApplicationResponse struct {
-	Results              []*ServiceApplication `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceApplicationResponse) Reset()         { *m = ListServiceApplicationResponse{} }
-func (m *ListServiceApplicationResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceApplicationResponse) ProtoMessage()    {}
-func (*ListServiceApplicationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{40}
-}
-
-func (m *ListServiceApplicationResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceApplicationResponse.Unmarshal(m, b)
-}
-func (m *ListServiceApplicationResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceApplicationResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceApplicationResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceApplicationResponse.Merge(m, src)
-}
-func (m *ListServiceApplicationResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceApplicationResponse.Size(m)
-}
-func (m *ListServiceApplicationResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceApplicationResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceApplicationResponse proto.InternalMessageInfo
-
-func (m *ListServiceApplicationResponse) GetResults() []*ServiceApplication {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceTagRequest struct {
-	Payload              *ServiceTag `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *CreateServiceTagRequest) Reset()         { *m = CreateServiceTagRequest{} }
-func (m *CreateServiceTagRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceTagRequest) ProtoMessage()    {}
-func (*CreateServiceTagRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{41}
-}
-
-func (m *CreateServiceTagRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceTagRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceTagRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceTagRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceTagRequest.Merge(m, src)
-}
-func (m *CreateServiceTagRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceTagRequest.Size(m)
-}
-func (m *CreateServiceTagRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceTagRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceTagRequest proto.InternalMessageInfo
-
-func (m *CreateServiceTagRequest) GetPayload() *ServiceTag {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceTagResponse struct {
-	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *CreateServiceTagResponse) Reset()         { *m = CreateServiceTagResponse{} }
-func (m *CreateServiceTagResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceTagResponse) ProtoMessage()    {}
-func (*CreateServiceTagResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{42}
-}
-
-func (m *CreateServiceTagResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceTagResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceTagResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceTagResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceTagResponse.Merge(m, src)
-}
-func (m *CreateServiceTagResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceTagResponse.Size(m)
-}
-func (m *CreateServiceTagResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceTagResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceTagResponse proto.InternalMessageInfo
-
-func (m *CreateServiceTagResponse) GetResult() *ServiceTag {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceTagRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReadServiceTagRequest) Reset()         { *m = ReadServiceTagRequest{} }
-func (m *ReadServiceTagRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceTagRequest) ProtoMessage()    {}
-func (*ReadServiceTagRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{43}
-}
-
-func (m *ReadServiceTagRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceTagRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceTagRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceTagRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceTagRequest.Merge(m, src)
-}
-func (m *ReadServiceTagRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceTagRequest.Size(m)
-}
-func (m *ReadServiceTagRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceTagRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceTagRequest proto.InternalMessageInfo
-
-func (m *ReadServiceTagRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type ReadServiceTagResponse struct {
-	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *ReadServiceTagResponse) Reset()         { *m = ReadServiceTagResponse{} }
-func (m *ReadServiceTagResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceTagResponse) ProtoMessage()    {}
-func (*ReadServiceTagResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{44}
-}
-
-func (m *ReadServiceTagResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceTagResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceTagResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceTagResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceTagResponse.Merge(m, src)
-}
-func (m *ReadServiceTagResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceTagResponse.Size(m)
-}
-func (m *ReadServiceTagResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceTagResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceTagResponse proto.InternalMessageInfo
-
-func (m *ReadServiceTagResponse) GetResult() *ServiceTag {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceTagRequest struct {
-	Payload              *ServiceTag `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *UpdateServiceTagRequest) Reset()         { *m = UpdateServiceTagRequest{} }
-func (m *UpdateServiceTagRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceTagRequest) ProtoMessage()    {}
-func (*UpdateServiceTagRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{45}
-}
-
-func (m *UpdateServiceTagRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceTagRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceTagRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceTagRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceTagRequest.Merge(m, src)
-}
-func (m *UpdateServiceTagRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceTagRequest.Size(m)
-}
-func (m *UpdateServiceTagRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceTagRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceTagRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceTagRequest) GetPayload() *ServiceTag {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceTagResponse struct {
-	Result               *ServiceTag `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *UpdateServiceTagResponse) Reset()         { *m = UpdateServiceTagResponse{} }
-func (m *UpdateServiceTagResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceTagResponse) ProtoMessage()    {}
-func (*UpdateServiceTagResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{46}
-}
-
-func (m *UpdateServiceTagResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceTagResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceTagResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceTagResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceTagResponse.Merge(m, src)
-}
-func (m *UpdateServiceTagResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceTagResponse.Size(m)
-}
-func (m *UpdateServiceTagResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceTagResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceTagResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceTagResponse) GetResult() *ServiceTag {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceTagRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceTagRequest) Reset()         { *m = DeleteServiceTagRequest{} }
-func (m *DeleteServiceTagRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceTagRequest) ProtoMessage()    {}
-func (*DeleteServiceTagRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{47}
-}
-
-func (m *DeleteServiceTagRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceTagRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceTagRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceTagRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceTagRequest.Merge(m, src)
-}
-func (m *DeleteServiceTagRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceTagRequest.Size(m)
-}
-func (m *DeleteServiceTagRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceTagRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceTagRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceTagRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type DeleteServiceTagResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceTagResponse) Reset()         { *m = DeleteServiceTagResponse{} }
-func (m *DeleteServiceTagResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceTagResponse) ProtoMessage()    {}
-func (*DeleteServiceTagResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{48}
-}
-
-func (m *DeleteServiceTagResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceTagResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceTagResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceTagResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceTagResponse.Merge(m, src)
-}
-func (m *DeleteServiceTagResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceTagResponse.Size(m)
-}
-func (m *DeleteServiceTagResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceTagResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceTagResponse proto.InternalMessageInfo
-
-type ListServiceTagRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceTagRequest) Reset()         { *m = ListServiceTagRequest{} }
-func (m *ListServiceTagRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceTagRequest) ProtoMessage()    {}
-func (*ListServiceTagRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{49}
-}
-
-func (m *ListServiceTagRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceTagRequest.Unmarshal(m, b)
-}
-func (m *ListServiceTagRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceTagRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceTagRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceTagRequest.Merge(m, src)
-}
-func (m *ListServiceTagRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceTagRequest.Size(m)
-}
-func (m *ListServiceTagRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceTagRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceTagRequest proto.InternalMessageInfo
-
-func (m *ListServiceTagRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceTagRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceTagRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceTagRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceTagResponse struct {
-	Results              []*ServiceTag `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *ListServiceTagResponse) Reset()         { *m = ListServiceTagResponse{} }
-func (m *ListServiceTagResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceTagResponse) ProtoMessage()    {}
-func (*ListServiceTagResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{50}
-}
-
-func (m *ListServiceTagResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceTagResponse.Unmarshal(m, b)
-}
-func (m *ListServiceTagResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceTagResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceTagResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceTagResponse.Merge(m, src)
-}
-func (m *ListServiceTagResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceTagResponse.Size(m)
-}
-func (m *ListServiceTagResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceTagResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceTagResponse proto.InternalMessageInfo
-
-func (m *ListServiceTagResponse) GetResults() []*ServiceTag {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceApplicationFileRequest struct {
-	Payload              *ServiceApplicationFile `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *CreateServiceApplicationFileRequest) Reset()         { *m = CreateServiceApplicationFileRequest{} }
-func (m *CreateServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceApplicationFileRequest) ProtoMessage()    {}
-func (*CreateServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{51}
-}
-
-func (m *CreateServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceApplicationFileRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceApplicationFileRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceApplicationFileRequest.Merge(m, src)
-}
-func (m *CreateServiceApplicationFileRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceApplicationFileRequest.Size(m)
-}
-func (m *CreateServiceApplicationFileRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceApplicationFileRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceApplicationFileRequest proto.InternalMessageInfo
-
-func (m *CreateServiceApplicationFileRequest) GetPayload() *ServiceApplicationFile {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceApplicationFileResponse struct {
-	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *CreateServiceApplicationFileResponse) Reset()         { *m = CreateServiceApplicationFileResponse{} }
-func (m *CreateServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceApplicationFileResponse) ProtoMessage()    {}
-func (*CreateServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{52}
-}
-
-func (m *CreateServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceApplicationFileResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceApplicationFileResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceApplicationFileResponse.Merge(m, src)
-}
-func (m *CreateServiceApplicationFileResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceApplicationFileResponse.Size(m)
-}
-func (m *CreateServiceApplicationFileResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceApplicationFileResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceApplicationFileResponse proto.InternalMessageInfo
-
-func (m *CreateServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceApplicationFileRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *ReadServiceApplicationFileRequest) Reset()         { *m = ReadServiceApplicationFileRequest{} }
-func (m *ReadServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceApplicationFileRequest) ProtoMessage()    {}
-func (*ReadServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{53}
-}
-
-func (m *ReadServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceApplicationFileRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceApplicationFileRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceApplicationFileRequest.Merge(m, src)
-}
-func (m *ReadServiceApplicationFileRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceApplicationFileRequest.Size(m)
-}
-func (m *ReadServiceApplicationFileRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceApplicationFileRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceApplicationFileRequest proto.InternalMessageInfo
-
-func (m *ReadServiceApplicationFileRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type ReadServiceApplicationFileResponse struct {
-	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *ReadServiceApplicationFileResponse) Reset()         { *m = ReadServiceApplicationFileResponse{} }
-func (m *ReadServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceApplicationFileResponse) ProtoMessage()    {}
-func (*ReadServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{54}
-}
-
-func (m *ReadServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceApplicationFileResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceApplicationFileResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceApplicationFileResponse.Merge(m, src)
-}
-func (m *ReadServiceApplicationFileResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceApplicationFileResponse.Size(m)
-}
-func (m *ReadServiceApplicationFileResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceApplicationFileResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceApplicationFileResponse proto.InternalMessageInfo
-
-func (m *ReadServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceApplicationFileRequest struct {
-	Payload              *ServiceApplicationFile `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *UpdateServiceApplicationFileRequest) Reset()         { *m = UpdateServiceApplicationFileRequest{} }
-func (m *UpdateServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceApplicationFileRequest) ProtoMessage()    {}
-func (*UpdateServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{55}
-}
-
-func (m *UpdateServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceApplicationFileRequest.Merge(m, src)
-}
-func (m *UpdateServiceApplicationFileRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceApplicationFileRequest.Size(m)
-}
-func (m *UpdateServiceApplicationFileRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceApplicationFileRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceApplicationFileRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceApplicationFileRequest) GetPayload() *ServiceApplicationFile {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceApplicationFileResponse struct {
-	Result               *ServiceApplicationFile `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
-}
-
-func (m *UpdateServiceApplicationFileResponse) Reset()         { *m = UpdateServiceApplicationFileResponse{} }
-func (m *UpdateServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceApplicationFileResponse) ProtoMessage()    {}
-func (*UpdateServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{56}
-}
-
-func (m *UpdateServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceApplicationFileResponse.Merge(m, src)
-}
-func (m *UpdateServiceApplicationFileResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceApplicationFileResponse.Size(m)
-}
-func (m *UpdateServiceApplicationFileResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceApplicationFileResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceApplicationFileResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceApplicationFileResponse) GetResult() *ServiceApplicationFile {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceApplicationFileRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *DeleteServiceApplicationFileRequest) Reset()         { *m = DeleteServiceApplicationFileRequest{} }
-func (m *DeleteServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceApplicationFileRequest) ProtoMessage()    {}
-func (*DeleteServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{57}
-}
-
-func (m *DeleteServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceApplicationFileRequest.Merge(m, src)
-}
-func (m *DeleteServiceApplicationFileRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceApplicationFileRequest.Size(m)
-}
-func (m *DeleteServiceApplicationFileRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceApplicationFileRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceApplicationFileRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceApplicationFileRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type DeleteServiceApplicationFileResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceApplicationFileResponse) Reset()         { *m = DeleteServiceApplicationFileResponse{} }
-func (m *DeleteServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceApplicationFileResponse) ProtoMessage()    {}
-func (*DeleteServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{58}
-}
-
-func (m *DeleteServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceApplicationFileResponse.Merge(m, src)
-}
-func (m *DeleteServiceApplicationFileResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceApplicationFileResponse.Size(m)
-}
-func (m *DeleteServiceApplicationFileResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceApplicationFileResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceApplicationFileResponse proto.InternalMessageInfo
-
-type ListServiceApplicationFileRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceApplicationFileRequest) Reset()         { *m = ListServiceApplicationFileRequest{} }
-func (m *ListServiceApplicationFileRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceApplicationFileRequest) ProtoMessage()    {}
-func (*ListServiceApplicationFileRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{59}
-}
-
-func (m *ListServiceApplicationFileRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceApplicationFileRequest.Unmarshal(m, b)
-}
-func (m *ListServiceApplicationFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceApplicationFileRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceApplicationFileRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceApplicationFileRequest.Merge(m, src)
-}
-func (m *ListServiceApplicationFileRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceApplicationFileRequest.Size(m)
-}
-func (m *ListServiceApplicationFileRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceApplicationFileRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceApplicationFileRequest proto.InternalMessageInfo
-
-func (m *ListServiceApplicationFileRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationFileRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationFileRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceApplicationFileRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceApplicationFileResponse struct {
-	Results              []*ServiceApplicationFile `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                  `json:"-"`
-	XXX_unrecognized     []byte                    `json:"-"`
-	XXX_sizecache        int32                     `json:"-"`
-}
-
-func (m *ListServiceApplicationFileResponse) Reset()         { *m = ListServiceApplicationFileResponse{} }
-func (m *ListServiceApplicationFileResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceApplicationFileResponse) ProtoMessage()    {}
-func (*ListServiceApplicationFileResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{60}
-}
-
-func (m *ListServiceApplicationFileResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceApplicationFileResponse.Unmarshal(m, b)
-}
-func (m *ListServiceApplicationFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceApplicationFileResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceApplicationFileResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceApplicationFileResponse.Merge(m, src)
-}
-func (m *ListServiceApplicationFileResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceApplicationFileResponse.Size(m)
-}
-func (m *ListServiceApplicationFileResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceApplicationFileResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceApplicationFileResponse proto.InternalMessageInfo
-
-func (m *ListServiceApplicationFileResponse) GetResults() []*ServiceApplicationFile {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceOfferRequest struct {
-	Payload              *ServiceOffer `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *CreateServiceOfferRequest) Reset()         { *m = CreateServiceOfferRequest{} }
-func (m *CreateServiceOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceOfferRequest) ProtoMessage()    {}
-func (*CreateServiceOfferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{61}
-}
-
-func (m *CreateServiceOfferRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceOfferRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceOfferRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceOfferRequest.Merge(m, src)
-}
-func (m *CreateServiceOfferRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceOfferRequest.Size(m)
-}
-func (m *CreateServiceOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceOfferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceOfferRequest proto.InternalMessageInfo
-
-func (m *CreateServiceOfferRequest) GetPayload() *ServiceOffer {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceOfferResponse struct {
-	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *CreateServiceOfferResponse) Reset()         { *m = CreateServiceOfferResponse{} }
-func (m *CreateServiceOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceOfferResponse) ProtoMessage()    {}
-func (*CreateServiceOfferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{62}
-}
-
-func (m *CreateServiceOfferResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceOfferResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceOfferResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceOfferResponse.Merge(m, src)
-}
-func (m *CreateServiceOfferResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceOfferResponse.Size(m)
-}
-func (m *CreateServiceOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceOfferResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceOfferResponse proto.InternalMessageInfo
-
-func (m *CreateServiceOfferResponse) GetResult() *ServiceOffer {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceOfferRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *ReadServiceOfferRequest) Reset()         { *m = ReadServiceOfferRequest{} }
-func (m *ReadServiceOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceOfferRequest) ProtoMessage()    {}
-func (*ReadServiceOfferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{63}
-}
-
-func (m *ReadServiceOfferRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceOfferRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceOfferRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceOfferRequest.Merge(m, src)
-}
-func (m *ReadServiceOfferRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceOfferRequest.Size(m)
-}
-func (m *ReadServiceOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceOfferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceOfferRequest proto.InternalMessageInfo
-
-func (m *ReadServiceOfferRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type ReadServiceOfferResponse struct {
-	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *ReadServiceOfferResponse) Reset()         { *m = ReadServiceOfferResponse{} }
-func (m *ReadServiceOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceOfferResponse) ProtoMessage()    {}
-func (*ReadServiceOfferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{64}
-}
-
-func (m *ReadServiceOfferResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceOfferResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceOfferResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceOfferResponse.Merge(m, src)
-}
-func (m *ReadServiceOfferResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceOfferResponse.Size(m)
-}
-func (m *ReadServiceOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceOfferResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceOfferResponse proto.InternalMessageInfo
-
-func (m *ReadServiceOfferResponse) GetResult() *ServiceOffer {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceOfferRequest struct {
-	Payload              *ServiceOffer `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *UpdateServiceOfferRequest) Reset()         { *m = UpdateServiceOfferRequest{} }
-func (m *UpdateServiceOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceOfferRequest) ProtoMessage()    {}
-func (*UpdateServiceOfferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{65}
-}
-
-func (m *UpdateServiceOfferRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceOfferRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceOfferRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceOfferRequest.Merge(m, src)
-}
-func (m *UpdateServiceOfferRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceOfferRequest.Size(m)
-}
-func (m *UpdateServiceOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceOfferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceOfferRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceOfferRequest) GetPayload() *ServiceOffer {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceOfferResponse struct {
-	Result               *ServiceOffer `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *UpdateServiceOfferResponse) Reset()         { *m = UpdateServiceOfferResponse{} }
-func (m *UpdateServiceOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceOfferResponse) ProtoMessage()    {}
-func (*UpdateServiceOfferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{66}
-}
-
-func (m *UpdateServiceOfferResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceOfferResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceOfferResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceOfferResponse.Merge(m, src)
-}
-func (m *UpdateServiceOfferResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceOfferResponse.Size(m)
-}
-func (m *UpdateServiceOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceOfferResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceOfferResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceOfferResponse) GetResult() *ServiceOffer {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceOfferRequest struct {
-	Id                   *types.UUIDValue `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
-}
-
-func (m *DeleteServiceOfferRequest) Reset()         { *m = DeleteServiceOfferRequest{} }
-func (m *DeleteServiceOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceOfferRequest) ProtoMessage()    {}
-func (*DeleteServiceOfferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{67}
-}
-
-func (m *DeleteServiceOfferRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceOfferRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceOfferRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceOfferRequest.Merge(m, src)
-}
-func (m *DeleteServiceOfferRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceOfferRequest.Size(m)
-}
-func (m *DeleteServiceOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceOfferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceOfferRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceOfferRequest) GetId() *types.UUIDValue {
-	if m != nil {
-		return m.Id
-	}
-	return nil
-}
-
-type DeleteServiceOfferResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceOfferResponse) Reset()         { *m = DeleteServiceOfferResponse{} }
-func (m *DeleteServiceOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceOfferResponse) ProtoMessage()    {}
-func (*DeleteServiceOfferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{68}
-}
-
-func (m *DeleteServiceOfferResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceOfferResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceOfferResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceOfferResponse.Merge(m, src)
-}
-func (m *DeleteServiceOfferResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceOfferResponse.Size(m)
-}
-func (m *DeleteServiceOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceOfferResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceOfferResponse proto.InternalMessageInfo
-
-type ListServiceOfferRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceOfferRequest) Reset()         { *m = ListServiceOfferRequest{} }
-func (m *ListServiceOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceOfferRequest) ProtoMessage()    {}
-func (*ListServiceOfferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{69}
-}
-
-func (m *ListServiceOfferRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceOfferRequest.Unmarshal(m, b)
-}
-func (m *ListServiceOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceOfferRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceOfferRequest.Merge(m, src)
-}
-func (m *ListServiceOfferRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceOfferRequest.Size(m)
-}
-func (m *ListServiceOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceOfferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceOfferRequest proto.InternalMessageInfo
-
-func (m *ListServiceOfferRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceOfferRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceOfferRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceOfferRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceOfferResponse struct {
-	Results              []*ServiceOffer `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+type EventRequestSession struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *ListServiceOfferResponse) Reset()         { *m = ListServiceOfferResponse{} }
-func (m *ListServiceOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceOfferResponse) ProtoMessage()    {}
-func (*ListServiceOfferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{70}
+func (m *EventRequestSession) Reset()         { *m = EventRequestSession{} }
+func (m *EventRequestSession) String() string { return proto.CompactTextString(m) }
+func (*EventRequestSession) ProtoMessage()    {}
+func (*EventRequestSession) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{102}
 }
 
-func (m *ListServiceOfferResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceOfferResponse.Unmarshal(m, b)
+func (m *EventRequestSession) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventRequestSession.Unmarshal(m, b)
 }
-func (m *ListServiceOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceOfferResponse.Marshal(b, m, deterministic)
+func (m *EventRequestSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventRequestSession.Marshal(b, m, deterministic)
 }
-func (m *ListServiceOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceOfferResponse.Merge(m, src)
+func (m *EventRequestSession) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventRequestSession.Merge(m, src)
 }
-func (m *ListServiceOfferResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceOfferResponse.Size(m)
+func (m *EventRequestSession) XXX_Size() int {
+	return xxx_messageInfo_EventRequestSession.Size(m)
 }
-func (m *ListServiceOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceOfferResponse.DiscardUnknown(m)
+func (m *EventRequestSession) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventRequestSession.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ListServiceOfferResponse proto.InternalMessageInfo
+var xxx_messageInfo_EventRequestSession proto.InternalMessageInfo
 
-func (m *ListServiceOfferResponse) GetResults() []*ServiceOffer {
+func (m *EventRequestSession) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Results
+		return m.Session
 	}
 	return nil
 }
 
-type CreateServiceDetailsRequest struct {
-	Payload              *ServiceDetails `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+type EventJoinSession struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *CreateServiceDetailsRequest) Reset()         { *m = CreateServiceDetailsRequest{} }
-func (m *CreateServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceDetailsRequest) ProtoMessage()    {}
-func (*CreateServiceDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{71}
+func (m *EventJoinSession) Reset()         { *m = EventJoinSession{} }
+func (m *EventJoinSession) String() string { return proto.CompactTextString(m) }
+func (*EventJoinSession) ProtoMessage()    {}
+func (*EventJoinSession) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{103}
 }
 
-func (m *CreateServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceDetailsRequest.Unmarshal(m, b)
+func (m *EventJoinSession) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventJoinSession.Unmarshal(m, b)
 }
-func (m *CreateServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceDetailsRequest.Marshal(b, m, deterministic)
+func (m *EventJoinSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventJoinSession.Marshal(b, m, deterministic)
 }
-func (m *CreateServiceDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceDetailsRequest.Merge(m, src)
+func (m *EventJoinSession) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventJoinSession.Merge(m, src)
 }
-func (m *CreateServiceDetailsRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceDetailsRequest.Size(m)
+func (m *EventJoinSession) XXX_Size() int {
+	return xxx_messageInfo_EventJoinSession.Size(m)
 }
-func (m *CreateServiceDetailsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceDetailsRequest.DiscardUnknown(m)
+func (m *EventJoinSession) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventJoinSession.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateServiceDetailsRequest proto.InternalMessageInfo
+var xxx_messageInfo_EventJoinSession proto.InternalMessageInfo
 
-func (m *CreateServiceDetailsRequest) GetPayload() *ServiceDetails {
+func (m *EventJoinSession) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Payload
+		return m.Session
 	}
 	return nil
 }
 
-type CreateServiceDetailsResponse struct {
-	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+type EventLeaveSession struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *CreateServiceDetailsResponse) Reset()         { *m = CreateServiceDetailsResponse{} }
-func (m *CreateServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceDetailsResponse) ProtoMessage()    {}
-func (*CreateServiceDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{72}
+func (m *EventLeaveSession) Reset()         { *m = EventLeaveSession{} }
+func (m *EventLeaveSession) String() string { return proto.CompactTextString(m) }
+func (*EventLeaveSession) ProtoMessage()    {}
+func (*EventLeaveSession) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{104}
 }
 
-func (m *CreateServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceDetailsResponse.Unmarshal(m, b)
+func (m *EventLeaveSession) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventLeaveSession.Unmarshal(m, b)
 }
-func (m *CreateServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceDetailsResponse.Marshal(b, m, deterministic)
+func (m *EventLeaveSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventLeaveSession.Marshal(b, m, deterministic)
 }
-func (m *CreateServiceDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceDetailsResponse.Merge(m, src)
+func (m *EventLeaveSession) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventLeaveSession.Merge(m, src)
 }
-func (m *CreateServiceDetailsResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceDetailsResponse.Size(m)
+func (m *EventLeaveSession) XXX_Size() int {
+	return xxx_messageInfo_EventLeaveSession.Size(m)
 }
-func (m *CreateServiceDetailsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceDetailsResponse.DiscardUnknown(m)
+func (m *EventLeaveSession) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventLeaveSession.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateServiceDetailsResponse proto.InternalMessageInfo
+var xxx_messageInfo_EventLeaveSession proto.InternalMessageInfo
 
-func (m *CreateServiceDetailsResponse) GetResult() *ServiceDetails {
+func (m *EventLeaveSession) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Result
+		return m.Session
 	}
 	return nil
 }
 
-type ReadServiceDetailsRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type StreamSessionOutputEvent struct {
+	// Types that are valid to be assigned to Event:
+	//	*StreamSessionOutputEvent_SessionRequested
+	//	*StreamSessionOutputEvent_SessionStarted
+	//	*StreamSessionOutputEvent_SessionTimeout
+	//	*StreamSessionOutputEvent_SessionFinished
+	Event                isStreamSessionOutputEvent_Event `protobuf_oneof:"event"`
+	XXX_NoUnkeyedLiteral struct{}                         `json:"-"`
+	XXX_unrecognized     []byte                           `json:"-"`
+	XXX_sizecache        int32                            `json:"-"`
 }
 
-func (m *ReadServiceDetailsRequest) Reset()         { *m = ReadServiceDetailsRequest{} }
-func (m *ReadServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceDetailsRequest) ProtoMessage()    {}
-func (*ReadServiceDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{73}
+func (m *StreamSessionOutputEvent) Reset()         { *m = StreamSessionOutputEvent{} }
+func (m *StreamSessionOutputEvent) String() string { return proto.CompactTextString(m) }
+func (*StreamSessionOutputEvent) ProtoMessage()    {}
+func (*StreamSessionOutputEvent) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{105}
 }
 
-func (m *ReadServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceDetailsRequest.Unmarshal(m, b)
+func (m *StreamSessionOutputEvent) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamSessionOutputEvent.Unmarshal(m, b)
 }
-func (m *ReadServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceDetailsRequest.Marshal(b, m, deterministic)
+func (m *StreamSessionOutputEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamSessionOutputEvent.Marshal(b, m, deterministic)
 }
-func (m *ReadServiceDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceDetailsRequest.Merge(m, src)
+func (m *StreamSessionOutputEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamSessionOutputEvent.Merge(m, src)
 }
-func (m *ReadServiceDetailsRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceDetailsRequest.Size(m)
+func (m *StreamSessionOutputEvent) XXX_Size() int {
+	return xxx_messageInfo_StreamSessionOutputEvent.Size(m)
 }
-func (m *ReadServiceDetailsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceDetailsRequest.DiscardUnknown(m)
+func (m *StreamSessionOutputEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamSessionOutputEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ReadServiceDetailsRequest proto.InternalMessageInfo
+var xxx_messageInfo_StreamSessionOutputEvent proto.InternalMessageInfo
 
-func (m *ReadServiceDetailsRequest) GetId() uint64 {
+type isStreamSessionOutputEvent_Event interface {
+	isStreamSessionOutputEvent_Event()
+}
+
+type StreamSessionOutputEvent_SessionRequested struct {
+	SessionRequested *EventSessionRequested `protobuf:"bytes,1,opt,name=session_requested,json=sessionRequested,proto3,oneof"`
+}
+
+type StreamSessionOutputEvent_SessionStarted struct {
+	SessionStarted *EventSessionStarted `protobuf:"bytes,2,opt,name=session_started,json=sessionStarted,proto3,oneof"`
+}
+
+type StreamSessionOutputEvent_SessionTimeout struct {
+	SessionTimeout *EventSessionTimeout `protobuf:"bytes,3,opt,name=session_timeout,json=sessionTimeout,proto3,oneof"`
+}
+
+type StreamSessionOutputEvent_SessionFinished struct {
+	SessionFinished *EventSessionFinished `protobuf:"bytes,4,opt,name=session_finished,json=sessionFinished,proto3,oneof"`
+}
+
+func (*StreamSessionOutputEvent_SessionRequested) isStreamSessionOutputEvent_Event() {}
+
+func (*StreamSessionOutputEvent_SessionStarted) isStreamSessionOutputEvent_Event() {}
+
+func (*StreamSessionOutputEvent_SessionTimeout) isStreamSessionOutputEvent_Event() {}
+
+func (*StreamSessionOutputEvent_SessionFinished) isStreamSessionOutputEvent_Event() {}
+
+func (m *StreamSessionOutputEvent) GetEvent() isStreamSessionOutputEvent_Event {
 	if m != nil {
-		return m.Id
+		return m.Event
 	}
-	return 0
+	return nil
 }
 
-type ReadServiceDetailsResponse struct {
-	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+func (m *StreamSessionOutputEvent) GetSessionRequested() *EventSessionRequested {
+	if x, ok := m.GetEvent().(*StreamSessionOutputEvent_SessionRequested); ok {
+		return x.SessionRequested
+	}
+	return nil
+}
+
+func (m *StreamSessionOutputEvent) GetSessionStarted() *EventSessionStarted {
+	if x, ok := m.GetEvent().(*StreamSessionOutputEvent_SessionStarted); ok {
+		return x.SessionStarted
+	}
+	return nil
+}
+
+func (m *StreamSessionOutputEvent) GetSessionTimeout() *EventSessionTimeout {
+	if x, ok := m.GetEvent().(*StreamSessionOutputEvent_SessionTimeout); ok {
+		return x.SessionTimeout
+	}
+	return nil
+}
+
+func (m *StreamSessionOutputEvent) GetSessionFinished() *EventSessionFinished {
+	if x, ok := m.GetEvent().(*StreamSessionOutputEvent_SessionFinished); ok {
+		return x.SessionFinished
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*StreamSessionOutputEvent) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*StreamSessionOutputEvent_SessionRequested)(nil),
+		(*StreamSessionOutputEvent_SessionStarted)(nil),
+		(*StreamSessionOutputEvent_SessionTimeout)(nil),
+		(*StreamSessionOutputEvent_SessionFinished)(nil),
+	}
+}
+
+type EventSessionRequested struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *ReadServiceDetailsResponse) Reset()         { *m = ReadServiceDetailsResponse{} }
-func (m *ReadServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceDetailsResponse) ProtoMessage()    {}
-func (*ReadServiceDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{74}
+func (m *EventSessionRequested) Reset()         { *m = EventSessionRequested{} }
+func (m *EventSessionRequested) String() string { return proto.CompactTextString(m) }
+func (*EventSessionRequested) ProtoMessage()    {}
+func (*EventSessionRequested) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{106}
 }
 
-func (m *ReadServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceDetailsResponse.Unmarshal(m, b)
+func (m *EventSessionRequested) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventSessionRequested.Unmarshal(m, b)
 }
-func (m *ReadServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceDetailsResponse.Marshal(b, m, deterministic)
+func (m *EventSessionRequested) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventSessionRequested.Marshal(b, m, deterministic)
 }
-func (m *ReadServiceDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceDetailsResponse.Merge(m, src)
+func (m *EventSessionRequested) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSessionRequested.Merge(m, src)
 }
-func (m *ReadServiceDetailsResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceDetailsResponse.Size(m)
+func (m *EventSessionRequested) XXX_Size() int {
+	return xxx_messageInfo_EventSessionRequested.Size(m)
 }
-func (m *ReadServiceDetailsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceDetailsResponse.DiscardUnknown(m)
+func (m *EventSessionRequested) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSessionRequested.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ReadServiceDetailsResponse proto.InternalMessageInfo
+var xxx_messageInfo_EventSessionRequested proto.InternalMessageInfo
 
-func (m *ReadServiceDetailsResponse) GetResult() *ServiceDetails {
+func (m *EventSessionRequested) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Result
+		return m.Session
 	}
 	return nil
 }
 
-type UpdateServiceDetailsRequest struct {
-	Payload              *ServiceDetails `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
+type EventSessionStarted struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *UpdateServiceDetailsRequest) Reset()         { *m = UpdateServiceDetailsRequest{} }
-func (m *UpdateServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceDetailsRequest) ProtoMessage()    {}
-func (*UpdateServiceDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{75}
+func (m *EventSessionStarted) Reset()         { *m = EventSessionStarted{} }
+func (m *EventSessionStarted) String() string { return proto.CompactTextString(m) }
+func (*EventSessionStarted) ProtoMessage()    {}
+func (*EventSessionStarted) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{107}
 }
 
-func (m *UpdateServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceDetailsRequest.Unmarshal(m, b)
+func (m *EventSessionStarted) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventSessionStarted.Unmarshal(m, b)
 }
-func (m *UpdateServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceDetailsRequest.Marshal(b, m, deterministic)
+func (m *EventSessionStarted) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventSessionStarted.Marshal(b, m, deterministic)
 }
-func (m *UpdateServiceDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceDetailsRequest.Merge(m, src)
+func (m *EventSessionStarted) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSessionStarted.Merge(m, src)
 }
-func (m *UpdateServiceDetailsRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceDetailsRequest.Size(m)
+func (m *EventSessionStarted) XXX_Size() int {
+	return xxx_messageInfo_EventSessionStarted.Size(m)
 }
-func (m *UpdateServiceDetailsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceDetailsRequest.DiscardUnknown(m)
+func (m *EventSessionStarted) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSessionStarted.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateServiceDetailsRequest proto.InternalMessageInfo
+var xxx_messageInfo_EventSessionStarted proto.InternalMessageInfo
 
-func (m *UpdateServiceDetailsRequest) GetPayload() *ServiceDetails {
+func (m *EventSessionStarted) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Payload
+		return m.Session
 	}
 	return nil
 }
 
-type UpdateServiceDetailsResponse struct {
-	Result               *ServiceDetails `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+type EventSessionTimeout struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *UpdateServiceDetailsResponse) Reset()         { *m = UpdateServiceDetailsResponse{} }
-func (m *UpdateServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceDetailsResponse) ProtoMessage()    {}
-func (*UpdateServiceDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{76}
+func (m *EventSessionTimeout) Reset()         { *m = EventSessionTimeout{} }
+func (m *EventSessionTimeout) String() string { return proto.CompactTextString(m) }
+func (*EventSessionTimeout) ProtoMessage()    {}
+func (*EventSessionTimeout) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{108}
 }
 
-func (m *UpdateServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceDetailsResponse.Unmarshal(m, b)
+func (m *EventSessionTimeout) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventSessionTimeout.Unmarshal(m, b)
 }
-func (m *UpdateServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceDetailsResponse.Marshal(b, m, deterministic)
+func (m *EventSessionTimeout) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventSessionTimeout.Marshal(b, m, deterministic)
 }
-func (m *UpdateServiceDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceDetailsResponse.Merge(m, src)
+func (m *EventSessionTimeout) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSessionTimeout.Merge(m, src)
 }
-func (m *UpdateServiceDetailsResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceDetailsResponse.Size(m)
+func (m *EventSessionTimeout) XXX_Size() int {
+	return xxx_messageInfo_EventSessionTimeout.Size(m)
 }
-func (m *UpdateServiceDetailsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceDetailsResponse.DiscardUnknown(m)
+func (m *EventSessionTimeout) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSessionTimeout.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateServiceDetailsResponse proto.InternalMessageInfo
+var xxx_messageInfo_EventSessionTimeout proto.InternalMessageInfo
 
-func (m *UpdateServiceDetailsResponse) GetResult() *ServiceDetails {
+func (m *EventSessionTimeout) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Result
+		return m.Session
 	}
 	return nil
 }
 
-type DeleteServiceDetailsRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type EventSessionFinished struct {
+	Session              *ServiceSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
 }
 
-func (m *DeleteServiceDetailsRequest) Reset()         { *m = DeleteServiceDetailsRequest{} }
-func (m *DeleteServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceDetailsRequest) ProtoMessage()    {}
-func (*DeleteServiceDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{77}
+func (m *EventSessionFinished) Reset()         { *m = EventSessionFinished{} }
+func (m *EventSessionFinished) String() string { return proto.CompactTextString(m) }
+func (*EventSessionFinished) ProtoMessage()    {}
+func (*EventSessionFinished) Descriptor() ([]byte, []int) {
+	return fileDescriptor_3c62a9da5f95a834, []int{109}
 }
 
-func (m *DeleteServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceDetailsRequest.Unmarshal(m, b)
+func (m *EventSessionFinished) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EventSessionFinished.Unmarshal(m, b)
 }
-func (m *DeleteServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceDetailsRequest.Marshal(b, m, deterministic)
+func (m *EventSessionFinished) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EventSessionFinished.Marshal(b, m, deterministic)
 }
-func (m *DeleteServiceDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceDetailsRequest.Merge(m, src)
+func (m *EventSessionFinished) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSessionFinished.Merge(m, src)
 }
-func (m *DeleteServiceDetailsRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceDetailsRequest.Size(m)
+func (m *EventSessionFinished) XXX_Size() int {
+	return xxx_messageInfo_EventSessionFinished.Size(m)
 }
-func (m *DeleteServiceDetailsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceDetailsRequest.DiscardUnknown(m)
+func (m *EventSessionFinished) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSessionFinished.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteServiceDetailsRequest proto.InternalMessageInfo
+var xxx_messageInfo_EventSessionFinished proto.InternalMessageInfo
 
-func (m *DeleteServiceDetailsRequest) GetId() uint64 {
+func (m *EventSessionFinished) GetSession() *ServiceSession {
 	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type DeleteServiceDetailsResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceDetailsResponse) Reset()         { *m = DeleteServiceDetailsResponse{} }
-func (m *DeleteServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceDetailsResponse) ProtoMessage()    {}
-func (*DeleteServiceDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{78}
-}
-
-func (m *DeleteServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceDetailsResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceDetailsResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceDetailsResponse.Merge(m, src)
-}
-func (m *DeleteServiceDetailsResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceDetailsResponse.Size(m)
-}
-func (m *DeleteServiceDetailsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceDetailsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceDetailsResponse proto.InternalMessageInfo
-
-type ListServiceDetailsRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceDetailsRequest) Reset()         { *m = ListServiceDetailsRequest{} }
-func (m *ListServiceDetailsRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceDetailsRequest) ProtoMessage()    {}
-func (*ListServiceDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{79}
-}
-
-func (m *ListServiceDetailsRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceDetailsRequest.Unmarshal(m, b)
-}
-func (m *ListServiceDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceDetailsRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceDetailsRequest.Merge(m, src)
-}
-func (m *ListServiceDetailsRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceDetailsRequest.Size(m)
-}
-func (m *ListServiceDetailsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceDetailsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceDetailsRequest proto.InternalMessageInfo
-
-func (m *ListServiceDetailsRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceDetailsRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceDetailsRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceDetailsRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceDetailsResponse struct {
-	Results              []*ServiceDetails `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *ListServiceDetailsResponse) Reset()         { *m = ListServiceDetailsResponse{} }
-func (m *ListServiceDetailsResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceDetailsResponse) ProtoMessage()    {}
-func (*ListServiceDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{80}
-}
-
-func (m *ListServiceDetailsResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceDetailsResponse.Unmarshal(m, b)
-}
-func (m *ListServiceDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceDetailsResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceDetailsResponse.Merge(m, src)
-}
-func (m *ListServiceDetailsResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceDetailsResponse.Size(m)
-}
-func (m *ListServiceDetailsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceDetailsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceDetailsResponse proto.InternalMessageInfo
-
-func (m *ListServiceDetailsResponse) GetResults() []*ServiceDetails {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceEmploymentRequest struct {
-	Payload              *ServiceEmployment `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *CreateServiceEmploymentRequest) Reset()         { *m = CreateServiceEmploymentRequest{} }
-func (m *CreateServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceEmploymentRequest) ProtoMessage()    {}
-func (*CreateServiceEmploymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{81}
-}
-
-func (m *CreateServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceEmploymentRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceEmploymentRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceEmploymentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceEmploymentRequest.Merge(m, src)
-}
-func (m *CreateServiceEmploymentRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceEmploymentRequest.Size(m)
-}
-func (m *CreateServiceEmploymentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceEmploymentRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceEmploymentRequest proto.InternalMessageInfo
-
-func (m *CreateServiceEmploymentRequest) GetPayload() *ServiceEmployment {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceEmploymentResponse struct {
-	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *CreateServiceEmploymentResponse) Reset()         { *m = CreateServiceEmploymentResponse{} }
-func (m *CreateServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceEmploymentResponse) ProtoMessage()    {}
-func (*CreateServiceEmploymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{82}
-}
-
-func (m *CreateServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceEmploymentResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceEmploymentResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceEmploymentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceEmploymentResponse.Merge(m, src)
-}
-func (m *CreateServiceEmploymentResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceEmploymentResponse.Size(m)
-}
-func (m *CreateServiceEmploymentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceEmploymentResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceEmploymentResponse proto.InternalMessageInfo
-
-func (m *CreateServiceEmploymentResponse) GetResult() *ServiceEmployment {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceEmploymentRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReadServiceEmploymentRequest) Reset()         { *m = ReadServiceEmploymentRequest{} }
-func (m *ReadServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceEmploymentRequest) ProtoMessage()    {}
-func (*ReadServiceEmploymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{83}
-}
-
-func (m *ReadServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceEmploymentRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceEmploymentRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceEmploymentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceEmploymentRequest.Merge(m, src)
-}
-func (m *ReadServiceEmploymentRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceEmploymentRequest.Size(m)
-}
-func (m *ReadServiceEmploymentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceEmploymentRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceEmploymentRequest proto.InternalMessageInfo
-
-func (m *ReadServiceEmploymentRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type ReadServiceEmploymentResponse struct {
-	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *ReadServiceEmploymentResponse) Reset()         { *m = ReadServiceEmploymentResponse{} }
-func (m *ReadServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceEmploymentResponse) ProtoMessage()    {}
-func (*ReadServiceEmploymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{84}
-}
-
-func (m *ReadServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceEmploymentResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceEmploymentResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceEmploymentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceEmploymentResponse.Merge(m, src)
-}
-func (m *ReadServiceEmploymentResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceEmploymentResponse.Size(m)
-}
-func (m *ReadServiceEmploymentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceEmploymentResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceEmploymentResponse proto.InternalMessageInfo
-
-func (m *ReadServiceEmploymentResponse) GetResult() *ServiceEmployment {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceEmploymentRequest struct {
-	Payload              *ServiceEmployment `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *UpdateServiceEmploymentRequest) Reset()         { *m = UpdateServiceEmploymentRequest{} }
-func (m *UpdateServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceEmploymentRequest) ProtoMessage()    {}
-func (*UpdateServiceEmploymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{85}
-}
-
-func (m *UpdateServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceEmploymentRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceEmploymentRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceEmploymentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceEmploymentRequest.Merge(m, src)
-}
-func (m *UpdateServiceEmploymentRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceEmploymentRequest.Size(m)
-}
-func (m *UpdateServiceEmploymentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceEmploymentRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceEmploymentRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceEmploymentRequest) GetPayload() *ServiceEmployment {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceEmploymentResponse struct {
-	Result               *ServiceEmployment `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
-}
-
-func (m *UpdateServiceEmploymentResponse) Reset()         { *m = UpdateServiceEmploymentResponse{} }
-func (m *UpdateServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceEmploymentResponse) ProtoMessage()    {}
-func (*UpdateServiceEmploymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{86}
-}
-
-func (m *UpdateServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceEmploymentResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceEmploymentResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceEmploymentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceEmploymentResponse.Merge(m, src)
-}
-func (m *UpdateServiceEmploymentResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceEmploymentResponse.Size(m)
-}
-func (m *UpdateServiceEmploymentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceEmploymentResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceEmploymentResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceEmploymentResponse) GetResult() *ServiceEmployment {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceEmploymentRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceEmploymentRequest) Reset()         { *m = DeleteServiceEmploymentRequest{} }
-func (m *DeleteServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceEmploymentRequest) ProtoMessage()    {}
-func (*DeleteServiceEmploymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{87}
-}
-
-func (m *DeleteServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceEmploymentRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceEmploymentRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceEmploymentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceEmploymentRequest.Merge(m, src)
-}
-func (m *DeleteServiceEmploymentRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceEmploymentRequest.Size(m)
-}
-func (m *DeleteServiceEmploymentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceEmploymentRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceEmploymentRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceEmploymentRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type DeleteServiceEmploymentResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceEmploymentResponse) Reset()         { *m = DeleteServiceEmploymentResponse{} }
-func (m *DeleteServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceEmploymentResponse) ProtoMessage()    {}
-func (*DeleteServiceEmploymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{88}
-}
-
-func (m *DeleteServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceEmploymentResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceEmploymentResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceEmploymentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceEmploymentResponse.Merge(m, src)
-}
-func (m *DeleteServiceEmploymentResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceEmploymentResponse.Size(m)
-}
-func (m *DeleteServiceEmploymentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceEmploymentResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceEmploymentResponse proto.InternalMessageInfo
-
-type ListServiceEmploymentRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceEmploymentRequest) Reset()         { *m = ListServiceEmploymentRequest{} }
-func (m *ListServiceEmploymentRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceEmploymentRequest) ProtoMessage()    {}
-func (*ListServiceEmploymentRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{89}
-}
-
-func (m *ListServiceEmploymentRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceEmploymentRequest.Unmarshal(m, b)
-}
-func (m *ListServiceEmploymentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceEmploymentRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceEmploymentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceEmploymentRequest.Merge(m, src)
-}
-func (m *ListServiceEmploymentRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceEmploymentRequest.Size(m)
-}
-func (m *ListServiceEmploymentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceEmploymentRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceEmploymentRequest proto.InternalMessageInfo
-
-func (m *ListServiceEmploymentRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceEmploymentRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceEmploymentRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceEmploymentRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceEmploymentResponse struct {
-	Results              []*ServiceEmployment `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *ListServiceEmploymentResponse) Reset()         { *m = ListServiceEmploymentResponse{} }
-func (m *ListServiceEmploymentResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceEmploymentResponse) ProtoMessage()    {}
-func (*ListServiceEmploymentResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{90}
-}
-
-func (m *ListServiceEmploymentResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceEmploymentResponse.Unmarshal(m, b)
-}
-func (m *ListServiceEmploymentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceEmploymentResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceEmploymentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceEmploymentResponse.Merge(m, src)
-}
-func (m *ListServiceEmploymentResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceEmploymentResponse.Size(m)
-}
-func (m *ListServiceEmploymentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceEmploymentResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceEmploymentResponse proto.InternalMessageInfo
-
-func (m *ListServiceEmploymentResponse) GetResults() []*ServiceEmployment {
-	if m != nil {
-		return m.Results
-	}
-	return nil
-}
-
-type CreateServiceRequest struct {
-	Payload              *Service `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateServiceRequest) Reset()         { *m = CreateServiceRequest{} }
-func (m *CreateServiceRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceRequest) ProtoMessage()    {}
-func (*CreateServiceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{91}
-}
-
-func (m *CreateServiceRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceRequest.Unmarshal(m, b)
-}
-func (m *CreateServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceRequest.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceRequest.Merge(m, src)
-}
-func (m *CreateServiceRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceRequest.Size(m)
-}
-func (m *CreateServiceRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceRequest proto.InternalMessageInfo
-
-func (m *CreateServiceRequest) GetPayload() *Service {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type CreateServiceResponse struct {
-	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *CreateServiceResponse) Reset()         { *m = CreateServiceResponse{} }
-func (m *CreateServiceResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateServiceResponse) ProtoMessage()    {}
-func (*CreateServiceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{92}
-}
-
-func (m *CreateServiceResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateServiceResponse.Unmarshal(m, b)
-}
-func (m *CreateServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateServiceResponse.Marshal(b, m, deterministic)
-}
-func (m *CreateServiceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateServiceResponse.Merge(m, src)
-}
-func (m *CreateServiceResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateServiceResponse.Size(m)
-}
-func (m *CreateServiceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateServiceResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CreateServiceResponse proto.InternalMessageInfo
-
-func (m *CreateServiceResponse) GetResult() *Service {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type ReadServiceRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReadServiceRequest) Reset()         { *m = ReadServiceRequest{} }
-func (m *ReadServiceRequest) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceRequest) ProtoMessage()    {}
-func (*ReadServiceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{93}
-}
-
-func (m *ReadServiceRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceRequest.Unmarshal(m, b)
-}
-func (m *ReadServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceRequest.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceRequest.Merge(m, src)
-}
-func (m *ReadServiceRequest) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceRequest.Size(m)
-}
-func (m *ReadServiceRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceRequest proto.InternalMessageInfo
-
-func (m *ReadServiceRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type ReadServiceResponse struct {
-	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *ReadServiceResponse) Reset()         { *m = ReadServiceResponse{} }
-func (m *ReadServiceResponse) String() string { return proto.CompactTextString(m) }
-func (*ReadServiceResponse) ProtoMessage()    {}
-func (*ReadServiceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{94}
-}
-
-func (m *ReadServiceResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReadServiceResponse.Unmarshal(m, b)
-}
-func (m *ReadServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReadServiceResponse.Marshal(b, m, deterministic)
-}
-func (m *ReadServiceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadServiceResponse.Merge(m, src)
-}
-func (m *ReadServiceResponse) XXX_Size() int {
-	return xxx_messageInfo_ReadServiceResponse.Size(m)
-}
-func (m *ReadServiceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadServiceResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ReadServiceResponse proto.InternalMessageInfo
-
-func (m *ReadServiceResponse) GetResult() *Service {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type UpdateServiceRequest struct {
-	Payload              *Service `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *UpdateServiceRequest) Reset()         { *m = UpdateServiceRequest{} }
-func (m *UpdateServiceRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceRequest) ProtoMessage()    {}
-func (*UpdateServiceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{95}
-}
-
-func (m *UpdateServiceRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceRequest.Unmarshal(m, b)
-}
-func (m *UpdateServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceRequest.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceRequest.Merge(m, src)
-}
-func (m *UpdateServiceRequest) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceRequest.Size(m)
-}
-func (m *UpdateServiceRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceRequest proto.InternalMessageInfo
-
-func (m *UpdateServiceRequest) GetPayload() *Service {
-	if m != nil {
-		return m.Payload
-	}
-	return nil
-}
-
-type UpdateServiceResponse struct {
-	Result               *Service `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *UpdateServiceResponse) Reset()         { *m = UpdateServiceResponse{} }
-func (m *UpdateServiceResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateServiceResponse) ProtoMessage()    {}
-func (*UpdateServiceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{96}
-}
-
-func (m *UpdateServiceResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UpdateServiceResponse.Unmarshal(m, b)
-}
-func (m *UpdateServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UpdateServiceResponse.Marshal(b, m, deterministic)
-}
-func (m *UpdateServiceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateServiceResponse.Merge(m, src)
-}
-func (m *UpdateServiceResponse) XXX_Size() int {
-	return xxx_messageInfo_UpdateServiceResponse.Size(m)
-}
-func (m *UpdateServiceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateServiceResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateServiceResponse proto.InternalMessageInfo
-
-func (m *UpdateServiceResponse) GetResult() *Service {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type DeleteServiceRequest struct {
-	Id                   uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceRequest) Reset()         { *m = DeleteServiceRequest{} }
-func (m *DeleteServiceRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceRequest) ProtoMessage()    {}
-func (*DeleteServiceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{97}
-}
-
-func (m *DeleteServiceRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceRequest.Unmarshal(m, b)
-}
-func (m *DeleteServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceRequest.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceRequest.Merge(m, src)
-}
-func (m *DeleteServiceRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceRequest.Size(m)
-}
-func (m *DeleteServiceRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceRequest proto.InternalMessageInfo
-
-func (m *DeleteServiceRequest) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-type DeleteServiceResponse struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DeleteServiceResponse) Reset()         { *m = DeleteServiceResponse{} }
-func (m *DeleteServiceResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteServiceResponse) ProtoMessage()    {}
-func (*DeleteServiceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{98}
-}
-
-func (m *DeleteServiceResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteServiceResponse.Unmarshal(m, b)
-}
-func (m *DeleteServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteServiceResponse.Marshal(b, m, deterministic)
-}
-func (m *DeleteServiceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteServiceResponse.Merge(m, src)
-}
-func (m *DeleteServiceResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteServiceResponse.Size(m)
-}
-func (m *DeleteServiceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteServiceResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DeleteServiceResponse proto.InternalMessageInfo
-
-type ListServiceRequest struct {
-	Filter               *query.Filtering      `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	OrderBy              *query.Sorting        `protobuf:"bytes,2,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	Fields               *query.FieldSelection `protobuf:"bytes,3,opt,name=fields,proto3" json:"fields,omitempty"`
-	Paging               *query.Pagination     `protobuf:"bytes,4,opt,name=paging,proto3" json:"paging,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *ListServiceRequest) Reset()         { *m = ListServiceRequest{} }
-func (m *ListServiceRequest) String() string { return proto.CompactTextString(m) }
-func (*ListServiceRequest) ProtoMessage()    {}
-func (*ListServiceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{99}
-}
-
-func (m *ListServiceRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceRequest.Unmarshal(m, b)
-}
-func (m *ListServiceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceRequest.Marshal(b, m, deterministic)
-}
-func (m *ListServiceRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceRequest.Merge(m, src)
-}
-func (m *ListServiceRequest) XXX_Size() int {
-	return xxx_messageInfo_ListServiceRequest.Size(m)
-}
-func (m *ListServiceRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceRequest proto.InternalMessageInfo
-
-func (m *ListServiceRequest) GetFilter() *query.Filtering {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *ListServiceRequest) GetOrderBy() *query.Sorting {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-func (m *ListServiceRequest) GetFields() *query.FieldSelection {
-	if m != nil {
-		return m.Fields
-	}
-	return nil
-}
-
-func (m *ListServiceRequest) GetPaging() *query.Pagination {
-	if m != nil {
-		return m.Paging
-	}
-	return nil
-}
-
-type ListServiceResponse struct {
-	Results              []*Service `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
-}
-
-func (m *ListServiceResponse) Reset()         { *m = ListServiceResponse{} }
-func (m *ListServiceResponse) String() string { return proto.CompactTextString(m) }
-func (*ListServiceResponse) ProtoMessage()    {}
-func (*ListServiceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3c62a9da5f95a834, []int{100}
-}
-
-func (m *ListServiceResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ListServiceResponse.Unmarshal(m, b)
-}
-func (m *ListServiceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ListServiceResponse.Marshal(b, m, deterministic)
-}
-func (m *ListServiceResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ListServiceResponse.Merge(m, src)
-}
-func (m *ListServiceResponse) XXX_Size() int {
-	return xxx_messageInfo_ListServiceResponse.Size(m)
-}
-func (m *ListServiceResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ListServiceResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ListServiceResponse proto.InternalMessageInfo
-
-func (m *ListServiceResponse) GetResults() []*Service {
-	if m != nil {
-		return m.Results
+		return m.Session
 	}
 	return nil
 }
@@ -4643,19 +5137,6 @@ func init() {
 	proto.RegisterType((*ServiceApplication)(nil), "model.ServiceApplication")
 	proto.RegisterType((*ServiceApplicationFile)(nil), "model.ServiceApplicationFile")
 	proto.RegisterType((*ServiceProvider)(nil), "model.ServiceProvider")
-	proto.RegisterType((*ServiceSessionEvaluation)(nil), "model.ServiceSessionEvaluation")
-	proto.RegisterType((*ServiceSession)(nil), "model.ServiceSession")
-	proto.RegisterType((*ServiceSessionNote)(nil), "model.ServiceSessionNote")
-	proto.RegisterType((*CreateServiceSessionRequest)(nil), "model.CreateServiceSessionRequest")
-	proto.RegisterType((*CreateServiceSessionResponse)(nil), "model.CreateServiceSessionResponse")
-	proto.RegisterType((*ReadServiceSessionRequest)(nil), "model.ReadServiceSessionRequest")
-	proto.RegisterType((*ReadServiceSessionResponse)(nil), "model.ReadServiceSessionResponse")
-	proto.RegisterType((*UpdateServiceSessionRequest)(nil), "model.UpdateServiceSessionRequest")
-	proto.RegisterType((*UpdateServiceSessionResponse)(nil), "model.UpdateServiceSessionResponse")
-	proto.RegisterType((*DeleteServiceSessionRequest)(nil), "model.DeleteServiceSessionRequest")
-	proto.RegisterType((*DeleteServiceSessionResponse)(nil), "model.DeleteServiceSessionResponse")
-	proto.RegisterType((*ListServiceSessionRequest)(nil), "model.ListServiceSessionRequest")
-	proto.RegisterType((*ListServiceSessionResponse)(nil), "model.ListServiceSessionResponse")
 	proto.RegisterType((*CreateServiceProviderRequest)(nil), "model.CreateServiceProviderRequest")
 	proto.RegisterType((*CreateServiceProviderResponse)(nil), "model.CreateServiceProviderResponse")
 	proto.RegisterType((*ReadServiceProviderRequest)(nil), "model.ReadServiceProviderRequest")
@@ -4736,6 +5217,28 @@ func init() {
 	proto.RegisterType((*DeleteServiceResponse)(nil), "model.DeleteServiceResponse")
 	proto.RegisterType((*ListServiceRequest)(nil), "model.ListServiceRequest")
 	proto.RegisterType((*ListServiceResponse)(nil), "model.ListServiceResponse")
+	proto.RegisterType((*ServiceSessionEvaluation)(nil), "model.ServiceSessionEvaluation")
+	proto.RegisterType((*ServiceSession)(nil), "model.ServiceSession")
+	proto.RegisterType((*ServiceSessionNote)(nil), "model.ServiceSessionNote")
+	proto.RegisterType((*CreateServiceSessionRequest)(nil), "model.CreateServiceSessionRequest")
+	proto.RegisterType((*CreateServiceSessionResponse)(nil), "model.CreateServiceSessionResponse")
+	proto.RegisterType((*ReadServiceSessionRequest)(nil), "model.ReadServiceSessionRequest")
+	proto.RegisterType((*ReadServiceSessionResponse)(nil), "model.ReadServiceSessionResponse")
+	proto.RegisterType((*UpdateServiceSessionRequest)(nil), "model.UpdateServiceSessionRequest")
+	proto.RegisterType((*UpdateServiceSessionResponse)(nil), "model.UpdateServiceSessionResponse")
+	proto.RegisterType((*DeleteServiceSessionRequest)(nil), "model.DeleteServiceSessionRequest")
+	proto.RegisterType((*DeleteServiceSessionResponse)(nil), "model.DeleteServiceSessionResponse")
+	proto.RegisterType((*ListServiceSessionRequest)(nil), "model.ListServiceSessionRequest")
+	proto.RegisterType((*ListServiceSessionResponse)(nil), "model.ListServiceSessionResponse")
+	proto.RegisterType((*StreamSessionInputEvent)(nil), "model.StreamSessionInputEvent")
+	proto.RegisterType((*EventRequestSession)(nil), "model.EventRequestSession")
+	proto.RegisterType((*EventJoinSession)(nil), "model.EventJoinSession")
+	proto.RegisterType((*EventLeaveSession)(nil), "model.EventLeaveSession")
+	proto.RegisterType((*StreamSessionOutputEvent)(nil), "model.StreamSessionOutputEvent")
+	proto.RegisterType((*EventSessionRequested)(nil), "model.EventSessionRequested")
+	proto.RegisterType((*EventSessionStarted)(nil), "model.EventSessionStarted")
+	proto.RegisterType((*EventSessionTimeout)(nil), "model.EventSessionTimeout")
+	proto.RegisterType((*EventSessionFinished)(nil), "model.EventSessionFinished")
 }
 
 func init() {
@@ -4743,189 +5246,210 @@ func init() {
 }
 
 var fileDescriptor_3c62a9da5f95a834 = []byte{
-	// 2907 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x5b, 0x4d, 0x6f, 0xdb, 0xc8,
-	0x19, 0x0e, 0xfd, 0xed, 0xd7, 0x89, 0xeb, 0x8c, 0xed, 0x58, 0x92, 0xbf, 0x14, 0x39, 0x1f, 0x4e,
-	0x03, 0x4b, 0x5e, 0x67, 0x8b, 0xc5, 0xba, 0x58, 0x24, 0x76, 0x6c, 0xb7, 0x76, 0xe3, 0x24, 0xa5,
-	0xec, 0x00, 0x69, 0x77, 0x57, 0xa0, 0xc4, 0xb1, 0x4c, 0x98, 0x22, 0xb9, 0x24, 0x15, 0xac, 0x8e,
-	0x3d, 0xf4, 0xda, 0x5f, 0x51, 0xa0, 0x3f, 0xa1, 0xb5, 0x0f, 0xfd, 0x0d, 0xfd, 0x07, 0x05, 0x8a,
-	0xa2, 0x45, 0x7b, 0xe8, 0xad, 0x05, 0x0a, 0xf4, 0x50, 0x90, 0x1c, 0x8e, 0x38, 0xc3, 0x19, 0xca,
-	0x51, 0x0c, 0xec, 0xc6, 0x97, 0xc4, 0x14, 0xdf, 0x79, 0x3f, 0x9f, 0x67, 0x86, 0x7c, 0x67, 0x08,
-	0x3f, 0x6c, 0x1a, 0xfe, 0x69, 0xbb, 0x5e, 0x6e, 0xd8, 0xad, 0xca, 0x99, 0xad, 0x63, 0xaf, 0x65,
-	0x98, 0x95, 0x33, 0x6f, 0xad, 0x65, 0xeb, 0xd8, 0xac, 0x78, 0xd8, 0x7d, 0x67, 0x34, 0x70, 0xd9,
-	0x71, 0x6d, 0xdf, 0x46, 0xc3, 0xe1, 0x8f, 0x85, 0xec, 0x21, 0x8e, 0x6b, 0x9f, 0x18, 0x26, 0x19,
-	0x52, 0x28, 0x36, 0x6d, 0xbb, 0x69, 0xe2, 0x4a, 0x78, 0x55, 0x6f, 0x9f, 0x54, 0x4e, 0x0c, 0x6c,
-	0xea, 0xb5, 0x96, 0xe6, 0x9d, 0x11, 0x89, 0x65, 0x5e, 0xc2, 0x37, 0x5a, 0xd8, 0xf3, 0xb5, 0x96,
-	0x43, 0x04, 0x16, 0x88, 0x80, 0xe6, 0x18, 0x15, 0xcd, 0xb2, 0x6c, 0x5f, 0xf3, 0x0d, 0xdb, 0xf2,
-	0xc8, 0xdd, 0xc7, 0xe1, 0x7f, 0x8d, 0xb5, 0x26, 0xb6, 0xd6, 0xde, 0x69, 0xa6, 0xa1, 0x6b, 0x3e,
-	0xae, 0xa4, 0xfe, 0x20, 0xc2, 0x9b, 0x09, 0xcf, 0x0d, 0xeb, 0xc4, 0xae, 0x9b, 0xf6, 0xb7, 0xb6,
-	0x83, 0xad, 0x4a, 0x42, 0x49, 0xd3, 0x76, 0x5b, 0x15, 0xdb, 0x09, 0x6d, 0x54, 0x82, 0x0b, 0x32,
-	0xf6, 0xf3, 0xcb, 0x8e, 0xf5, 0x3b, 0x0e, 0xf6, 0xa2, 0x7f, 0xc9, 0xd0, 0x03, 0xd9, 0x50, 0xcd,
-	0x37, 0x35, 0x6f, 0x4d, 0x73, 0x9c, 0x35, 0xdf, 0xb6, 0xcd, 0x33, 0xc3, 0xaf, 0x7c, 0xd3, 0xc6,
-	0x6e, 0xa7, 0xd2, 0xb0, 0x4d, 0x13, 0x37, 0x02, 0x17, 0x6a, 0xb6, 0x83, 0x5d, 0xcd, 0xb7, 0x5d,
-	0xa2, 0xab, 0x74, 0x02, 0x50, 0x8d, 0x8a, 0x72, 0xa4, 0x35, 0x51, 0x11, 0x06, 0x0c, 0x3d, 0xa7,
-	0x14, 0x95, 0xd5, 0xa1, 0xed, 0xa9, 0x8b, 0xf3, 0xfc, 0x4d, 0x00, 0x34, 0xe2, 0x61, 0xd7, 0xd0,
-	0xcc, 0x55, 0x45, 0x1d, 0x30, 0x74, 0x54, 0x80, 0xc1, 0x33, 0xdc, 0xc9, 0x0d, 0x14, 0x95, 0xd5,
-	0xf1, 0xed, 0xb1, 0x8b, 0xf3, 0xfc, 0x10, 0x0c, 0xac, 0x2b, 0x6a, 0xf0, 0x23, 0x42, 0x30, 0x64,
-	0x69, 0x2d, 0x9c, 0x1b, 0x0c, 0x6e, 0xaa, 0xe1, 0xdf, 0x9b, 0x23, 0x17, 0xe7, 0xf9, 0x81, 0x31,
-	0xa5, 0xf4, 0xfb, 0x01, 0x18, 0x25, 0x86, 0x2e, 0x61, 0xe5, 0x73, 0x80, 0x86, 0x8b, 0x35, 0x1f,
-	0xeb, 0x35, 0xcd, 0x0f, 0x8d, 0x4d, 0x6c, 0x14, 0xca, 0x51, 0xe1, 0xca, 0x71, 0x65, 0xcb, 0x47,
-	0x71, 0x65, 0xd5, 0x71, 0x22, 0xbd, 0xe5, 0x07, 0x43, 0xdb, 0x8e, 0x1e, 0x0f, 0x1d, 0xec, 0x3d,
-	0x94, 0x48, 0x6f, 0xf9, 0xd4, 0xff, 0xa1, 0xae, 0xff, 0xe8, 0x21, 0x0c, 0x05, 0xa9, 0xcf, 0x0d,
-	0x17, 0x95, 0xd5, 0xc9, 0x8d, 0xe9, 0x72, 0x08, 0xca, 0x32, 0x89, 0xa4, 0x7c, 0xd4, 0x71, 0xb0,
-	0x1a, 0x0a, 0xa0, 0x35, 0x18, 0xf2, 0xb5, 0xa6, 0x97, 0x1b, 0x29, 0x0e, 0xae, 0x4e, 0x6c, 0xdc,
-	0x66, 0x05, 0x8f, 0xb4, 0xe6, 0x76, 0x98, 0x89, 0x8d, 0x1b, 0x6a, 0x28, 0x56, 0x2a, 0xc2, 0x50,
-	0x30, 0x18, 0x4d, 0xc0, 0xe8, 0xe1, 0xee, 0xce, 0xfe, 0xf3, 0xad, 0x17, 0x53, 0x37, 0x82, 0x8b,
-	0xbd, 0xfd, 0xa3, 0x97, 0xbb, 0xd5, 0xea, 0x94, 0x42, 0x33, 0xf7, 0xa7, 0x41, 0xb8, 0x49, 0xd4,
-	0xbc, 0x3a, 0x39, 0xc1, 0x2e, 0xda, 0xa7, 0xe9, 0x9b, 0xd8, 0x98, 0x2d, 0x87, 0x90, 0x8a, 0xd0,
-	0x71, 0x7c, 0xbc, 0xbf, 0xf3, 0x46, 0x33, 0xdb, 0x78, 0xbb, 0x74, 0x71, 0x9e, 0x5f, 0x82, 0x05,
-	0x34, 0xd4, 0x6e, 0x1b, 0xfa, 0xaa, 0xb2, 0x89, 0x82, 0xff, 0x6b, 0x4d, 0x6c, 0x05, 0xc5, 0xc7,
-	0xb5, 0x77, 0x9f, 0xae, 0x3e, 0xfa, 0x0e, 0xf3, 0x3c, 0x03, 0xc3, 0x8e, 0x6b, 0x34, 0xa2, 0x44,
-	0x0f, 0xa8, 0xd1, 0x05, 0x2a, 0xc0, 0x58, 0xa3, 0xed, 0xba, 0xd8, 0x6a, 0x74, 0xc2, 0x6c, 0x8f,
-	0xab, 0xf4, 0x1a, 0xad, 0xc3, 0x28, 0x99, 0x3a, 0x72, 0x23, 0xa1, 0xa5, 0x49, 0x36, 0xbf, 0x51,
-	0x72, 0x4b, 0x37, 0xd4, 0x58, 0x0c, 0x6d, 0xc2, 0x98, 0xe3, 0xda, 0xef, 0x0c, 0x1d, 0xbb, 0xb9,
-	0xd1, 0x70, 0xc8, 0x1d, 0x76, 0xc8, 0x6b, 0x72, 0x97, 0x0e, 0xa5, 0xf2, 0xa8, 0x08, 0x13, 0x3a,
-	0xf6, 0x1a, 0xae, 0x11, 0xb2, 0x36, 0x37, 0x16, 0x3a, 0x93, 0xfc, 0x29, 0x88, 0xc0, 0x37, 0x7c,
-	0x13, 0xe7, 0xc6, 0xc3, 0x7b, 0xd1, 0x05, 0x5a, 0x86, 0x09, 0xc7, 0x68, 0xf8, 0x6d, 0x17, 0xd7,
-	0xda, 0xae, 0x99, 0x83, 0xf0, 0x1e, 0x90, 0x9f, 0x8e, 0x5d, 0x93, 0x96, 0xf4, 0x37, 0x83, 0x70,
-	0x9b, 0xb8, 0xb1, 0xdb, 0x72, 0x4c, 0xbb, 0xd3, 0xc2, 0x96, 0xff, 0xbd, 0xa5, 0xc5, 0x22, 0xc0,
-	0x89, 0xe1, 0x7a, 0x7e, 0x2d, 0x41, 0x8e, 0xf1, 0xf0, 0x97, 0x97, 0x01, 0x43, 0xe6, 0x61, 0xdc,
-	0xd4, 0xe2, 0xbb, 0xa4, 0x70, 0xc1, 0x0f, 0xe1, 0xcd, 0x19, 0x18, 0xc6, 0x2d, 0xcd, 0x30, 0xc3,
-	0xb2, 0x8d, 0xab, 0xd1, 0x45, 0x08, 0x80, 0x53, 0xdb, 0xc2, 0x61, 0x65, 0xc6, 0xd5, 0xe8, 0x02,
-	0xad, 0xc2, 0x54, 0x43, 0xb3, 0x6a, 0x75, 0x5c, 0x6b, 0xd8, 0x96, 0xaf, 0x35, 0x7c, 0xac, 0x87,
-	0xb9, 0x1f, 0x53, 0x27, 0x1b, 0x9a, 0xb5, 0x8d, 0x9f, 0xc7, 0xbf, 0xa2, 0x5d, 0x98, 0x26, 0x75,
-	0xae, 0xc5, 0x45, 0xab, 0x19, 0x7a, 0x58, 0x0c, 0x19, 0x25, 0xd4, 0xdb, 0x1e, 0x5b, 0xf7, 0x7d,
-	0x7d, 0x33, 0x9c, 0xbe, 0xc6, 0x94, 0xa2, 0x52, 0xfa, 0xdd, 0x00, 0x4c, 0x92, 0x82, 0xec, 0x60,
-	0x5f, 0x33, 0x4c, 0xef, 0xa3, 0x9a, 0xa4, 0x72, 0x30, 0xaa, 0xe9, 0xba, 0x8b, 0x3d, 0x8f, 0x14,
-	0x20, 0xbe, 0xec, 0x66, 0x7a, 0x24, 0x99, 0xe9, 0x3c, 0x8c, 0x99, 0x76, 0xd3, 0x0e, 0x51, 0x1a,
-	0x95, 0x60, 0x34, 0xb8, 0x3e, 0x76, 0xcd, 0x6e, 0xc1, 0xc6, 0x12, 0x05, 0x4b, 0x64, 0xea, 0xbf,
-	0x83, 0x80, 0x48, 0xa6, 0xb6, 0x1c, 0xc7, 0x34, 0x1a, 0xe1, 0xea, 0xf9, 0xf1, 0xcf, 0x49, 0xc9,
-	0xf9, 0x62, 0xe8, 0x3d, 0xe7, 0x8b, 0x27, 0x30, 0x1c, 0x3c, 0xa2, 0x04, 0xc9, 0x0f, 0xe6, 0xfe,
-	0x45, 0x76, 0x60, 0x22, 0x4d, 0x7b, 0x86, 0x89, 0xd5, 0x48, 0x36, 0xf0, 0x55, 0x0b, 0xee, 0x44,
-	0xbe, 0x8e, 0xf4, 0xf6, 0x95, 0x48, 0x6f, 0xf9, 0xe8, 0xc7, 0x30, 0xa1, 0x39, 0x81, 0xf5, 0x68,
-	0xec, 0x68, 0xcf, 0xb1, 0x10, 0x8b, 0x6f, 0xf9, 0xa8, 0x92, 0x18, 0x5c, 0xef, 0x84, 0x65, 0xee,
-	0x4e, 0xa7, 0xaf, 0xa3, 0x87, 0xad, 0xee, 0x80, 0xed, 0x4e, 0xa2, 0xf6, 0xff, 0x56, 0xe0, 0x8e,
-	0x38, 0xa8, 0x8f, 0xbf, 0xfe, 0x53, 0x30, 0x18, 0xb0, 0x21, 0x62, 0x55, 0xf0, 0x67, 0x22, 0xee,
-	0xff, 0x0c, 0xc0, 0x0f, 0x38, 0x14, 0x7c, 0xfc, 0x01, 0x57, 0x60, 0x54, 0x8f, 0xa6, 0x3a, 0x82,
-	0xf7, 0x59, 0x16, 0xb6, 0x64, 0x1e, 0x54, 0x63, 0x29, 0xf4, 0x18, 0x46, 0xec, 0xe0, 0xf9, 0x23,
-	0x86, 0x39, 0xf7, 0x2c, 0x14, 0x3e, 0x9b, 0xa8, 0x44, 0x04, 0x6d, 0xc2, 0x04, 0xa6, 0x2b, 0x5b,
-	0xfc, 0x50, 0x94, 0x63, 0x47, 0x74, 0x97, 0x3e, 0x35, 0x29, 0x9c, 0x48, 0xfc, 0x1f, 0x06, 0x20,
-	0x47, 0x84, 0xab, 0xd8, 0xf3, 0x0c, 0xdb, 0xda, 0x7d, 0xa7, 0x99, 0xed, 0x68, 0xca, 0xf9, 0xbe,
-	0x4e, 0xd0, 0x95, 0xe0, 0x59, 0x25, 0x74, 0x56, 0x9c, 0x58, 0x12, 0x89, 0x1a, 0x4b, 0x05, 0xb3,
-	0x77, 0xc3, 0x6e, 0x05, 0xb1, 0xc7, 0xb3, 0x37, 0xb9, 0x44, 0x15, 0x98, 0x76, 0x71, 0x74, 0xa1,
-	0x87, 0x41, 0xd7, 0x02, 0xe4, 0x84, 0x93, 0x85, 0xa2, 0x22, 0xf6, 0x96, 0xaa, 0xf9, 0x38, 0x91,
-	0xba, 0xff, 0x0d, 0xd2, 0x15, 0x8d, 0x18, 0xfc, 0xf8, 0x21, 0xfb, 0x05, 0xdc, 0xf4, 0x1a, 0xa7,
-	0x58, 0x6f, 0x9b, 0xd1, 0xe0, 0xa1, 0x9e, 0x83, 0x27, 0xa8, 0x7c, 0x34, 0x6d, 0x9e, 0x18, 0x96,
-	0xe1, 0x9d, 0x46, 0xa3, 0x87, 0x7b, 0x4f, 0x9b, 0xb1, 0xf8, 0x96, 0x8f, 0x3e, 0x81, 0xe1, 0x10,
-	0xda, 0x64, 0xa6, 0x16, 0x81, 0x9f, 0xae, 0x0c, 0x91, 0x24, 0xaa, 0xc0, 0xb0, 0x65, 0xfb, 0xd8,
-	0xcb, 0x8d, 0x86, 0xe8, 0xcf, 0x0b, 0x61, 0xf0, 0xd2, 0xf6, 0xb1, 0x1a, 0xc9, 0xa1, 0xa7, 0x00,
-	0x98, 0xe2, 0x9b, 0xcc, 0xcc, 0xcb, 0xc2, 0x51, 0x5d, 0x1a, 0xa8, 0x89, 0x21, 0x89, 0xf2, 0xff,
-	0x76, 0x80, 0x2e, 0xd3, 0x09, 0x43, 0xd7, 0x62, 0xd6, 0xea, 0x92, 0x6b, 0xf0, 0x12, 0xe4, 0x42,
-	0x30, 0xe4, 0xe3, 0x6f, 0x63, 0x66, 0x85, 0x7f, 0x27, 0xd2, 0xf4, 0x12, 0xe6, 0x9f, 0x87, 0x6e,
-	0x71, 0xc3, 0xf1, 0x37, 0x6d, 0xec, 0x85, 0xd6, 0x1c, 0xad, 0x63, 0xda, 0x5a, 0x37, 0x67, 0x62,
-	0x6b, 0x44, 0xaa, 0x74, 0x08, 0x0b, 0x62, 0x7d, 0x9e, 0x63, 0x5b, 0x5e, 0xf0, 0x92, 0x38, 0xe2,
-	0x62, 0xaf, 0x6d, 0xfa, 0xd9, 0xfa, 0x88, 0x50, 0x69, 0x1b, 0xf2, 0x2a, 0xd6, 0x74, 0xb1, 0x73,
-	0xf7, 0x7b, 0xd6, 0x32, 0xa8, 0x53, 0xe9, 0x67, 0x50, 0x10, 0xe9, 0xe8, 0xcf, 0xa1, 0x97, 0x30,
-	0x7f, 0x1c, 0xd6, 0xe2, 0xea, 0xf2, 0x25, 0xd6, 0xd7, 0x9f, 0x7b, 0x3b, 0x30, 0xbf, 0x83, 0x4d,
-	0x2c, 0x73, 0xef, 0x92, 0x19, 0x5b, 0x82, 0x05, 0xb1, 0x96, 0xc8, 0xa9, 0xd2, 0xdf, 0x14, 0xc8,
-	0xbf, 0x30, 0x3c, 0x5f, 0x96, 0x83, 0x91, 0x13, 0xc3, 0xf4, 0xb1, 0x4b, 0x0c, 0xcd, 0x95, 0xe3,
-	0x16, 0x4d, 0x59, 0x73, 0x8c, 0xf2, 0x5e, 0x78, 0xcf, 0xb0, 0x9a, 0x2a, 0x11, 0x43, 0xeb, 0x30,
-	0x66, 0xbb, 0xc1, 0x1b, 0x4c, 0xbd, 0x43, 0x68, 0x34, 0xcb, 0x0e, 0xa9, 0xda, 0xae, 0x1f, 0x0c,
-	0x18, 0x0d, 0xc5, 0xb6, 0x3b, 0xe8, 0xd3, 0xc0, 0x04, 0x36, 0x75, 0x8f, 0x70, 0x67, 0x81, 0x37,
-	0x81, 0x4d, 0xbd, 0x8a, 0x49, 0xc7, 0x47, 0x25, 0xb2, 0x68, 0x1d, 0x46, 0x1c, 0xad, 0x69, 0x58,
-	0x4d, 0x32, 0x6f, 0xe6, 0xd8, 0x51, 0xaf, 0x83, 0x7b, 0xd1, 0x94, 0x42, 0xe4, 0x4a, 0x87, 0x50,
-	0x10, 0xc5, 0x49, 0x6a, 0x53, 0x81, 0xd1, 0x28, 0xed, 0x5e, 0x4e, 0xc9, 0xa4, 0x22, 0x91, 0x2a,
-	0xbd, 0xe6, 0xc8, 0x11, 0x3f, 0x4b, 0xc5, 0x99, 0x5b, 0xe7, 0xd1, 0x23, 0x79, 0x02, 0xef, 0xc2,
-	0xe7, 0x15, 0x2c, 0x4a, 0x34, 0x12, 0x1f, 0xcb, 0x1c, 0x7e, 0x64, 0x1a, 0x63, 0x00, 0x3d, 0x67,
-	0xc8, 0xc2, 0x3b, 0x78, 0x49, 0xfc, 0x1c, 0xc2, 0xbc, 0x50, 0x49, 0x9f, 0x3e, 0xbd, 0xe6, 0x38,
-	0x72, 0x25, 0x69, 0x93, 0x68, 0xec, 0xd3, 0xc5, 0x5d, 0x8e, 0x31, 0x7d, 0x26, 0x6e, 0x19, 0x16,
-	0x25, 0x6a, 0x08, 0xf3, 0xfe, 0xae, 0x30, 0x88, 0xe4, 0xcd, 0x5c, 0x23, 0xea, 0xbd, 0x82, 0x79,
-	0x61, 0xa0, 0xa4, 0x40, 0xeb, 0x3c, 0xf7, 0xa4, 0x35, 0x8f, 0xc9, 0xf7, 0x06, 0x96, 0x19, 0xaa,
-	0x24, 0x5e, 0xe0, 0xe2, 0xf4, 0x3d, 0xe1, 0x81, 0x94, 0x97, 0xbe, 0xc8, 0x76, 0xb1, 0x74, 0x0c,
-	0x45, 0xb9, 0x5e, 0xe2, 0xed, 0x27, 0x1c, 0x9c, 0x32, 0xf4, 0xc6, 0x88, 0xda, 0x83, 0xc5, 0x04,
-	0x87, 0x04, 0xce, 0x5e, 0x12, 0x52, 0x55, 0x58, 0x92, 0xe9, 0xe9, 0xdf, 0xb9, 0x37, 0xb0, 0xcc,
-	0xf0, 0xe7, 0x0a, 0x73, 0x29, 0xd7, 0xdb, 0xbf, 0xbb, 0x3f, 0x85, 0x65, 0x86, 0x56, 0xfd, 0x67,
-	0xb3, 0x04, 0x45, 0xb9, 0x26, 0xc2, 0xd1, 0x7f, 0x2a, 0xb0, 0x98, 0x80, 0xae, 0xc0, 0xd8, 0x35,
-	0xa2, 0xe9, 0x31, 0x2c, 0xc9, 0x62, 0x25, 0xf5, 0x7a, 0xc2, 0x33, 0x35, 0x0b, 0x08, 0x31, 0x59,
-	0xf7, 0x60, 0x8e, 0x21, 0xd5, 0x91, 0xd6, 0x8c, 0x93, 0xf7, 0x98, 0x07, 0x56, 0x7a, 0xa7, 0xa1,
-	0x0b, 0xa8, 0x5d, 0xc8, 0xa5, 0xf5, 0x10, 0xc7, 0x1e, 0x71, 0x40, 0x12, 0xe8, 0x89, 0x01, 0xf4,
-	0x10, 0x66, 0x13, 0x24, 0x4a, 0x38, 0x33, 0xd9, 0x7d, 0x05, 0x0f, 0xf1, 0xf1, 0x1c, 0xee, 0xf0,
-	0x82, 0xef, 0x6f, 0x6d, 0x0f, 0xe6, 0x18, 0x16, 0x7c, 0x40, 0xf0, 0x69, 0x3d, 0xef, 0xef, 0xce,
-	0x23, 0x98, 0x63, 0x30, 0x9f, 0x11, 0x7e, 0x01, 0x72, 0x69, 0x51, 0x42, 0x8b, 0xbf, 0x28, 0x30,
-	0x9b, 0x80, 0x4a, 0x42, 0xcb, 0x35, 0xa2, 0xc3, 0x2e, 0xdc, 0xe1, 0x63, 0x24, 0x09, 0x7f, 0xcc,
-	0xd3, 0x40, 0x54, 0xb9, 0x18, 0xfe, 0x5f, 0xc3, 0x8a, 0x6c, 0x4d, 0x09, 0x3b, 0xa8, 0x24, 0x71,
-	0x9f, 0xf1, 0x68, 0xe8, 0xd1, 0x78, 0xa5, 0xc8, 0xf8, 0x0a, 0xee, 0x65, 0xeb, 0x27, 0x4e, 0xff,
-	0x88, 0x43, 0x49, 0x0f, 0xfd, 0x31, 0x62, 0x0e, 0xe0, 0xae, 0x78, 0xcd, 0x49, 0x3a, 0x7f, 0xc9,
-	0x19, 0xf7, 0x97, 0x50, 0xca, 0xd2, 0xf5, 0x61, 0x8e, 0x7e, 0x0d, 0x2b, 0xb2, 0xf5, 0xe6, 0xaa,
-	0xf2, 0x9c, 0xad, 0xff, 0xc3, 0xdc, 0x7f, 0x01, 0x2b, 0xb2, 0xd5, 0xa8, 0x8f, 0x4c, 0x3f, 0x80,
-	0x7b, 0xd9, 0xda, 0x08, 0x91, 0xff, 0xa5, 0xc0, 0x5d, 0xf1, 0x9c, 0x9f, 0x34, 0x7a, 0x8d, 0x48,
-	0xfd, 0x15, 0x94, 0xb2, 0xe2, 0x25, 0x35, 0xfc, 0x8c, 0x27, 0x78, 0x2f, 0x90, 0xc4, 0x64, 0x3f,
-	0x80, 0x3c, 0x43, 0xc6, 0xa8, 0x8f, 0x4c, 0xd2, 0xb8, 0xc6, 0x43, 0x4f, 0xd8, 0x74, 0xa6, 0x80,
-	0xdb, 0x87, 0x82, 0x48, 0x17, 0x9d, 0x83, 0x58, 0x98, 0x89, 0x1b, 0xd8, 0x04, 0x5c, 0xcf, 0x60,
-	0x2e, 0x41, 0x3c, 0xc6, 0xa9, 0x4b, 0x02, 0xea, 0x27, 0x90, 0x4b, 0x6b, 0xe8, 0xc7, 0x95, 0x03,
-	0xc8, 0x33, 0x34, 0xfa, 0xc0, 0x0c, 0x89, 0x74, 0xf5, 0xe3, 0xd6, 0x36, 0xe4, 0x19, 0xc2, 0xf4,
-	0x93, 0xa3, 0x05, 0x28, 0x88, 0x74, 0x10, 0xaa, 0xfd, 0x55, 0x81, 0xb9, 0x04, 0xf4, 0x18, 0x03,
-	0xd7, 0x88, 0x60, 0xfb, 0x90, 0x4b, 0x47, 0x49, 0x1b, 0x60, 0x1c, 0xad, 0xc4, 0xe5, 0x8d, 0xc9,
-	0xc4, 0xf7, 0x33, 0xe3, 0x4d, 0x9c, 0x4b, 0xf6, 0xe7, 0xe8, 0x9e, 0x8f, 0xac, 0x9f, 0x49, 0xf5,
-	0x5d, 0xae, 0x3f, 0x17, 0x8b, 0xc7, 0x90, 0x79, 0xcc, 0xf4, 0x33, 0x39, 0xe7, 0xf8, 0xa7, 0x29,
-	0xb6, 0x71, 0xf9, 0x81, 0x96, 0xf9, 0xc6, 0xe5, 0x15, 0x24, 0x46, 0xac, 0xaf, 0x3f, 0xf7, 0xd6,
-	0xb8, 0xc6, 0x65, 0x8f, 0xd4, 0xf0, 0x1d, 0x4a, 0xce, 0x3a, 0xdf, 0xa1, 0x4c, 0x05, 0x7b, 0x4d,
-	0x3b, 0x94, 0x7c, 0x11, 0x7a, 0x75, 0x28, 0x69, 0x55, 0x63, 0xfa, 0x1c, 0xc1, 0x12, 0x03, 0xf7,
-	0xc4, 0x0e, 0x25, 0xc9, 0xdd, 0x06, 0x0f, 0x14, 0xf9, 0x9e, 0x26, 0xc5, 0x4a, 0x95, 0x6b, 0xbd,
-	0x24, 0xb5, 0xd2, 0x7e, 0x0e, 0x0b, 0x17, 0xb9, 0xd6, 0x18, 0x31, 0x65, 0x58, 0x48, 0xb0, 0x23,
-	0xed, 0x28, 0x0f, 0x99, 0x9f, 0x33, 0x0d, 0x95, 0x2b, 0x71, 0xe1, 0x08, 0x96, 0x18, 0x0e, 0x5c,
-	0x59, 0xb6, 0xa4, 0x5a, 0xfb, 0x76, 0x75, 0x1d, 0x96, 0x18, 0xc2, 0xf4, 0xce, 0xd7, 0x5d, 0xae,
-	0x69, 0x92, 0x76, 0xa3, 0xf4, 0x0f, 0x05, 0x16, 0x12, 0xe8, 0x4b, 0xeb, 0xbc, 0x46, 0x44, 0xab,
-	0x32, 0x4d, 0x1d, 0x41, 0x4d, 0x36, 0x78, 0xae, 0x65, 0x94, 0x3a, 0xa6, 0xdb, 0x33, 0x98, 0x61,
-	0x88, 0x11, 0xe7, 0x6d, 0x95, 0x87, 0x0d, 0x77, 0xda, 0xaf, 0x0b, 0x96, 0xa7, 0x30, 0xcb, 0x69,
-	0x20, 0xee, 0x3c, 0xe0, 0x20, 0xc2, 0x6b, 0x88, 0x81, 0x71, 0x0f, 0x50, 0x82, 0x16, 0x32, 0x30,
-	0x7c, 0x01, 0xd3, 0x8c, 0xd4, 0x7b, 0x1a, 0x79, 0x06, 0x33, 0x0c, 0xa4, 0xfb, 0x8a, 0x93, 0xd3,
-	0xf0, 0x9e, 0x2e, 0x3c, 0x80, 0x19, 0x06, 0xce, 0xb2, 0x48, 0xe7, 0x60, 0x96, 0x93, 0x23, 0x60,
-	0xff, 0xb3, 0x02, 0x28, 0x81, 0x80, 0x6b, 0x08, 0xf1, 0xa7, 0x30, 0xcd, 0x04, 0x48, 0x32, 0xbc,
-	0xca, 0x03, 0x3b, 0x55, 0x24, 0x72, 0x7b, 0xe3, 0x8f, 0x4b, 0x30, 0x46, 0x7e, 0xf4, 0xd0, 0x0e,
-	0x4c, 0x24, 0xb4, 0xa1, 0xb8, 0xeb, 0x97, 0x4e, 0x61, 0xa1, 0x20, 0xba, 0x45, 0x8c, 0x1f, 0xc0,
-	0x2d, 0x06, 0xdf, 0x68, 0x9e, 0x08, 0x8b, 0x78, 0x53, 0x58, 0x10, 0xdf, 0x24, 0xba, 0x76, 0x60,
-	0x22, 0x01, 0x62, 0xea, 0x51, 0x1a, 0xfe, 0xd4, 0x23, 0x11, 0xe6, 0x0f, 0xe0, 0x16, 0x83, 0x44,
-	0xea, 0x91, 0x08, 0xe1, 0xd4, 0x23, 0x31, 0x78, 0xdf, 0xc2, 0x2d, 0x06, 0x6c, 0x54, 0x97, 0x08,
-	0xaa, 0x54, 0x97, 0x18, 0x9f, 0xb7, 0x2e, 0xce, 0xf3, 0xe3, 0xdd, 0x23, 0xe6, 0x6f, 0x19, 0xb4,
-	0xc6, 0x27, 0x60, 0x8a, 0xe9, 0x54, 0xb3, 0xbb, 0xb7, 0x85, 0xbb, 0x19, 0x12, 0xc4, 0xeb, 0x1a,
-	0x37, 0x6b, 0xc5, 0xca, 0x4b, 0xa2, 0xec, 0x73, 0xea, 0x57, 0x32, 0x65, 0x68, 0x5a, 0x50, 0x7a,
-	0xc7, 0x9e, 0xfa, 0x2e, 0x3d, 0x10, 0x40, 0x7d, 0xcf, 0xd8, 0xee, 0xaf, 0x71, 0x33, 0x11, 0xef,
-	0x7b, 0xc6, 0xe6, 0x3e, 0xf5, 0x3d, 0x73, 0xc3, 0xbe, 0xcd, 0xcd, 0x33, 0xbc, 0x81, 0x8c, 0xed,
-	0x79, 0x6a, 0x20, 0x73, 0xf3, 0x7d, 0xe6, 0xe2, 0x3c, 0x3f, 0x95, 0x3a, 0xda, 0x74, 0x08, 0x93,
-	0x6c, 0xe3, 0x11, 0x2d, 0xa4, 0x0b, 0xd9, 0xed, 0xb9, 0x16, 0x16, 0x25, 0x77, 0x49, 0x14, 0x55,
-	0x98, 0xe2, 0xfb, 0xe6, 0x68, 0x49, 0x54, 0xba, 0x84, 0xca, 0x65, 0xe9, 0x7d, 0xa2, 0xf4, 0x10,
-	0x26, 0xd9, 0xe6, 0x38, 0xf5, 0x51, 0xd8, 0x5c, 0xa7, 0x3e, 0x4a, 0x3a, 0xea, 0x55, 0x98, 0xe2,
-	0xdb, 0xdb, 0xd4, 0x47, 0x49, 0xff, 0x9c, 0xfa, 0x28, 0xed, 0x8b, 0x63, 0x98, 0xe2, 0x3b, 0xd8,
-	0x54, 0xa9, 0xa4, 0x0b, 0x4e, 0x95, 0x4a, 0x5b, 0xdf, 0xe4, 0x70, 0x5e, 0x42, 0x65, 0x15, 0xa6,
-	0xf8, 0x37, 0x5e, 0x6a, 0x46, 0xf2, 0xc2, 0x4f, 0xcd, 0x48, 0x5f, 0x95, 0xdf, 0x02, 0x4a, 0x37,
-	0x7f, 0x28, 0x6d, 0xa4, 0x3d, 0x26, 0x4a, 0x9b, 0x8c, 0xce, 0x51, 0x15, 0xa6, 0xf8, 0x56, 0x0e,
-	0xf5, 0x57, 0xd2, 0x25, 0xa2, 0xfe, 0x4a, 0x7b, 0x40, 0x6f, 0x01, 0xa5, 0x5b, 0x31, 0xd4, 0x5f,
-	0x69, 0xc7, 0x87, 0xfa, 0x9b, 0xd1, 0xc7, 0x69, 0x01, 0x4a, 0xb7, 0x55, 0xa8, 0x6a, 0x69, 0xd7,
-	0x86, 0xaa, 0xce, 0xe8, 0xc9, 0xa0, 0x8b, 0xf3, 0xfc, 0x24, 0xf7, 0x41, 0x4a, 0x9d, 0xd9, 0xda,
-	0x48, 0x7c, 0xd1, 0xb0, 0x92, 0xae, 0x59, 0xea, 0x29, 0xb9, 0x70, 0x2f, 0x5b, 0x88, 0x84, 0x74,
-	0xca, 0x6d, 0x89, 0x25, 0xac, 0xdc, 0x17, 0x15, 0x30, 0x6d, 0xe7, 0x41, 0x2f, 0x31, 0x62, 0xa9,
-	0xce, 0xec, 0x76, 0x09, 0xa2, 0xc9, 0x7a, 0xef, 0xa2, 0xd1, 0x64, 0xbf, 0x6c, 0x9d, 0x72, 0x7b,
-	0x5c, 0x82, 0x68, 0xb2, 0x5f, 0xad, 0x68, 0x34, 0xbd, 0xde, 0x95, 0x7e, 0xa5, 0x70, 0xfb, 0x57,
-	0x02, 0x53, 0xd9, 0xaf, 0x46, 0xd4, 0x54, 0xaf, 0xf7, 0xa1, 0xb9, 0x8b, 0xf3, 0xfc, 0xb4, 0xe8,
-	0xc3, 0x16, 0x76, 0x31, 0xa6, 0x1f, 0x58, 0xa4, 0xeb, 0xce, 0x36, 0x2a, 0x44, 0x8b, 0x31, 0xff,
-	0x8a, 0xcf, 0x2f, 0xc6, 0xb1, 0x72, 0xe1, 0x62, 0xcc, 0xa9, 0x5f, 0xc9, 0x94, 0x11, 0x2e, 0xc6,
-	0xbc, 0xef, 0xd2, 0x6e, 0x96, 0x68, 0x31, 0x16, 0xf8, 0x2e, 0xea, 0x21, 0x89, 0x17, 0x63, 0x89,
-	0xef, 0x99, 0x4d, 0x28, 0x7e, 0x31, 0xe6, 0x0d, 0x64, 0xb4, 0x9c, 0xc4, 0x8b, 0x31, 0xdf, 0x67,
-	0x62, 0x17, 0xe3, 0x58, 0x3d, 0x66, 0x76, 0x01, 0x93, 0x5f, 0x89, 0x08, 0xa8, 0x9e, 0x3e, 0x1f,
-	0x50, 0xb8, 0xdf, 0x43, 0x8a, 0x44, 0x77, 0xc6, 0x6d, 0x6e, 0x27, 0x0d, 0x09, 0xb9, 0x2e, 0x30,
-	0xf5, 0xb0, 0xa7, 0x1c, 0x5d, 0x18, 0xef, 0x88, 0xf7, 0xe1, 0x90, 0x80, 0xf0, 0x19, 0x31, 0xf5,
-	0x38, 0x8c, 0x72, 0xc6, 0xed, 0x59, 0x8b, 0x62, 0xea, 0x71, 0xf4, 0x84, 0xc6, 0xd4, 0xf3, 0x28,
-	0xc9, 0xaf, 0x15, 0x6e, 0xbf, 0x5a, 0x64, 0xad, 0xc7, 0xc9, 0x11, 0x6a, 0xad, 0xe7, 0xb9, 0x90,
-	0xdc, 0xc5, 0x79, 0x7e, 0x46, 0xf8, 0xed, 0xd0, 0x97, 0xcc, 0x8b, 0x17, 0xfd, 0xc2, 0x42, 0xc0,
-	0x7e, 0xee, 0xc0, 0x57, 0xa1, 0x94, 0x25, 0xd2, 0x9d, 0xce, 0x85, 0x67, 0x04, 0x91, 0x90, 0xfe,
-	0xbc, 0x85, 0x7b, 0xd9, 0x42, 0xc4, 0xc6, 0x97, 0x4c, 0x7f, 0x20, 0x15, 0x81, 0xfc, 0x48, 0x21,
-	0x8d, 0x20, 0xeb, 0xc0, 0x60, 0x9d, 0x7b, 0xf9, 0x4f, 0x45, 0x90, 0x75, 0x3c, 0x90, 0x46, 0x90,
-	0x7d, 0xe2, 0xaf, 0xc3, 0xbd, 0xf7, 0xa7, 0x6c, 0x64, 0x9d, 0xef, 0xa3, 0x36, 0xb2, 0x4f, 0xef,
-	0xcd, 0x5e, 0x9c, 0xe7, 0x6f, 0xa7, 0xbe, 0xa4, 0x29, 0x90, 0xd3, 0xd8, 0x39, 0x65, 0x7b, 0xfd,
-	0x17, 0x65, 0xc9, 0xa7, 0xe0, 0x75, 0xad, 0x71, 0x86, 0x2d, 0xbd, 0x62, 0x58, 0x3e, 0x76, 0x2d,
-	0xcd, 0xac, 0x38, 0x67, 0xcd, 0x8a, 0x53, 0xaf, 0x8f, 0x84, 0xa7, 0xc5, 0x9f, 0xfc, 0x3f, 0x00,
-	0x00, 0xff, 0xff, 0x15, 0x2e, 0x13, 0x4e, 0x76, 0x3e, 0x00, 0x00,
+	// 3239 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x5c, 0xdd, 0x72, 0xdb, 0xc6,
+	0xf5, 0x37, 0x24, 0x8a, 0xa4, 0x0e, 0x6d, 0x85, 0x5e, 0x4b, 0x16, 0x49, 0x7d, 0x9a, 0x76, 0x1c,
+	0xe5, 0xef, 0x11, 0xa9, 0xc8, 0xf9, 0x4f, 0x26, 0x6e, 0x33, 0x8e, 0x64, 0x49, 0xb1, 0x14, 0x7f,
+	0x15, 0x94, 0x32, 0xe3, 0x36, 0x09, 0x07, 0x22, 0x57, 0x34, 0x22, 0x10, 0x40, 0x00, 0x50, 0x8d,
+	0x2e, 0x7b, 0xd1, 0xbb, 0x3e, 0x45, 0x67, 0x3a, 0x7d, 0x83, 0x76, 0xa4, 0x8b, 0xde, 0xb6, 0x97,
+	0x7d, 0x83, 0xce, 0x74, 0x3a, 0xfd, 0xba, 0xe8, 0x4d, 0xfb, 0x00, 0x1d, 0x00, 0xbb, 0x4b, 0xec,
+	0x62, 0x01, 0x4a, 0x94, 0x66, 0x1a, 0xeb, 0xc6, 0x26, 0xb0, 0x67, 0xcf, 0x39, 0x7b, 0xce, 0xf9,
+	0xed, 0xd7, 0x39, 0x10, 0xfc, 0x5f, 0x47, 0xf7, 0xde, 0xf4, 0xf6, 0x6b, 0x2d, 0xab, 0x5b, 0x3f,
+	0xb4, 0xda, 0xd8, 0xed, 0xea, 0x46, 0xfd, 0xd0, 0x5d, 0xee, 0x5a, 0x6d, 0x6c, 0xd4, 0x5d, 0xec,
+	0x1c, 0xe9, 0x2d, 0x5c, 0xb3, 0x1d, 0xcb, 0xb3, 0xd0, 0x58, 0xf0, 0xb2, 0x92, 0xde, 0xc5, 0x76,
+	0xac, 0x03, 0xdd, 0x20, 0x5d, 0x2a, 0x8b, 0x1d, 0xcb, 0xea, 0x18, 0xb8, 0x1e, 0x3c, 0xed, 0xf7,
+	0x0e, 0xea, 0x07, 0x3a, 0x36, 0xda, 0xcd, 0xae, 0xe6, 0x1e, 0x12, 0x8a, 0x05, 0x91, 0xc2, 0xd3,
+	0xbb, 0xd8, 0xf5, 0xb4, 0xae, 0x4d, 0x08, 0x66, 0x09, 0x81, 0x66, 0xeb, 0x75, 0xcd, 0x34, 0x2d,
+	0x4f, 0xf3, 0x74, 0xcb, 0x74, 0x49, 0xeb, 0x83, 0xe0, 0xbf, 0xd6, 0x72, 0x07, 0x9b, 0xcb, 0x47,
+	0x9a, 0xa1, 0xb7, 0x35, 0x0f, 0xd7, 0x63, 0x3f, 0x08, 0xf1, 0xa3, 0x88, 0xe6, 0xba, 0x79, 0x60,
+	0xed, 0x1b, 0xd6, 0x77, 0x96, 0x8d, 0xcd, 0x7a, 0x84, 0x49, 0xc7, 0x72, 0xba, 0x75, 0xcb, 0x0e,
+	0x64, 0xd4, 0xfd, 0x07, 0xd2, 0xf7, 0xe3, 0xb3, 0xf6, 0xf5, 0x8e, 0x6d, 0xec, 0x86, 0xff, 0x92,
+	0xae, 0x3b, 0x49, 0x5d, 0x35, 0xcf, 0xd0, 0xdc, 0x65, 0xcd, 0xb6, 0x97, 0x3d, 0xcb, 0x32, 0x0e,
+	0x75, 0xaf, 0xfe, 0x6d, 0x0f, 0x3b, 0xc7, 0xf5, 0x96, 0x65, 0x18, 0xb8, 0xe5, 0xab, 0xd0, 0xb4,
+	0x6c, 0xec, 0x68, 0x9e, 0xe5, 0x10, 0x5e, 0xd5, 0x03, 0x80, 0x46, 0xe8, 0x94, 0x5d, 0xad, 0x83,
+	0x16, 0x61, 0x44, 0x6f, 0x97, 0x94, 0x45, 0x65, 0x29, 0xb3, 0x5e, 0x3c, 0x3d, 0x29, 0x5f, 0x07,
+	0x40, 0x59, 0x17, 0x3b, 0xba, 0x66, 0x2c, 0x29, 0xea, 0x88, 0xde, 0x46, 0x15, 0x18, 0x3d, 0xc4,
+	0xc7, 0xa5, 0x91, 0x45, 0x65, 0x69, 0x7c, 0x3d, 0x7f, 0x7a, 0x52, 0xce, 0xc0, 0xc8, 0x8a, 0xa2,
+	0xfa, 0x2f, 0x11, 0x82, 0x8c, 0xa9, 0x75, 0x71, 0x69, 0xd4, 0x6f, 0x54, 0x83, 0xdf, 0x8f, 0xb2,
+	0xa7, 0x27, 0xe5, 0x91, 0xbc, 0x52, 0xfd, 0xed, 0x08, 0xe4, 0x88, 0xa0, 0x33, 0x48, 0xf9, 0x18,
+	0xa0, 0xe5, 0x60, 0xcd, 0xc3, 0xed, 0xa6, 0xe6, 0x05, 0xc2, 0x0a, 0xab, 0x95, 0x5a, 0xe8, 0xb8,
+	0x1a, 0xf5, 0x6c, 0x6d, 0x97, 0x7a, 0x56, 0x1d, 0x27, 0xd4, 0x6b, 0x9e, 0xdf, 0xb5, 0x67, 0xb7,
+	0x69, 0xd7, 0xd1, 0xc1, 0x5d, 0x09, 0xf5, 0x9a, 0xc7, 0xf4, 0xcf, 0xf4, 0xf5, 0x47, 0xef, 0x41,
+	0xc6, 0x37, 0x7d, 0x69, 0x6c, 0x51, 0x59, 0x9a, 0x58, 0xbd, 0x55, 0x0b, 0x82, 0xb2, 0x46, 0x46,
+	0x52, 0xdb, 0x3d, 0xb6, 0xb1, 0x1a, 0x10, 0xa0, 0x65, 0xc8, 0x78, 0x5a, 0xc7, 0x2d, 0x65, 0x17,
+	0x47, 0x97, 0x0a, 0xab, 0x37, 0x79, 0xc2, 0x5d, 0xad, 0xb3, 0x1e, 0x58, 0x62, 0xf5, 0x9a, 0x1a,
+	0x90, 0x55, 0x17, 0x21, 0xe3, 0x77, 0x46, 0x05, 0xc8, 0x3d, 0xdf, 0xdc, 0xd8, 0x7e, 0xb2, 0xf6,
+	0xac, 0x78, 0xcd, 0x7f, 0xd8, 0xda, 0xde, 0x7d, 0xb1, 0xd9, 0x68, 0x14, 0x15, 0x66, 0xb9, 0x3f,
+	0x8e, 0xc2, 0x75, 0xc2, 0xe6, 0xe5, 0xc1, 0x01, 0x76, 0xd0, 0x36, 0x33, 0x5f, 0x61, 0x75, 0xaa,
+	0x16, 0x84, 0x54, 0x18, 0x1d, 0x7b, 0x7b, 0xdb, 0x1b, 0x5f, 0x68, 0x46, 0x0f, 0xaf, 0x57, 0x4f,
+	0x4f, 0xca, 0xf3, 0x30, 0x8b, 0x32, 0xbd, 0x9e, 0xde, 0x5e, 0x52, 0x1e, 0x21, 0xff, 0xff, 0x66,
+	0x07, 0x9b, 0xbe, 0xf3, 0x71, 0xf3, 0xe8, 0xc3, 0xa5, 0xf7, 0xff, 0x87, 0x76, 0x9e, 0x84, 0x31,
+	0xdb, 0xd1, 0x5b, 0xa1, 0xa1, 0x47, 0xd4, 0xf0, 0x01, 0x55, 0x20, 0xdf, 0xea, 0x39, 0x0e, 0x36,
+	0x5b, 0xc7, 0x81, 0xb5, 0xc7, 0x55, 0xf6, 0x8c, 0x56, 0x20, 0x47, 0xa6, 0x8e, 0x52, 0x36, 0x90,
+	0x34, 0xc1, 0xdb, 0x37, 0x34, 0x6e, 0xf5, 0x9a, 0x4a, 0xc9, 0xd0, 0x23, 0xc8, 0xdb, 0x8e, 0x75,
+	0xa4, 0xb7, 0xb1, 0x53, 0xca, 0x05, 0x5d, 0x6e, 0xf3, 0x5d, 0x5e, 0x91, 0x56, 0xd6, 0x95, 0xd1,
+	0xa3, 0x45, 0x28, 0xb4, 0xb1, 0xdb, 0x72, 0xf4, 0x00, 0xb5, 0xa5, 0x7c, 0xa0, 0x4c, 0xf4, 0x95,
+	0x3f, 0x02, 0x4f, 0xf7, 0x0c, 0x5c, 0x1a, 0x0f, 0xda, 0xc2, 0x07, 0xb4, 0x00, 0x05, 0x5b, 0x6f,
+	0x79, 0x3d, 0x07, 0x37, 0x7b, 0x8e, 0x51, 0x82, 0xa0, 0x0d, 0xc8, 0xab, 0x3d, 0xc7, 0x60, 0x2e,
+	0xfd, 0xfd, 0x28, 0xdc, 0x24, 0x6a, 0x6c, 0x76, 0x6d, 0xc3, 0x3a, 0xee, 0x62, 0xd3, 0xfb, 0xde,
+	0xc2, 0xe2, 0x01, 0x00, 0x99, 0x84, 0x9b, 0x7a, 0x3b, 0x04, 0xc7, 0xfa, 0xf5, 0xd3, 0x93, 0x72,
+	0x1e, 0xb2, 0x61, 0x80, 0xa9, 0xe3, 0xa4, 0x7d, 0xbb, 0x8d, 0xe6, 0x00, 0x0e, 0x74, 0xc7, 0xf5,
+	0x9a, 0x01, 0x92, 0x42, 0x3f, 0x8e, 0x07, 0x6f, 0x5e, 0xf8, 0x70, 0x9a, 0x81, 0x71, 0x43, 0xa3,
+	0xad, 0xd9, 0xd0, 0xcb, 0xfe, 0x8b, 0xa0, 0x71, 0x12, 0xc6, 0x70, 0x57, 0xd3, 0x8d, 0xc0, 0x61,
+	0xe3, 0x6a, 0xf8, 0x10, 0x44, 0xcb, 0x1b, 0xcb, 0xc4, 0xc4, 0x0f, 0xe1, 0x03, 0x5a, 0x82, 0x62,
+	0x4b, 0x33, 0x9b, 0xfb, 0xb8, 0xd9, 0xb2, 0x4c, 0x4f, 0x6b, 0x79, 0xb8, 0x1d, 0x38, 0x23, 0xaf,
+	0x4e, 0xb4, 0x34, 0x73, 0x1d, 0x3f, 0xa1, 0x6f, 0x51, 0x03, 0x6e, 0x91, 0xa0, 0x68, 0x52, 0x0f,
+	0xfb, 0xe3, 0x80, 0x34, 0xfc, 0xf0, 0xc3, 0xbb, 0xe9, 0xf2, 0x21, 0xb3, 0xdd, 0x66, 0x9e, 0xfc,
+	0xd5, 0x08, 0x4c, 0x10, 0x4f, 0x6e, 0x60, 0x4f, 0xd3, 0x0d, 0xf7, 0xad, 0x9a, 0xdd, 0x4a, 0x90,
+	0xd3, 0xda, 0x6d, 0x07, 0xbb, 0x2e, 0x71, 0x15, 0x7d, 0xec, 0x5b, 0x3d, 0x1b, 0xb5, 0x7a, 0x19,
+	0xf2, 0x86, 0xd5, 0xb1, 0x82, 0xf0, 0x0e, 0x9d, 0x94, 0xf3, 0x9f, 0xf7, 0x1c, 0xa3, 0xef, 0xbc,
+	0x7c, 0xc4, 0x79, 0xcc, 0x4e, 0xbf, 0xc8, 0x00, 0x22, 0x76, 0x5a, 0xb3, 0x6d, 0x43, 0x6f, 0x05,
+	0x8b, 0xee, 0xdb, 0x3f, 0x95, 0x45, 0xa7, 0x99, 0xcc, 0x39, 0xa7, 0x99, 0x87, 0x30, 0xe6, 0x83,
+	0xc6, 0x37, 0xbd, 0xbf, 0x64, 0xcc, 0xf1, 0x1d, 0x23, 0x66, 0xda, 0xd2, 0x0d, 0xac, 0x86, 0xb4,
+	0xbe, 0xae, 0x9a, 0xdf, 0x12, 0xea, 0x9a, 0x1d, 0xac, 0x2b, 0xa1, 0x5e, 0xf3, 0xd0, 0x0f, 0xa0,
+	0xa0, 0xd9, 0xbe, 0xf4, 0xb0, 0x6f, 0x6e, 0x60, 0x5f, 0xa0, 0xe4, 0x6b, 0x1e, 0xda, 0x80, 0x82,
+	0x83, 0x8f, 0x74, 0xfc, 0xd3, 0x10, 0x3d, 0xf9, 0xb3, 0xa3, 0x07, 0x68, 0xbf, 0x08, 0x6c, 0xfe,
+	0xad, 0xc0, 0x6d, 0xf9, 0x38, 0xdf, 0xfe, 0x90, 0x28, 0xc2, 0xa8, 0x0f, 0x8f, 0x10, 0x66, 0xfe,
+	0x4f, 0x36, 0xea, 0xff, 0x8c, 0xc0, 0x3b, 0x42, 0x58, 0xbc, 0xfd, 0xc3, 0xad, 0x43, 0xae, 0x1d,
+	0xce, 0x7c, 0x04, 0x00, 0x53, 0x7c, 0x1c, 0x93, 0x69, 0x51, 0xa5, 0x54, 0xe8, 0x01, 0x64, 0x2d,
+	0x7f, 0x1f, 0x43, 0xe3, 0x5e, 0xd8, 0x53, 0x05, 0x7b, 0x1c, 0x95, 0x90, 0xa0, 0x47, 0x50, 0xc0,
+	0x6c, 0x85, 0xa4, 0x9b, 0xab, 0x12, 0xdf, 0xa3, 0xbf, 0x84, 0xaa, 0x51, 0x62, 0x66, 0xf6, 0x57,
+	0x30, 0xfb, 0x24, 0x18, 0xa9, 0x60, 0x7b, 0x15, 0x7f, 0xdb, 0xc3, 0xae, 0xe7, 0x6f, 0x2e, 0x6c,
+	0xed, 0xd8, 0xb0, 0x34, 0xea, 0x87, 0x04, 0x08, 0xab, 0x94, 0xac, 0xfa, 0x12, 0xe6, 0x12, 0x38,
+	0xba, 0xb6, 0x65, 0xba, 0x18, 0xd5, 0x20, 0xeb, 0x60, 0xb7, 0x67, 0x78, 0x03, 0x38, 0x12, 0xaa,
+	0xea, 0x13, 0xa8, 0xa8, 0x58, 0x6b, 0x27, 0x28, 0xf8, 0xee, 0xc0, 0x18, 0xf1, 0xfd, 0x5f, 0x7d,
+	0x0e, 0x33, 0x52, 0x26, 0x43, 0xea, 0xf4, 0x0a, 0x66, 0xf7, 0x02, 0x2f, 0x5f, 0xa6, 0xd9, 0x12,
+	0x38, 0x0e, 0xa9, 0xe2, 0x26, 0xcc, 0x6e, 0x60, 0x03, 0x27, 0xaa, 0x78, 0x46, 0xc3, 0x2d, 0xc0,
+	0x5c, 0x02, 0x9b, 0x50, 0xaf, 0xea, 0xdf, 0x14, 0xa8, 0x3c, 0xd3, 0x5d, 0x2f, 0x41, 0x4c, 0x1d,
+	0xb2, 0x07, 0xba, 0xe1, 0x61, 0x87, 0x88, 0x9a, 0xae, 0xd1, 0x53, 0x59, 0x4d, 0xb3, 0xf5, 0xda,
+	0x56, 0xd0, 0xa6, 0x9b, 0x1d, 0x95, 0x90, 0xa1, 0x15, 0xc8, 0x5b, 0x8e, 0xbf, 0x0f, 0xd9, 0x3f,
+	0x26, 0x38, 0x9d, 0xe2, 0xbb, 0x34, 0x2c, 0xc7, 0xf3, 0x3b, 0xe4, 0x02, 0xb2, 0xf5, 0x63, 0xf4,
+	0xa1, 0x2f, 0x02, 0x1b, 0x6d, 0x97, 0x80, 0x73, 0x56, 0x14, 0x81, 0x8d, 0x76, 0x03, 0x93, 0x43,
+	0x9e, 0x4a, 0x68, 0xd1, 0x0a, 0x64, 0x6d, 0xad, 0xa3, 0x9b, 0x1d, 0x02, 0xcd, 0x12, 0xdf, 0xeb,
+	0x95, 0xdf, 0xa6, 0x85, 0x3d, 0x42, 0xba, 0xea, 0x4b, 0x98, 0x91, 0x0e, 0x94, 0x38, 0x68, 0x05,
+	0x72, 0xa1, 0xe9, 0xdd, 0x92, 0x12, 0x40, 0x31, 0xd1, 0xe7, 0x84, 0xac, 0xfa, 0x05, 0x2c, 0x70,
+	0x50, 0x89, 0x4c, 0xf7, 0xd4, 0x7c, 0x0f, 0xc5, 0x40, 0x2a, 0x27, 0xae, 0x84, 0xfd, 0x58, 0xda,
+	0x83, 0xc5, 0x64, 0xbe, 0x44, 0xdb, 0x0f, 0x84, 0x70, 0x4a, 0xe1, 0x4b, 0x23, 0x6a, 0x0b, 0xe6,
+	0x22, 0x18, 0x92, 0x28, 0x7b, 0xc6, 0x90, 0x6a, 0xc0, 0x7c, 0x12, 0x9f, 0xe1, 0x95, 0xfb, 0x02,
+	0x16, 0x38, 0xfc, 0x5c, 0xa2, 0x2d, 0x93, 0xf9, 0x0e, 0xaf, 0xee, 0x53, 0x58, 0xe0, 0x60, 0x35,
+	0xbc, 0x35, 0xab, 0xb0, 0x98, 0xcc, 0x89, 0x60, 0xf4, 0x9f, 0x0a, 0xcc, 0x45, 0x42, 0x57, 0x22,
+	0xec, 0x0a, 0xc1, 0x74, 0x0f, 0xe6, 0x93, 0xc6, 0x4a, 0xfc, 0xf5, 0x50, 0x44, 0x6a, 0x5a, 0x20,
+	0x50, 0xb0, 0x6e, 0xc1, 0x34, 0x07, 0xaa, 0x5d, 0xad, 0x43, 0x8d, 0xf7, 0x40, 0x0c, 0xac, 0xf8,
+	0x0d, 0x47, 0x3f, 0xa0, 0x36, 0xa1, 0x14, 0xe7, 0x43, 0x14, 0x7b, 0x5f, 0x08, 0x24, 0x09, 0x1f,
+	0x1a, 0x40, 0xef, 0xc1, 0x54, 0x04, 0x44, 0x11, 0x65, 0x26, 0xfa, 0x47, 0xac, 0x20, 0x3e, 0x9e,
+	0xc0, 0x6d, 0x91, 0xf0, 0xfc, 0xd2, 0xb6, 0x60, 0x9a, 0x43, 0xc1, 0x05, 0x06, 0x1f, 0xe7, 0x73,
+	0x7e, 0x75, 0xde, 0x87, 0x69, 0x2e, 0xe6, 0x53, 0x86, 0x5f, 0x81, 0x52, 0x9c, 0x94, 0xc0, 0xe2,
+	0xcf, 0x0a, 0x4c, 0x45, 0x42, 0x25, 0xc2, 0xe5, 0x0a, 0xc1, 0x61, 0x13, 0x6e, 0x8b, 0x63, 0x24,
+	0x06, 0x7f, 0x20, 0xc2, 0x40, 0xe6, 0x39, 0x1a, 0xfe, 0x5f, 0xc3, 0xdd, 0xa4, 0x35, 0x25, 0x38,
+	0x82, 0x11, 0xc3, 0x7d, 0x24, 0x46, 0xc3, 0x80, 0x93, 0x1b, 0x8b, 0x8c, 0xaf, 0xe0, 0x5e, 0x3a,
+	0x7f, 0xa2, 0xf4, 0xff, 0x0b, 0x51, 0x32, 0x80, 0x3f, 0x8d, 0x98, 0x1d, 0xb8, 0x23, 0x5f, 0x73,
+	0xa2, 0xca, 0x9f, 0x71, 0xc6, 0xfd, 0x09, 0x54, 0xd3, 0x78, 0x5d, 0x4c, 0xd1, 0xaf, 0xe1, 0x6e,
+	0xd2, 0x7a, 0x73, 0x59, 0x76, 0x4e, 0xe7, 0x7f, 0x31, 0xf5, 0x9f, 0xc1, 0xdd, 0xa4, 0xd5, 0x68,
+	0x08, 0x4b, 0xdf, 0x87, 0x7b, 0xe9, 0xdc, 0x08, 0x90, 0xff, 0xa5, 0xc0, 0x1d, 0xf9, 0x9c, 0x1f,
+	0x15, 0x7a, 0x85, 0x40, 0xfd, 0x15, 0x54, 0xd3, 0xc6, 0x4b, 0x7c, 0xf8, 0x91, 0x08, 0xf0, 0x41,
+	0x41, 0x42, 0xc1, 0xbe, 0x03, 0x65, 0x0e, 0x8c, 0xe1, 0xb9, 0x93, 0x98, 0x71, 0x59, 0x0c, 0x3d,
+	0xe9, 0x21, 0x95, 0x05, 0xdc, 0x36, 0x54, 0x64, 0xbc, 0xd8, 0x1c, 0xc4, 0x87, 0x99, 0xfc, 0xc0,
+	0x4b, 0x82, 0xeb, 0x53, 0x98, 0x8e, 0x00, 0x8f, 0x53, 0xea, 0x8c, 0x01, 0xf5, 0x19, 0x94, 0xe2,
+	0x1c, 0x86, 0x51, 0x65, 0x07, 0xca, 0x1c, 0x8c, 0x2e, 0x68, 0x21, 0x19, 0xaf, 0x61, 0xd4, 0x5a,
+	0x87, 0x32, 0x07, 0x98, 0x61, 0x6c, 0x34, 0x0b, 0x15, 0x19, 0x0f, 0x02, 0xb5, 0xbf, 0x28, 0x30,
+	0x1d, 0x09, 0x3d, 0x4e, 0xc0, 0x15, 0x02, 0xd8, 0x36, 0x94, 0xe2, 0xa3, 0x24, 0x1e, 0x59, 0x16,
+	0x61, 0x25, 0x77, 0x2f, 0x05, 0xd3, 0x0b, 0x98, 0xe1, 0x00, 0x40, 0x2f, 0x7d, 0x98, 0xd1, 0x84,
+	0x60, 0x49, 0xba, 0x23, 0xa2, 0xe1, 0xf2, 0x5c, 0xb8, 0xb2, 0x61, 0xfc, 0x98, 0x7a, 0x7c, 0xc0,
+	0x24, 0xf0, 0xa3, 0x21, 0xf3, 0x00, 0xca, 0x11, 0x48, 0x08, 0xca, 0x89, 0xbb, 0xa9, 0xcf, 0xb9,
+	0xbb, 0x98, 0x0b, 0x4a, 0x7e, 0x01, 0x33, 0x5c, 0xdc, 0x5f, 0x82, 0x61, 0xe4, 0xfc, 0x86, 0x53,
+	0x6f, 0x19, 0x66, 0x38, 0x1c, 0x0c, 0x30, 0xcd, 0xbc, 0x70, 0xdf, 0x22, 0x48, 0xaf, 0xfe, 0x55,
+	0x81, 0x72, 0x24, 0xa4, 0x62, 0x83, 0xbd, 0x32, 0xd0, 0x79, 0xce, 0xdd, 0x07, 0x89, 0x4e, 0xa8,
+	0x8b, 0xe0, 0x49, 0xf2, 0x2a, 0x85, 0xcf, 0x2e, 0xcc, 0x73, 0xe1, 0x1e, 0xb9, 0xd1, 0x24, 0xb6,
+	0x5b, 0x15, 0x03, 0x25, 0xf9, 0x0e, 0x94, 0xc5, 0x4a, 0x43, 0xb8, 0x7a, 0x89, 0x72, 0x65, 0xf7,
+	0x39, 0x7c, 0xb8, 0x24, 0x73, 0xa5, 0x11, 0x53, 0x83, 0xd9, 0x08, 0x3a, 0xe2, 0x8a, 0x8a, 0x21,
+	0xf3, 0x23, 0xee, 0x42, 0xe5, 0x52, 0x54, 0xd8, 0x85, 0x79, 0x0e, 0x03, 0x97, 0x66, 0xad, 0x44,
+	0xae, 0x43, 0xab, 0xba, 0x02, 0xf3, 0x1c, 0x60, 0x06, 0xdb, 0xeb, 0x8e, 0x70, 0x69, 0x12, 0x57,
+	0xa3, 0xfa, 0x0f, 0x05, 0x66, 0x23, 0xd1, 0x17, 0xe7, 0x79, 0x85, 0x80, 0xd6, 0xe0, 0x2e, 0x75,
+	0x24, 0x3e, 0x59, 0x15, 0xb1, 0x96, 0xe2, 0x6a, 0x0a, 0xb7, 0x4f, 0x61, 0x92, 0x03, 0x06, 0xb5,
+	0xdb, 0x92, 0x18, 0x36, 0x42, 0x95, 0x41, 0x3f, 0x58, 0x1e, 0xc3, 0x94, 0xc0, 0x81, 0xa8, 0x73,
+	0x5f, 0x08, 0x11, 0x91, 0x03, 0x0d, 0x8c, 0x7b, 0x80, 0x22, 0xb0, 0x48, 0x0a, 0x86, 0x4f, 0xe0,
+	0x16, 0x47, 0x75, 0x4e, 0x21, 0x9f, 0xc2, 0x24, 0x17, 0xd2, 0x43, 0x8d, 0x53, 0xe0, 0x70, 0x4e,
+	0x15, 0xee, 0xc3, 0x24, 0x17, 0xce, 0x49, 0x23, 0x9d, 0x86, 0x29, 0x81, 0x8e, 0x04, 0xfb, 0x9f,
+	0x14, 0x40, 0x91, 0x08, 0xb8, 0x82, 0x21, 0xfe, 0x18, 0x6e, 0x71, 0x03, 0x24, 0x16, 0x5e, 0x12,
+	0x03, 0x3b, 0xe6, 0x24, 0x1a, 0xce, 0xbf, 0x19, 0x81, 0x12, 0x79, 0xd9, 0xc0, 0xae, 0xab, 0x5b,
+	0xe6, 0xe6, 0x91, 0x66, 0xf4, 0xc2, 0x0c, 0xfb, 0xf7, 0xb5, 0x1a, 0xa1, 0x0e, 0x39, 0x37, 0x54,
+	0x56, 0x9e, 0x36, 0x24, 0x23, 0x51, 0x29, 0x15, 0x2a, 0x41, 0xae, 0x65, 0x75, 0x7d, 0x20, 0xd3,
+	0x52, 0x05, 0xf2, 0x88, 0xea, 0x70, 0xcb, 0xc1, 0xe1, 0x43, 0x3b, 0x18, 0x74, 0xd3, 0xd1, 0xbc,
+	0xb0, 0x70, 0x41, 0x51, 0x11, 0xdf, 0xa4, 0x6a, 0x5e, 0xbf, 0x26, 0xed, 0xd7, 0x19, 0x56, 0xbc,
+	0x41, 0xc4, 0xbd, 0xfd, 0xe9, 0xd8, 0x73, 0x15, 0xeb, 0x7c, 0x02, 0xd7, 0xdd, 0xd6, 0x1b, 0xdc,
+	0xee, 0x19, 0xa1, 0xa4, 0xb1, 0x81, 0x92, 0x0a, 0x8c, 0x3e, 0x2c, 0x28, 0x38, 0xd0, 0x4d, 0xdd,
+	0x7d, 0x73, 0xd6, 0x62, 0x04, 0xa0, 0xe4, 0x6b, 0x1e, 0xfa, 0x00, 0xc6, 0x82, 0x1c, 0x2f, 0xa9,
+	0x43, 0x90, 0x9d, 0x2f, 0x58, 0xcd, 0x44, 0x48, 0x89, 0xea, 0x30, 0x66, 0x5a, 0x1e, 0x76, 0x4b,
+	0x79, 0xd9, 0x8d, 0x36, 0x71, 0xe1, 0x0b, 0xcb, 0xc3, 0x6a, 0x48, 0x87, 0x1e, 0x03, 0x60, 0x06,
+	0x85, 0xa0, 0x3c, 0xa8, 0xb0, 0xba, 0x20, 0xed, 0xd5, 0x47, 0x8c, 0x1a, 0xe9, 0xc2, 0x22, 0xe5,
+	0x97, 0x23, 0xac, 0x7c, 0x25, 0x22, 0xe6, 0x4a, 0x24, 0xef, 0xcf, 0x87, 0x42, 0x04, 0x19, 0x0f,
+	0x7f, 0x47, 0x21, 0x18, 0xfc, 0x66, 0x46, 0x12, 0x0f, 0x81, 0xb4, 0xf3, 0x19, 0xcf, 0x3a, 0x4c,
+	0x56, 0xd2, 0x21, 0x90, 0xf1, 0x3b, 0xdb, 0x59, 0x87, 0x92, 0x47, 0xee, 0x0d, 0x22, 0x8b, 0xa9,
+	0xa0, 0xdc, 0x19, 0xef, 0x0d, 0xf8, 0xb3, 0xe1, 0x05, 0x15, 0x12, 0xcf, 0x86, 0x97, 0x60, 0x2f,
+	0x39, 0xbf, 0xe1, 0xd4, 0xdb, 0x10, 0xce, 0x86, 0xc3, 0x59, 0x4c, 0x3c, 0x32, 0x0a, 0x4a, 0x89,
+	0x47, 0xc6, 0x98, 0x0d, 0xae, 0xe8, 0x91, 0x51, 0xf4, 0xcd, 0xa0, 0x23, 0x23, 0x73, 0x36, 0x5d,
+	0xf4, 0xff, 0xae, 0xc0, 0x74, 0xc3, 0x73, 0xb0, 0xd6, 0x25, 0x4d, 0xdb, 0xa6, 0xdd, 0xf3, 0x36,
+	0x8f, 0xfc, 0x05, 0x71, 0x13, 0xde, 0x71, 0x42, 0x03, 0x36, 0x29, 0xba, 0x15, 0x32, 0x2b, 0x84,
+	0x4c, 0x03, 0x32, 0x62, 0x63, 0xd2, 0xfd, 0xe9, 0x35, 0x75, 0xc2, 0xe1, 0xde, 0xa0, 0x1f, 0xc2,
+	0xf5, 0x6f, 0x2c, 0xdd, 0x64, 0x3c, 0x46, 0x88, 0x0b, 0x22, 0x3c, 0x76, 0x2c, 0xdd, 0xec, 0x33,
+	0x28, 0x7c, 0xd3, 0x7f, 0x44, 0x8f, 0xe1, 0x86, 0x81, 0xb5, 0x23, 0xcc, 0xba, 0x8f, 0x72, 0x67,
+	0xa6, 0xa0, 0xfb, 0x33, 0x9f, 0xa0, 0xdf, 0xff, 0xba, 0x11, 0x79, 0x5e, 0xcf, 0xc1, 0x18, 0xf6,
+	0x89, 0xaa, 0x5b, 0x70, 0x4b, 0xa2, 0x70, 0x74, 0xee, 0x52, 0xce, 0x32, 0x77, 0x55, 0x9f, 0x40,
+	0x51, 0x54, 0xfa, 0xfc, 0x4c, 0x36, 0xe0, 0x66, 0x4c, 0xf5, 0xf3, 0x73, 0xf9, 0x83, 0xbf, 0x65,
+	0x8b, 0x7a, 0xef, 0x65, 0xcf, 0x63, 0xee, 0xfb, 0x1c, 0x6e, 0x12, 0xba, 0x26, 0xf1, 0x08, 0xa6,
+	0x40, 0x9b, 0x8d, 0x5a, 0x8f, 0xc7, 0x0a, 0x6e, 0x3f, 0xbd, 0xa6, 0x16, 0x5d, 0xe1, 0x9d, 0x1f,
+	0x0b, 0x94, 0x99, 0xeb, 0x69, 0x8e, 0xcf, 0x6a, 0x24, 0x1e, 0x0b, 0x84, 0x55, 0x23, 0xa4, 0xf0,
+	0x63, 0xc1, 0xe5, 0xde, 0x44, 0xd9, 0x78, 0x7a, 0x17, 0x5b, 0xbd, 0xfe, 0x42, 0x13, 0x67, 0xb3,
+	0x1b, 0x52, 0x44, 0xd8, 0x90, 0x37, 0xe8, 0x29, 0x50, 0x0d, 0x9b, 0x74, 0x2b, 0x40, 0x00, 0x34,
+	0x23, 0xe1, 0xb3, 0x45, 0x48, 0x9e, 0x5e, 0x53, 0xa9, 0x74, 0xfa, 0xaa, 0x1f, 0x1d, 0x4f, 0x61,
+	0x4a, 0x6a, 0x8d, 0xf3, 0x3b, 0x85, 0xc6, 0x19, 0x6f, 0x8c, 0x0b, 0xf3, 0xa1, 0x63, 0x3f, 0x37,
+	0x9f, 0xcf, 0x60, 0x52, 0x66, 0x8d, 0x73, 0x33, 0x5a, 0xfd, 0xdd, 0x3c, 0xe4, 0x49, 0x9b, 0x8b,
+	0x36, 0xa0, 0x10, 0x99, 0x87, 0x10, 0xdd, 0x44, 0xc5, 0xcf, 0x58, 0x95, 0x8a, 0xac, 0x89, 0xcc,
+	0x57, 0x3b, 0x70, 0x83, 0x5b, 0x9b, 0x11, 0xf5, 0x9f, 0xec, 0x60, 0x5d, 0x99, 0x95, 0x37, 0x12,
+	0x5e, 0x1b, 0x50, 0x88, 0x2c, 0xaa, 0x4c, 0xa3, 0xf8, 0xf9, 0x98, 0x69, 0x24, 0x3b, 0x14, 0xef,
+	0xc0, 0x0d, 0x6e, 0xf5, 0x63, 0x1a, 0xc9, 0x8e, 0xc0, 0x4c, 0x23, 0xf9, 0xe9, 0xf6, 0x35, 0xdc,
+	0xe0, 0x16, 0x2d, 0xc6, 0x4b, 0x76, 0x96, 0x65, 0xbc, 0xe4, 0x07, 0xd8, 0x1b, 0xa7, 0x27, 0xe5,
+	0xf1, 0xfe, 0xb7, 0x2f, 0xaf, 0xb9, 0xe3, 0x2c, 0x9d, 0x40, 0x16, 0xe3, 0xa6, 0xe6, 0xe3, 0xb9,
+	0x72, 0x27, 0x85, 0x82, 0x68, 0xdd, 0x14, 0xae, 0x35, 0x28, 0xf3, 0xaa, 0xcc, 0xfa, 0x02, 0xfb,
+	0xbb, 0xa9, 0x34, 0xcc, 0x2c, 0x28, 0xbe, 0xfb, 0x61, 0xba, 0x27, 0x6e, 0xae, 0x98, 0xee, 0x29,
+	0x5b, 0xa7, 0xa6, 0x70, 0x55, 0x21, 0xea, 0x9e, 0xb2, 0x51, 0x62, 0xba, 0xa7, 0x6e, 0x7e, 0x7a,
+	0xc2, 0x45, 0x84, 0x28, 0x20, 0x65, 0xab, 0xc3, 0x04, 0xa4, 0x6e, 0x64, 0x26, 0x4f, 0x4f, 0xca,
+	0xc5, 0xd8, 0x79, 0xf2, 0x39, 0x4c, 0xf0, 0x95, 0x09, 0x68, 0x36, 0xee, 0xc8, 0x7e, 0x51, 0x46,
+	0x65, 0x2e, 0xa1, 0x95, 0x8c, 0xa2, 0x01, 0x45, 0xb1, 0xb0, 0x06, 0xcd, 0xcb, 0x5c, 0x17, 0x61,
+	0xb9, 0x90, 0xd8, 0x4e, 0x98, 0x3e, 0x87, 0x09, 0xbe, 0x7a, 0x86, 0xe9, 0x28, 0xad, 0xbe, 0x61,
+	0x3a, 0x26, 0x94, 0xdc, 0x34, 0xa0, 0x28, 0xd6, 0xbf, 0x30, 0x1d, 0x13, 0x0a, 0x6c, 0x98, 0x8e,
+	0x89, 0x85, 0x33, 0x18, 0x8a, 0x62, 0x89, 0x0b, 0x63, 0x9a, 0x50, 0x26, 0xc3, 0x98, 0x26, 0xd6,
+	0xc6, 0x90, 0xfb, 0x90, 0x08, 0xcb, 0x06, 0x14, 0xc5, 0x94, 0x18, 0x13, 0x93, 0x90, 0x11, 0x64,
+	0x62, 0x12, 0x73, 0x69, 0xaf, 0x01, 0xc5, 0xb3, 0xc3, 0x0c, 0x36, 0x89, 0x49, 0x68, 0x06, 0x9b,
+	0x94, 0xd4, 0x72, 0x03, 0x8a, 0x62, 0xae, 0x97, 0xe9, 0x9b, 0x90, 0x46, 0x66, 0xfa, 0x26, 0x26,
+	0x89, 0x5f, 0x03, 0x8a, 0xe7, 0x6a, 0x99, 0xbe, 0x89, 0x29, 0x61, 0xa6, 0x6f, 0x4a, 0xa2, 0xb7,
+	0x0b, 0x28, 0x9e, 0x77, 0x65, 0xac, 0x13, 0xd3, 0xba, 0x8c, 0x75, 0x4a, 0xd2, 0x16, 0x9d, 0x9e,
+	0x94, 0x27, 0x84, 0x2f, 0xe5, 0xf6, 0xb9, 0xda, 0xa7, 0xc8, 0xa7, 0x56, 0x77, 0xe3, 0x3e, 0x8b,
+	0x5d, 0xa3, 0x57, 0xee, 0xa5, 0x13, 0x91, 0x21, 0xbd, 0x11, 0x6a, 0xe6, 0x22, 0x52, 0xde, 0x95,
+	0x39, 0x30, 0x2e, 0xe7, 0xfe, 0x20, 0x32, 0x22, 0x69, 0x9f, 0x2b, 0x87, 0x93, 0x8c, 0x26, 0x2d,
+	0x31, 0xc3, 0x46, 0x93, 0x9e, 0x8d, 0x79, 0x23, 0x14, 0xc1, 0x49, 0x46, 0x93, 0x9e, 0x7b, 0x61,
+	0xa3, 0x19, 0x94, 0x4c, 0xf9, 0x99, 0x22, 0x14, 0xb8, 0x49, 0x44, 0xa5, 0xe7, 0x4e, 0x98, 0xa8,
+	0x41, 0x09, 0x93, 0xe9, 0xd3, 0x93, 0xf2, 0x2d, 0xd9, 0x17, 0x77, 0xfc, 0x62, 0xcc, 0x3e, 0xe0,
+	0x8a, 0xfb, 0x9d, 0xcf, 0x64, 0xca, 0x16, 0x63, 0x31, 0x07, 0x28, 0x2e, 0xc6, 0x94, 0xb9, 0x74,
+	0x31, 0x16, 0xd8, 0xdf, 0x4d, 0xa5, 0x91, 0x2e, 0xc6, 0xa2, 0xee, 0x89, 0xe9, 0x6e, 0xd9, 0x62,
+	0x2c, 0xd1, 0x5d, 0x96, 0x64, 0x96, 0x2f, 0xc6, 0x09, 0xba, 0xa7, 0x66, 0xa9, 0xc5, 0xc5, 0x58,
+	0x14, 0x90, 0x92, 0x93, 0x96, 0x2f, 0xc6, 0x62, 0x22, 0x9a, 0x5f, 0x8c, 0x29, 0x7b, 0xcc, 0x95,
+	0x09, 0x46, 0xbf, 0x43, 0x93, 0x40, 0x3d, 0x5e, 0x40, 0x5c, 0x79, 0x77, 0x00, 0x15, 0x19, 0xdd,
+	0xa1, 0x50, 0xfd, 0x1a, 0x15, 0x24, 0xc5, 0xba, 0x44, 0xd4, 0x7b, 0x03, 0xe9, 0xd8, 0xc2, 0x78,
+	0x5b, 0x5e, 0xa8, 0x87, 0x24, 0x80, 0x4f, 0x19, 0xd3, 0x80, 0x6a, 0xf5, 0x43, 0xa1, 0xa8, 0x55,
+	0x36, 0xa6, 0x01, 0xb5, 0xe9, 0x6c, 0x4c, 0x03, 0x6b, 0xcd, 0x7f, 0xae, 0x08, 0x05, 0xad, 0x32,
+	0x69, 0x03, 0x4a, 0xcb, 0x99, 0xb4, 0x81, 0x85, 0xe3, 0xa5, 0xd3, 0x93, 0xf2, 0xa4, 0xf4, 0xeb,
+	0xc4, 0x2f, 0xb9, 0xcc, 0x0c, 0xfb, 0x64, 0x4b, 0x82, 0x7e, 0xe1, 0x8b, 0x90, 0x4a, 0x35, 0x8d,
+	0xa4, 0x3f, 0x9d, 0x4b, 0x3f, 0x22, 0x42, 0x52, 0xf8, 0x8b, 0x12, 0xee, 0xa5, 0x13, 0x11, 0x19,
+	0x5f, 0x72, 0x09, 0xc4, 0xd8, 0x08, 0x92, 0xbf, 0x39, 0x62, 0x23, 0x48, 0xfb, 0xa2, 0x68, 0x5f,
+	0xc8, 0x0e, 0xc6, 0x46, 0x90, 0xf6, 0xfd, 0x10, 0x1b, 0x41, 0xfa, 0x27, 0x41, 0xc7, 0x42, 0x62,
+	0x30, 0x26, 0x23, 0xed, 0x03, 0x20, 0x26, 0x23, 0xfd, 0xf3, 0x9e, 0xa9, 0xd3, 0x93, 0xf2, 0xcd,
+	0xd8, 0xa7, 0x79, 0x95, 0xe0, 0xaf, 0x1b, 0xe4, 0x95, 0x92, 0xb2, 0xda, 0x82, 0x49, 0x7e, 0x5f,
+	0x1f, 0xde, 0xdd, 0xa0, 0xcf, 0x21, 0xb3, 0xae, 0x6f, 0xe8, 0x6c, 0xcb, 0x95, 0x70, 0x21, 0xc7,
+	0xb6, 0x5c, 0x49, 0x57, 0x3e, 0x4b, 0xca, 0x8a, 0xb2, 0xbe, 0xf2, 0xe3, 0x5a, 0xc2, 0x1f, 0xc2,
+	0xd8, 0xd7, 0x5a, 0x87, 0xd8, 0x6c, 0xd7, 0x75, 0xd3, 0xc3, 0x8e, 0xa9, 0x19, 0x75, 0xfb, 0xb0,
+	0x53, 0xb7, 0xf7, 0xf7, 0xb3, 0xc1, 0xe5, 0xfe, 0xc3, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x05,
+	0x3c, 0x12, 0xef, 0x74, 0x43, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -6284,5 +6808,101 @@ var _Services_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
+	Metadata: "github.com/kodesmil/ks-model/service.proto",
+}
+
+// ServiceSessionStreamClient is the client API for ServiceSessionStream service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type ServiceSessionStreamClient interface {
+	BiDi(ctx context.Context, opts ...grpc.CallOption) (ServiceSessionStream_BiDiClient, error)
+}
+
+type serviceSessionStreamClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewServiceSessionStreamClient(cc *grpc.ClientConn) ServiceSessionStreamClient {
+	return &serviceSessionStreamClient{cc}
+}
+
+func (c *serviceSessionStreamClient) BiDi(ctx context.Context, opts ...grpc.CallOption) (ServiceSessionStream_BiDiClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_ServiceSessionStream_serviceDesc.Streams[0], "/model.ServiceSessionStream/BiDi", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &serviceSessionStreamBiDiClient{stream}
+	return x, nil
+}
+
+type ServiceSessionStream_BiDiClient interface {
+	Send(*StreamSessionInputEvent) error
+	Recv() (*StreamSessionOutputEvent, error)
+	grpc.ClientStream
+}
+
+type serviceSessionStreamBiDiClient struct {
+	grpc.ClientStream
+}
+
+func (x *serviceSessionStreamBiDiClient) Send(m *StreamSessionInputEvent) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *serviceSessionStreamBiDiClient) Recv() (*StreamSessionOutputEvent, error) {
+	m := new(StreamSessionOutputEvent)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// ServiceSessionStreamServer is the server API for ServiceSessionStream service.
+type ServiceSessionStreamServer interface {
+	BiDi(ServiceSessionStream_BiDiServer) error
+}
+
+func RegisterServiceSessionStreamServer(s *grpc.Server, srv ServiceSessionStreamServer) {
+	s.RegisterService(&_ServiceSessionStream_serviceDesc, srv)
+}
+
+func _ServiceSessionStream_BiDi_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ServiceSessionStreamServer).BiDi(&serviceSessionStreamBiDiServer{stream})
+}
+
+type ServiceSessionStream_BiDiServer interface {
+	Send(*StreamSessionOutputEvent) error
+	Recv() (*StreamSessionInputEvent, error)
+	grpc.ServerStream
+}
+
+type serviceSessionStreamBiDiServer struct {
+	grpc.ServerStream
+}
+
+func (x *serviceSessionStreamBiDiServer) Send(m *StreamSessionOutputEvent) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *serviceSessionStreamBiDiServer) Recv() (*StreamSessionInputEvent, error) {
+	m := new(StreamSessionInputEvent)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _ServiceSessionStream_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "model.ServiceSessionStream",
+	HandlerType: (*ServiceSessionStreamServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "BiDi",
+			Handler:       _ServiceSessionStream_BiDi_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "github.com/kodesmil/ks-model/service.proto",
 }

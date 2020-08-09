@@ -11,7 +11,6 @@ import fmt "fmt"
 import strings "strings"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import go_uuid1 "github.com/satori/go.uuid"
@@ -375,7 +374,6 @@ type ServiceOfferWithAfterToPB interface {
 }
 
 type ServiceEmploymentORM struct {
-	AccountID         string
 	CanBeContacted    bool
 	CreatedAt         *time.Time
 	Email             string
@@ -383,7 +381,8 @@ type ServiceEmploymentORM struct {
 	Id                uint64 `gorm:"type:serial;primary_key"`
 	LastName          string
 	Phone             string
-	ServiceProviderId *go_uuid1.UUID
+	ProfileId         string         `gorm:"type:uuid"`
+	ServiceProviderId *go_uuid1.UUID `gorm:"type:uuid"`
 	UpdatedAt         *time.Time
 }
 
@@ -417,6 +416,7 @@ func (m *ServiceEmployment) ToORM(ctx context.Context) (ServiceEmploymentORM, er
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	to.FirstName = m.FirstName
 	to.LastName = m.LastName
 	to.Email = m.Email
@@ -429,11 +429,6 @@ func (m *ServiceEmployment) ToORM(ctx context.Context) (ServiceEmploymentORM, er
 		}
 		to.ServiceProviderId = &tempUUID
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceEmploymentWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -461,6 +456,7 @@ func (m *ServiceEmploymentORM) ToPB(ctx context.Context) (ServiceEmployment, err
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	to.FirstName = m.FirstName
 	to.LastName = m.LastName
 	to.Email = m.Email
@@ -499,7 +495,6 @@ type ServiceEmploymentWithAfterToPB interface {
 }
 
 type ServiceDetailsORM struct {
-	AccountID         string
 	Address           string
 	CreatedAt         *time.Time
 	Email             string
@@ -546,11 +541,6 @@ func (m *ServiceDetails) ToORM(ctx context.Context) (ServiceDetailsORM, error) {
 	to.Phone = m.Phone
 	to.LogoUrl = m.LogoUrl
 	to.Email = m.Email
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceDetailsWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -613,14 +603,13 @@ type ServiceDetailsWithAfterToPB interface {
 }
 
 type ServiceApplicationORM struct {
-	AccountID         string
 	AppliedAt         *time.Time
 	ApprovedAt        *time.Time
-	ApprovedBy        *ProfileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
 	CreatedAt         *time.Time
 	Files             []*ServiceApplicationFileORM `gorm:"foreignkey:ServiceApplicationId;association_foreignkey:Id"`
 	Id                *go_uuid1.UUID               `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Provider          *ServiceProviderORM          `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
+	ReviewerId        *go_uuid1.UUID               `gorm:"type:uuid"`
 	ServiceProviderId *go_uuid1.UUID
 	UpdatedAt         *time.Time
 }
@@ -693,18 +682,13 @@ func (m *ServiceApplication) ToORM(ctx context.Context) (ServiceApplicationORM, 
 		}
 		to.ApprovedAt = &t
 	}
-	if m.ApprovedBy != nil {
-		tempApprovedBy, err := m.ApprovedBy.ToORM(ctx)
-		if err != nil {
-			return to, err
+	if m.ReviewerId != nil {
+		tempUUID, uErr := go_uuid1.FromString(m.ReviewerId.Value)
+		if uErr != nil {
+			return to, uErr
 		}
-		to.ApprovedBy = &tempApprovedBy
+		to.ReviewerId = &tempUUID
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceApplicationWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -762,12 +746,8 @@ func (m *ServiceApplicationORM) ToPB(ctx context.Context) (ServiceApplication, e
 			return to, err
 		}
 	}
-	if m.ApprovedBy != nil {
-		tempApprovedBy, err := m.ApprovedBy.ToPB(ctx)
-		if err != nil {
-			return to, err
-		}
-		to.ApprovedBy = &tempApprovedBy
+	if m.ReviewerId != nil {
+		to.ReviewerId = &types1.UUIDValue{Value: m.ReviewerId.String()}
 	}
 	if posthook, ok := interface{}(m).(ServiceApplicationWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -799,7 +779,6 @@ type ServiceApplicationWithAfterToPB interface {
 }
 
 type ServiceApplicationFileORM struct {
-	AccountID            string
 	CreatedAt            *time.Time
 	Id                   *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	ServiceApplicationId *go_uuid1.UUID
@@ -844,11 +823,6 @@ func (m *ServiceApplicationFile) ToORM(ctx context.Context) (ServiceApplicationF
 		to.UpdatedAt = &t
 	}
 	to.Url = m.Url
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceApplicationFileWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -909,7 +883,6 @@ type ServiceApplicationFileWithAfterToPB interface {
 }
 
 type ServiceProviderORM struct {
-	AccountID   string
 	CreatedAt   *time.Time
 	Details     *ServiceDetailsORM      `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
 	Employments []*ServiceEmploymentORM `gorm:"foreignkey:ServiceProviderId;association_foreignkey:Id"`
@@ -983,11 +956,6 @@ func (m *ServiceProvider) ToORM(ctx context.Context) (ServiceProviderORM, error)
 			to.Employments = append(to.Employments, nil)
 		}
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceProviderWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -1076,7 +1044,6 @@ type ServiceProviderWithAfterToPB interface {
 }
 
 type ServiceSessionEvaluationORM struct {
-	AccountID          string
 	Comment            string
 	CreatedAt          *time.Time
 	Id                 uint64 `gorm:"type:serial;primary_key"`
@@ -1125,11 +1092,6 @@ func (m *ServiceSessionEvaluation) ToORM(ctx context.Context) (ServiceSessionEva
 	}
 	to.Comment = m.Comment
 	to.RecommendationRate = m.RecommendationRate
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceSessionEvaluationWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -1196,13 +1158,13 @@ type ServiceSessionEvaluationWithAfterToPB interface {
 }
 
 type ServiceSessionORM struct {
-	AccountID                  string
 	CreatedAt                  *time.Time
 	Evaluation                 *ServiceSessionEvaluationORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	FinishedAt                 *time.Time
 	Id                         *go_uuid1.UUID           `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Notes                      []*ServiceSessionNoteORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	Offer                      *ServiceOfferORM         `gorm:"foreignkey:ServiceOfferId;association_foreignkey:Id"`
+	ProfileId                  string                   `gorm:"type:uuid"`
 	ScheduledAt                *time.Time
 	ServiceOfferId             *go_uuid1.UUID
 	ServiceSessionEvaluationId *uint64
@@ -1246,6 +1208,7 @@ func (m *ServiceSession) ToORM(ctx context.Context) (ServiceSessionORM, error) {
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	if m.ScheduledAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.ScheduledAt); err != nil {
@@ -1285,11 +1248,6 @@ func (m *ServiceSession) ToORM(ctx context.Context) (ServiceSessionORM, error) {
 		}
 		to.Evaluation = &tempEvaluation
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceSessionWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -1319,6 +1277,7 @@ func (m *ServiceSessionORM) ToPB(ctx context.Context) (ServiceSession, error) {
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	if m.ScheduledAt != nil {
 		if to.ScheduledAt, err = ptypes1.TimestampProto(*m.ScheduledAt); err != nil {
 			return to, err
@@ -1384,11 +1343,10 @@ type ServiceSessionWithAfterToPB interface {
 }
 
 type ServiceSessionNoteORM struct {
-	AccountID        string
 	CreatedAt        *time.Time
 	Id               *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	ServiceSessionId *go_uuid1.UUID
-	Session          []*ServiceSessionORM `gorm:"foreignkey:ServiceSessionNoteId;association_foreignkey:Id"`
+	Session          *ServiceSessionORM `gorm:"foreignkey:ServiceSessionNoteId;association_foreignkey:Id"`
 	Text             string
 	UpdatedAt        *time.Time
 }
@@ -1429,23 +1387,14 @@ func (m *ServiceSessionNote) ToORM(ctx context.Context) (ServiceSessionNoteORM, 
 		}
 		to.UpdatedAt = &t
 	}
-	for _, v := range m.Session {
-		if v != nil {
-			if tempSession, cErr := v.ToORM(ctx); cErr == nil {
-				to.Session = append(to.Session, &tempSession)
-			} else {
-				return to, cErr
-			}
-		} else {
-			to.Session = append(to.Session, nil)
+	if m.Session != nil {
+		tempSession, err := m.Session.ToORM(ctx)
+		if err != nil {
+			return to, err
 		}
+		to.Session = &tempSession
 	}
 	to.Text = m.Text
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ServiceSessionNoteWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -1475,16 +1424,12 @@ func (m *ServiceSessionNoteORM) ToPB(ctx context.Context) (ServiceSessionNote, e
 			return to, err
 		}
 	}
-	for _, v := range m.Session {
-		if v != nil {
-			if tempSession, cErr := v.ToPB(ctx); cErr == nil {
-				to.Session = append(to.Session, &tempSession)
-			} else {
-				return to, cErr
-			}
-		} else {
-			to.Session = append(to.Session, nil)
+	if m.Session != nil {
+		tempSession, err := m.Session.ToPB(ctx)
+		if err != nil {
+			return to, err
 		}
+		to.Session = &tempSession
 	}
 	to.Text = m.Text
 	if posthook, ok := interface{}(m).(ServiceSessionNoteWithAfterToPB); ok {
@@ -2786,11 +2731,7 @@ func DefaultDeleteServiceEmploymentSet(ctx context.Context, in []*ServiceEmploym
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceEmploymentORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceEmploymentORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -2816,11 +2757,6 @@ func DefaultStrictUpdateServiceEmployment(ctx context.Context, in *ServiceEmploy
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceEmploymentORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceEmploymentORMWithBeforeStrictUpdateCleanup); ok {
@@ -2951,6 +2887,10 @@ func DefaultApplyFieldMaskServiceEmployment(ctx context.Context, patchee *Servic
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"FirstName" {
@@ -3172,11 +3112,7 @@ func DefaultDeleteServiceDetailsSet(ctx context.Context, in []*ServiceDetails, d
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceDetailsORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceDetailsORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -3202,11 +3138,6 @@ func DefaultStrictUpdateServiceDetails(ctx context.Context, in *ServiceDetails, 
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceDetailsORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceDetailsORMWithBeforeStrictUpdateCleanup); ok {
@@ -3554,11 +3485,7 @@ func DefaultDeleteServiceApplicationSet(ctx context.Context, in []*ServiceApplic
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceApplicationORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceApplicationORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -3584,26 +3511,12 @@ func DefaultStrictUpdateServiceApplication(ctx context.Context, in *ServiceAppli
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceApplicationORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationORMWithBeforeStrictUpdateCleanup); ok {
 		if db, err = hook.BeforeStrictUpdateCleanup(ctx, db); err != nil {
 			return nil, err
 		}
-	}
-	filterApprovedBy := ProfileORM{}
-	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
-		return nil, errors1.EmptyIdError
-	}
-	filterApprovedBy.ServiceApplicationId = new(go_uuid1.UUID)
-	*filterApprovedBy.ServiceApplicationId = *ormObj.Id
-	if err = db.Where(filterApprovedBy).Delete(ProfileORM{}).Error; err != nil {
-		return nil, err
 	}
 	filterFiles := ServiceApplicationFileORM{}
 	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
@@ -3727,7 +3640,6 @@ func DefaultApplyFieldMaskServiceApplication(ctx context.Context, patchee *Servi
 	}
 	var err error
 	var updatedProvider bool
-	var updatedApprovedBy bool
 	for i, f := range updateMask.Paths {
 		if f == prefix+"Id" {
 			patchee.Id = patcher.Id
@@ -3774,25 +3686,8 @@ func DefaultApplyFieldMaskServiceApplication(ctx context.Context, patchee *Servi
 			patchee.ApprovedAt = patcher.ApprovedAt
 			continue
 		}
-		if !updatedApprovedBy && strings.HasPrefix(f, prefix+"ApprovedBy.") {
-			updatedApprovedBy = true
-			if patcher.ApprovedBy == nil {
-				patchee.ApprovedBy = nil
-				continue
-			}
-			if patchee.ApprovedBy == nil {
-				patchee.ApprovedBy = &Profile{}
-			}
-			if o, err := DefaultApplyFieldMaskProfile(ctx, patchee.ApprovedBy, patcher.ApprovedBy, &field_mask1.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"ApprovedBy.", db); err != nil {
-				return nil, err
-			} else {
-				patchee.ApprovedBy = o
-			}
-			continue
-		}
-		if f == prefix+"ApprovedBy" {
-			updatedApprovedBy = true
-			patchee.ApprovedBy = patcher.ApprovedBy
+		if f == prefix+"ReviewerId" {
+			patchee.ReviewerId = patcher.ReviewerId
 			continue
 		}
 	}
@@ -3990,11 +3885,7 @@ func DefaultDeleteServiceApplicationFileSet(ctx context.Context, in []*ServiceAp
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceApplicationFileORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceApplicationFileORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -4020,11 +3911,6 @@ func DefaultStrictUpdateServiceApplicationFile(ctx context.Context, in *ServiceA
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceApplicationFileORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceApplicationFileORMWithBeforeStrictUpdateCleanup); ok {
@@ -4356,11 +4242,7 @@ func DefaultDeleteServiceProviderSet(ctx context.Context, in []*ServiceProvider,
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceProviderORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceProviderORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -4386,11 +4268,6 @@ func DefaultStrictUpdateServiceProvider(ctx context.Context, in *ServiceProvider
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceProviderORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceProviderORMWithBeforeStrictUpdateCleanup); ok {
@@ -4775,11 +4652,7 @@ func DefaultDeleteServiceSessionEvaluationSet(ctx context.Context, in []*Service
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceSessionEvaluationORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceSessionEvaluationORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -4805,11 +4678,6 @@ func DefaultStrictUpdateServiceSessionEvaluation(ctx context.Context, in *Servic
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceSessionEvaluationORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceSessionEvaluationORMWithBeforeStrictUpdateCleanup); ok {
@@ -5176,11 +5044,7 @@ func DefaultDeleteServiceSessionSet(ctx context.Context, in []*ServiceSession, d
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceSessionORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceSessionORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -5206,11 +5070,6 @@ func DefaultStrictUpdateServiceSession(ctx context.Context, in *ServiceSession, 
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceSessionORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceSessionORMWithBeforeStrictUpdateCleanup); ok {
@@ -5361,6 +5220,10 @@ func DefaultApplyFieldMaskServiceSession(ctx context.Context, patchee *ServiceSe
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"ScheduledAt" {
@@ -5612,11 +5475,7 @@ func DefaultDeleteServiceSessionNoteSet(ctx context.Context, in []*ServiceSessio
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ServiceSessionNoteORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ServiceSessionNoteORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -5642,11 +5501,6 @@ func DefaultStrictUpdateServiceSessionNote(ctx context.Context, in *ServiceSessi
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ServiceSessionNoteORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ServiceSessionNoteORMWithBeforeStrictUpdateCleanup); ok {
@@ -5775,7 +5629,8 @@ func DefaultApplyFieldMaskServiceSessionNote(ctx context.Context, patchee *Servi
 		return nil, errors1.NilArgumentError
 	}
 	var err error
-	for _, f := range updateMask.Paths {
+	var updatedSession bool
+	for i, f := range updateMask.Paths {
 		if f == prefix+"Id" {
 			patchee.Id = patcher.Id
 			continue
@@ -5788,7 +5643,24 @@ func DefaultApplyFieldMaskServiceSessionNote(ctx context.Context, patchee *Servi
 			patchee.UpdatedAt = patcher.UpdatedAt
 			continue
 		}
+		if !updatedSession && strings.HasPrefix(f, prefix+"Session.") {
+			updatedSession = true
+			if patcher.Session == nil {
+				patchee.Session = nil
+				continue
+			}
+			if patchee.Session == nil {
+				patchee.Session = &ServiceSession{}
+			}
+			if o, err := DefaultApplyFieldMaskServiceSession(ctx, patchee.Session, patcher.Session, &field_mask1.FieldMask{Paths: updateMask.Paths[i:]}, prefix+"Session.", db); err != nil {
+				return nil, err
+			} else {
+				patchee.Session = o
+			}
+			continue
+		}
 		if f == prefix+"Session" {
+			updatedSession = true
 			patchee.Session = patcher.Session
 			continue
 		}

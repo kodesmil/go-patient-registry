@@ -10,7 +10,6 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
@@ -33,11 +32,11 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type HealthMenstruationPersonalInfoORM struct {
-	AccountID          string
 	CreatedAt          *time.Time
 	CycleLengthInDays  int32
 	Id                 uint64 `gorm:"type:serial;primary_key"`
 	PeriodLengthInDays int32
+	ProfileId          string `gorm:"type:uuid"`
 	UpdatedAt          *time.Time
 }
 
@@ -71,13 +70,9 @@ func (m *HealthMenstruationPersonalInfo) ToORM(ctx context.Context) (HealthMenst
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	to.PeriodLengthInDays = m.PeriodLengthInDays
 	to.CycleLengthInDays = m.CycleLengthInDays
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(HealthMenstruationPersonalInfoWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -105,6 +100,7 @@ func (m *HealthMenstruationPersonalInfoORM) ToPB(ctx context.Context) (HealthMen
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	to.PeriodLengthInDays = m.PeriodLengthInDays
 	to.CycleLengthInDays = m.CycleLengthInDays
 	if posthook, ok := interface{}(m).(HealthMenstruationPersonalInfoWithAfterToPB); ok {
@@ -137,13 +133,13 @@ type HealthMenstruationPersonalInfoWithAfterToPB interface {
 }
 
 type HealthMenstruationDailyEntryORM struct {
-	AccountID           string
 	BasedOnPrediction   bool
 	CreatedAt           *time.Time
 	Day                 *time.Time
 	Id                  uint64 `gorm:"type:serial;primary_key"`
 	IntensityPercentage int32
 	Manual              bool
+	ProfileId           string `gorm:"type:uuid"`
 	Type                int32
 	UpdatedAt           *time.Time
 }
@@ -178,6 +174,7 @@ func (m *HealthMenstruationDailyEntry) ToORM(ctx context.Context) (HealthMenstru
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	if m.Day != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.Day); err != nil {
@@ -189,11 +186,6 @@ func (m *HealthMenstruationDailyEntry) ToORM(ctx context.Context) (HealthMenstru
 	to.Type = int32(m.Type)
 	to.Manual = m.Manual
 	to.BasedOnPrediction = m.BasedOnPrediction
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(HealthMenstruationDailyEntryWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -221,6 +213,7 @@ func (m *HealthMenstruationDailyEntryORM) ToPB(ctx context.Context) (HealthMenst
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	if m.Day != nil {
 		if to.Day, err = ptypes1.TimestampProto(*m.Day); err != nil {
 			return to, err
@@ -394,11 +387,7 @@ func DefaultDeleteHealthMenstruationPersonalInfoSet(ctx context.Context, in []*H
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&HealthMenstruationPersonalInfoORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&HealthMenstruationPersonalInfoORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -424,11 +413,6 @@ func DefaultStrictUpdateHealthMenstruationPersonalInfo(ctx context.Context, in *
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &HealthMenstruationPersonalInfoORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(HealthMenstruationPersonalInfoORMWithBeforeStrictUpdateCleanup); ok {
@@ -559,6 +543,10 @@ func DefaultApplyFieldMaskHealthMenstruationPersonalInfo(ctx context.Context, pa
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"PeriodLengthInDays" {
@@ -764,11 +752,7 @@ func DefaultDeleteHealthMenstruationDailyEntrySet(ctx context.Context, in []*Hea
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&HealthMenstruationDailyEntryORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&HealthMenstruationDailyEntryORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -794,11 +778,6 @@ func DefaultStrictUpdateHealthMenstruationDailyEntry(ctx context.Context, in *He
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &HealthMenstruationDailyEntryORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(HealthMenstruationDailyEntryORMWithBeforeStrictUpdateCleanup); ok {
@@ -929,6 +908,10 @@ func DefaultApplyFieldMaskHealthMenstruationDailyEntry(ctx context.Context, patc
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"Day" {

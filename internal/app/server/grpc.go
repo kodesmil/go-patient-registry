@@ -152,10 +152,10 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterServicesServer(grpcServer, ss)
 
+	sss := svc.NewServiceSessionStreamServer(db)
+	pb.RegisterServiceSessionStreamServer(grpcServer, sss)
+
 	cm := svc.NewChatServer(db)
-	if err != nil {
-		return nil, err
-	}
 	pb.RegisterChatServer(grpcServer, cm)
 
 	go func() {

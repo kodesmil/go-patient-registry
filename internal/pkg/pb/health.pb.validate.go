@@ -64,6 +64,8 @@ func (m *HealthMenstruationPersonalInfo) Validate() error {
 		}
 	}
 
+	// no validation rules for ProfileId
+
 	// no validation rules for PeriodLengthInDays
 
 	// no validation rules for CycleLengthInDays
@@ -157,6 +159,8 @@ func (m *HealthMenstruationDailyEntry) Validate() error {
 			}
 		}
 	}
+
+	// no validation rules for ProfileId
 
 	if v, ok := interface{}(m.GetDay()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {

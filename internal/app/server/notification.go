@@ -39,7 +39,7 @@ func NewNotificationServer(dbConnectionString string) {
 		var notificationDevices []pb.NotificationDeviceORM
 
 		err = db.
-			Joins("left join notification_settings ns on ns.account_id = notification_devices.account_id").
+			Joins("left join notification_settings ns on ns.profile_id = notification_devices.profile_id").
 			Where("ns.enable_notifications = ?", true).
 			Where("ns.enable_journal_reminder = ?", true).
 			Where("ns.cron_journal_reminder ~ ?", pattern).
@@ -57,7 +57,7 @@ func NewNotificationServer(dbConnectionString string) {
 
 		client, err := app.Messaging(ctx)
 		if err != nil {
-			log.Fatalf("error getting messaging client: %v\n", err)
+			log.Fatalf("error getting messaging client: %v", err)
 		}
 
 		message := &messaging.MulticastMessage{

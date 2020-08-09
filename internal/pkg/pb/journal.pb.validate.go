@@ -283,6 +283,8 @@ func (m *JournalEntry) Validate() error {
 		}
 	}
 
+	// no validation rules for ProfileId
+
 	if v, ok := interface{}(m.GetDay()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return JournalEntryValidationError{

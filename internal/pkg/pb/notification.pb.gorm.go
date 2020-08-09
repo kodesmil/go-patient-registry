@@ -10,7 +10,6 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
@@ -33,12 +32,12 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type NotificationSettingORM struct {
-	AccountID             string
 	CreatedAt             *time.Time
 	CronJournalReminder   string
 	EnableJournalReminder bool
 	EnableNotifications   bool
 	Id                    uint64 `gorm:"type:serial;primary_key"`
+	ProfileId             string `gorm:"type:uuid"`
 	UpdatedAt             *time.Time
 }
 
@@ -72,14 +71,10 @@ func (m *NotificationSetting) ToORM(ctx context.Context) (NotificationSettingORM
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	to.EnableNotifications = m.EnableNotifications
 	to.EnableJournalReminder = m.EnableJournalReminder
 	to.CronJournalReminder = m.CronJournalReminder
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(NotificationSettingWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -107,6 +102,7 @@ func (m *NotificationSettingORM) ToPB(ctx context.Context) (NotificationSetting,
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	to.EnableNotifications = m.EnableNotifications
 	to.EnableJournalReminder = m.EnableJournalReminder
 	to.CronJournalReminder = m.CronJournalReminder
@@ -140,10 +136,10 @@ type NotificationSettingWithAfterToPB interface {
 }
 
 type NotificationDeviceORM struct {
-	AccountID   string
 	CreatedAt   *time.Time
 	DeviceToken string `gorm:"unique"`
 	Id          uint64 `gorm:"type:serial;primary_key"`
+	ProfileId   string `gorm:"type:uuid"`
 	UpdatedAt   *time.Time
 }
 
@@ -177,12 +173,8 @@ func (m *NotificationDevice) ToORM(ctx context.Context) (NotificationDeviceORM, 
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	to.DeviceToken = m.DeviceToken
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(NotificationDeviceWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -210,6 +202,7 @@ func (m *NotificationDeviceORM) ToPB(ctx context.Context) (NotificationDevice, e
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	to.DeviceToken = m.DeviceToken
 	if posthook, ok := interface{}(m).(NotificationDeviceWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
@@ -375,11 +368,7 @@ func DefaultDeleteNotificationSettingSet(ctx context.Context, in []*Notification
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&NotificationSettingORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&NotificationSettingORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -405,11 +394,6 @@ func DefaultStrictUpdateNotificationSetting(ctx context.Context, in *Notificatio
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &NotificationSettingORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(NotificationSettingORMWithBeforeStrictUpdateCleanup); ok {
@@ -540,6 +524,10 @@ func DefaultApplyFieldMaskNotificationSetting(ctx context.Context, patchee *Noti
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"EnableNotifications" {
@@ -749,11 +737,7 @@ func DefaultDeleteNotificationDeviceSet(ctx context.Context, in []*NotificationD
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&NotificationDeviceORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&NotificationDeviceORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -779,11 +763,6 @@ func DefaultStrictUpdateNotificationDevice(ctx context.Context, in *Notification
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &NotificationDeviceORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(NotificationDeviceORMWithBeforeStrictUpdateCleanup); ok {
@@ -914,6 +893,10 @@ func DefaultApplyFieldMaskNotificationDevice(ctx context.Context, patchee *Notif
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"DeviceToken" {

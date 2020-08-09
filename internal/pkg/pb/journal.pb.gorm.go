@@ -10,7 +10,6 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
@@ -262,11 +261,11 @@ type JournalSubjectWithAfterToPB interface {
 }
 
 type JournalEntryORM struct {
-	AccountID string
 	CreatedAt *time.Time
 	Day       *time.Time
 	Id        string `gorm:"type:uuid;primary_key"`
 	Note      string
+	ProfileId string `gorm:"type:uuid"`
 	Severity  int32
 	UpdatedAt *time.Time
 }
@@ -305,6 +304,7 @@ func (m *JournalEntry) ToORM(ctx context.Context) (JournalEntryORM, error) {
 		}
 		to.UpdatedAt = &t
 	}
+	to.ProfileId = m.ProfileId
 	if m.Day != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.Day); err != nil {
@@ -314,11 +314,6 @@ func (m *JournalEntry) ToORM(ctx context.Context) (JournalEntryORM, error) {
 	}
 	to.Severity = int32(m.Severity)
 	to.Note = m.Note
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(JournalEntryWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -350,6 +345,7 @@ func (m *JournalEntryORM) ToPB(ctx context.Context) (JournalEntry, error) {
 			return to, err
 		}
 	}
+	to.ProfileId = m.ProfileId
 	if m.Day != nil {
 		if to.Day, err = ptypes1.TimestampProto(*m.Day); err != nil {
 			return to, err
@@ -1248,11 +1244,7 @@ func DefaultDeleteJournalEntrySet(ctx context.Context, in []*JournalEntry, db *g
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&JournalEntryORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&JournalEntryORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -1278,11 +1270,6 @@ func DefaultStrictUpdateJournalEntry(ctx context.Context, in *JournalEntry, db *
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &JournalEntryORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(JournalEntryORMWithBeforeStrictUpdateCleanup); ok {
@@ -1413,6 +1400,10 @@ func DefaultApplyFieldMaskJournalEntry(ctx context.Context, patchee *JournalEntr
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"Day" {

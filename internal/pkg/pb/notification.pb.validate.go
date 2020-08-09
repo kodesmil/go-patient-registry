@@ -64,6 +64,8 @@ func (m *NotificationSetting) Validate() error {
 		}
 	}
 
+	// no validation rules for ProfileId
+
 	// no validation rules for EnableNotifications
 
 	// no validation rules for EnableJournalReminder
@@ -947,6 +949,8 @@ func (m *NotificationDevice) Validate() error {
 			}
 		}
 	}
+
+	// no validation rules for ProfileId
 
 	// no validation rules for DeviceToken
 

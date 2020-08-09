@@ -4,7 +4,6 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
-	"fmt"
 	gorm1 "github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )
@@ -48,7 +47,7 @@ func (m *ChatMessageORM) AfterCreate_(ctx context.Context, db *gorm1.DB) error {
 		}
 		message := &messaging.MulticastMessage{
 			Notification: &messaging.Notification{
-				Title: fmt.Sprintf("New message"),
+				Title: "New message",
 				Body:  m.Text,
 			},
 			Tokens: MapToDeviceTokens(notificationDevices),

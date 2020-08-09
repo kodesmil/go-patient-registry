@@ -51,9 +51,25 @@ func (m *Group) Validate() error {
 		}
 	}
 
-	// no validation rules for Name
+	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
-	// no validation rules for Notes
+	if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GroupValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if v, ok := interface{}(m.GetProfileId()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -64,6 +80,10 @@ func (m *Group) Validate() error {
 			}
 		}
 	}
+
+	// no validation rules for Name
+
+	// no validation rules for Notes
 
 	return nil
 }
