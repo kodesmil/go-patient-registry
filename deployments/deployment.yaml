@@ -34,14 +34,6 @@ spec:
             - name: secrets
               mountPath: "/etc/secrets"
               readOnly: true
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8081
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: 8081
           resources:
             requests:
               cpu: 50m

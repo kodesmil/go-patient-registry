@@ -1,8 +1,13 @@
-apiVersion: skaffold/v2beta5
+apiVersion: skaffold/v2beta6
 kind: Config
 metadata:
   name: ks-backend
 build:
+  tagPolicy:
+    sha256: {}
+  local:
+    concurrency: 0
+  # useBuildkit: true
   artifacts:
     - image: docker.io/kodesmil/ks-backend
       docker:
@@ -17,12 +22,13 @@ deploy:
         overrides:
           postgresqlDatabase: swanly
           postgresqlPassword: postgres
-      - name: ion
-        chartPath: ion/kube/ion
-        wait: true
-        skipBuildDependencies: true
-        valuesFiles:
-          - deployments/ion/values.yaml
+#      - name: ion
+#        chartPath: ion/kube/ion
+#        recreatePods: false
+#        wait: true
+#        skipBuildDependencies: true
+#        valuesFiles:
+#          - deployments/ion/values.yaml
   kubectl:
     manifests:
       - deployments/deployment.yaml

@@ -7466,6 +7466,8 @@ func (m *ServiceSession) Validate() error {
 		}
 	}
 
+	// no validation rules for Status
+
 	return nil
 }
 
@@ -8558,6 +8560,16 @@ func (m *EventRequestSession) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventRequestSessionValidationError{
+				field:  "Profile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -8635,6 +8647,16 @@ func (m *EventJoinSession) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventJoinSessionValidationError{
+				field:  "Profile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -8704,6 +8726,16 @@ func (m *EventLeaveSession) Validate() error {
 		if err := v.Validate(); err != nil {
 			return EventLeaveSessionValidationError{
 				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventLeaveSessionValidationError{
+				field:  "Profile",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -8906,6 +8938,16 @@ func (m *EventSessionRequested) Validate() error {
 		}
 	}
 
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventSessionRequestedValidationError{
+				field:  "Profile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -8977,6 +9019,16 @@ func (m *EventSessionStarted) Validate() error {
 		if err := v.Validate(); err != nil {
 			return EventSessionStartedValidationError{
 				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventSessionStartedValidationError{
+				field:  "Profile",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -9131,6 +9183,16 @@ func (m *EventSessionFinished) Validate() error {
 		if err := v.Validate(); err != nil {
 			return EventSessionFinishedValidationError{
 				field:  "Session",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetProfile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return EventSessionFinishedValidationError{
+				field:  "Profile",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

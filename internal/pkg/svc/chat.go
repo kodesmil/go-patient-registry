@@ -70,6 +70,11 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		s.connections[accountID.ResourceId] = conn
 	}
 
+	profile, err := pb.DefaultReadProfile(stream.Context(), &pb.Profile{}, s.database)
+	if err != nil {
+		return err
+	}
+
 	for {
 		in, err := stream.Recv()
 		if err == io.EOF {
@@ -79,17 +84,16 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			return err
 		}
 		if in.GetLoadRooms() != nil {
-			filtering := &query.Filtering{
+			db := s.database.Joins("left join chat_room_participants on chat_room_participants.chat_room_id = chat_rooms.id")
+			out, err := pb.DefaultListChatRoom(stream.Context(), db, &query.Filtering{
 				Root: &query.Filtering_StringCondition{
 					StringCondition: &query.StringCondition{
 						FieldPath: []string{"chat_room_participants", "profile_id"},
-						Value:     accountID.ResourceId,
+						Value:     profile.Id.Value,
 						Type:      query.StringCondition_EQ,
 					},
 				},
-			}
-			db := s.database.Joins("left join chat_room_participants on chat_room_participants.chat_room_id::uuid = chat_rooms.id")
-			out, err := pb.DefaultListChatRoom(stream.Context(), db, filtering, nil, nil, nil)
+			}, nil, nil, nil)
 			if err != nil {
 				return err
 			}
@@ -124,7 +128,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			}
 			db := s.database.
 				Joins("left join chat_room_participants on chat_room_participants.id = chat_messages.author_id").
-				Joins("left join chat_rooms on chat_rooms.id = chat_room_participants.chat_room_id::uuid")
+				Joins("left join chat_rooms on chat_rooms.id = chat_room_participants.chat_room_id")
 			out, err := pb.DefaultListChatMessage(
 				stream.Context(), db,
 				filtering, sorting, nil, nil,
@@ -144,7 +148,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			err = db.Exec(
 				"UPDATE chat_room_participants SET last_seen_at=? WHERE id=?",
 				time.Now(),
-				room.Me.Id.Value,
+				room.Me.Id,
 			).Error
 			if err != nil {
 				return err

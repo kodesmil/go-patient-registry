@@ -1169,6 +1169,7 @@ type ServiceSessionORM struct {
 	ServiceOfferId             *go_uuid1.UUID
 	ServiceSessionEvaluationId *uint64
 	ServiceSessionNoteId       *go_uuid1.UUID
+	Status                     int32
 	UpdatedAt                  *time.Time
 }
 
@@ -1248,6 +1249,7 @@ func (m *ServiceSession) ToORM(ctx context.Context) (ServiceSessionORM, error) {
 		}
 		to.Evaluation = &tempEvaluation
 	}
+	to.Status = int32(m.Status)
 	if posthook, ok := interface{}(m).(ServiceSessionWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -1313,6 +1315,7 @@ func (m *ServiceSessionORM) ToPB(ctx context.Context) (ServiceSession, error) {
 		}
 		to.Evaluation = &tempEvaluation
 	}
+	to.Status = ServiceSession_Status(m.Status)
 	if posthook, ok := interface{}(m).(ServiceSessionWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -5278,6 +5281,10 @@ func DefaultApplyFieldMaskServiceSession(ctx context.Context, patchee *ServiceSe
 		if f == prefix+"Evaluation" {
 			updatedEvaluation = true
 			patchee.Evaluation = patcher.Evaluation
+			continue
+		}
+		if f == prefix+"Status" {
+			patchee.Status = patcher.Status
 			continue
 		}
 	}
