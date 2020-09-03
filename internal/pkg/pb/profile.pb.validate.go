@@ -41,15 +41,7 @@ func (m *Profile) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ProfileValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
@@ -315,15 +307,7 @@ func (m *ReadProfileRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ReadProfileRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }
@@ -623,15 +607,7 @@ func (m *DeleteProfileRequest) Validate() error {
 		return nil
 	}
 
-	if v, ok := interface{}(m.GetId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DeleteProfileRequestValidationError{
-				field:  "Id",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Id
 
 	return nil
 }

@@ -3,7 +3,6 @@ package svc
 import (
 	"fmt"
 	"github.com/infobloxopen/atlas-app-toolkit/query"
-	"github.com/infobloxopen/atlas-app-toolkit/rpc/resource"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/ks-backend/internal/pkg/pb"
 	"github.com/kodesmil/ks-backend/internal/pkg/strings"
@@ -55,24 +54,18 @@ func (s *chatServer) BroadcastMessage(ids []string, msg *pb.StreamChatEvent) err
 }
 
 func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
-
-	accountID := &resource.Identifier{ResourceId: fmt.Sprintf(
+	accountID := fmt.Sprintf(
 		"%v",
 		stream.Context().Value("AccountID"),
-	)}
+	)
 
-	if res, ok := s.connections[accountID.ResourceId]; !ok || !res.active {
+	if res, ok := s.connections[accountID]; !ok || !res.active {
 		conn := &Connection{
 			stream: stream,
 			active: true,
 			error:  make(chan error),
 		}
-		s.connections[accountID.ResourceId] = conn
-	}
-
-	profile, err := pb.DefaultReadProfile(stream.Context(), &pb.Profile{}, s.database)
-	if err != nil {
-		return err
+		s.connections[accountID] = conn
 	}
 
 	for {
@@ -89,7 +82,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 				Root: &query.Filtering_StringCondition{
 					StringCondition: &query.StringCondition{
 						FieldPath: []string{"chat_room_participants", "profile_id"},
-						Value:     profile.Id.Value,
+						Value:     accountID,
 						Type:      query.StringCondition_EQ,
 					},
 				},

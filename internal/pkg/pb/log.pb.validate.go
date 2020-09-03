@@ -66,6 +66,8 @@ func (m *LogActivity) Validate() error {
 
 	// no validation rules for Ip
 
+	// no validation rules for ProfileId
+
 	return nil
 }
 

@@ -130,7 +130,7 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 				}
 			}
 
-			if session.Status == pb.ServiceSession_NOT_STARTED {
+			if session.Status == pb.ServiceSession_NOT_STARTED && accountID == session.Offer.Owner.ProfileId {
 				session.Status = pb.ServiceSession_ONGOING
 				session, err = pb.DefaultStrictUpdateServiceSession(
 					stream.Context(), session, s.database,

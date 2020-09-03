@@ -265,7 +265,7 @@ type JournalEntryORM struct {
 	Day       *time.Time
 	Id        string `gorm:"type:uuid;primary_key"`
 	Note      string
-	ProfileId string `gorm:"type:uuid"`
+	ProfileId string
 	Severity  int32
 	UpdatedAt *time.Time
 }

@@ -274,7 +274,7 @@ type GroupORM struct {
 	Id        *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Name      string
 	Notes     string
-	ProfileId *go_uuid1.UUID `gorm:"type:uuid"`
+	ProfileId *string
 	UpdatedAt *time.Time
 }
 
@@ -314,13 +314,6 @@ func (m *Group) ToORM(ctx context.Context) (GroupORM, error) {
 		}
 		to.UpdatedAt = &t
 	}
-	if m.ProfileId != nil {
-		tempUUID, uErr := go_uuid1.FromString(m.ProfileId.Value)
-		if uErr != nil {
-			return to, uErr
-		}
-		to.ProfileId = &tempUUID
-	}
 	to.Name = m.Name
 	to.Notes = m.Notes
 	if posthook, ok := interface{}(m).(GroupWithAfterToORM); ok {
@@ -351,9 +344,6 @@ func (m *GroupORM) ToPB(ctx context.Context) (Group, error) {
 		if to.UpdatedAt, err = ptypes1.TimestampProto(*m.UpdatedAt); err != nil {
 			return to, err
 		}
-	}
-	if m.ProfileId != nil {
-		to.ProfileId = &types1.UUIDValue{Value: m.ProfileId.String()}
 	}
 	to.Name = m.Name
 	to.Notes = m.Notes
@@ -677,10 +667,6 @@ func DefaultApplyFieldMaskGroup(ctx context.Context, patchee *Group, patcher *Gr
 		}
 		if f == prefix+"UpdatedAt" {
 			patchee.UpdatedAt = patcher.UpdatedAt
-			continue
-		}
-		if f == prefix+"ProfileId" {
-			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 		if f == prefix+"Name" {

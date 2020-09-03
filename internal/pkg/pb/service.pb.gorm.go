@@ -420,7 +420,7 @@ type ServiceEmploymentORM struct {
 	Id                uint64 `gorm:"type:serial;primary_key"`
 	LastName          string
 	Phone             string
-	ProfileId         string         `gorm:"type:uuid"`
+	ProfileId         string
 	ServiceProviderId *go_uuid1.UUID `gorm:"type:uuid"`
 	UpdatedAt         *time.Time
 }
@@ -1203,7 +1203,7 @@ type ServiceSessionORM struct {
 	Id                   *go_uuid1.UUID           `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	Notes                []*ServiceSessionNoteORM `gorm:"foreignkey:ServiceSessionId;association_foreignkey:Id"`
 	Offer                *ServiceOfferORM         `gorm:"foreignkey:ServiceOfferId;association_foreignkey:Id"`
-	ProfileId            string                   `gorm:"type:uuid"`
+	ProfileId            string
 	ScheduledAt          *time.Time
 	ServiceOfferId       *go_uuid1.UUID
 	ServiceSessionNoteId *go_uuid1.UUID

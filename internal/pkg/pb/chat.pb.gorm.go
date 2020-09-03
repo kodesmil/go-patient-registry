@@ -286,7 +286,7 @@ type ChatRoomParticipantORM struct {
 	Id         uint64 `gorm:"type:serial;primary_key"`
 	LastSeenAt *time.Time
 	Profile    *ProfileORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	ProfileId  *go_uuid1.UUID
+	ProfileId  *string
 	UpdatedAt  *time.Time
 }
 

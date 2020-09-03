@@ -37,7 +37,7 @@ type NotificationSettingORM struct {
 	EnableJournalReminder bool
 	EnableNotifications   bool
 	Id                    uint64 `gorm:"type:serial;primary_key"`
-	ProfileId             string `gorm:"type:uuid"`
+	ProfileId             string
 	UpdatedAt             *time.Time
 }
 
@@ -139,7 +139,7 @@ type NotificationDeviceORM struct {
 	CreatedAt   *time.Time
 	DeviceToken string `gorm:"unique"`
 	Id          uint64 `gorm:"type:serial;primary_key"`
-	ProfileId   string `gorm:"type:uuid"`
+	ProfileId   string
 	UpdatedAt   *time.Time
 }
 

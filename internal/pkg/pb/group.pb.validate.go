@@ -71,16 +71,6 @@ func (m *Group) Validate() error {
 		}
 	}
 
-	if v, ok := interface{}(m.GetProfileId()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GroupValidationError{
-				field:  "ProfileId",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	// no validation rules for Name
 
 	// no validation rules for Notes

@@ -10,17 +10,14 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
-import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
 import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
 import trace1 "go.opencensus.io/trace"
-import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
 import _ "google.golang.org/genproto/protobuf/field_mask"
@@ -35,11 +32,10 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type ProfileORM struct {
-	AccountID         string
 	CreatedAt         *time.Time
 	FirstName         string
-	Groups            []*GroupORM    `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
-	Id                *go_uuid1.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	Groups            []*GroupORM `gorm:"foreignkey:ProfileId;association_foreignkey:Id"`
+	Id                string      `gorm:"primary_key"`
 	LastName          string
 	Notes             string
 	PrimaryEmail      string `gorm:"unique"`
@@ -62,13 +58,7 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		tempUUID, uErr := go_uuid1.FromString(m.Id.Value)
-		if uErr != nil {
-			return to, uErr
-		}
-		to.Id = &tempUUID
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		var t time.Time
 		if t, err = ptypes1.Timestamp(m.CreatedAt); err != nil {
@@ -99,11 +89,6 @@ func (m *Profile) ToORM(ctx context.Context) (ProfileORM, error) {
 		}
 	}
 	to.ProfilePictureUrl = m.ProfilePictureUrl
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
 	if posthook, ok := interface{}(m).(ProfileWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -120,9 +105,7 @@ func (m *ProfileORM) ToPB(ctx context.Context) (Profile, error) {
 			return to, err
 		}
 	}
-	if m.Id != nil {
-		to.Id = &types1.UUIDValue{Value: m.Id.String()}
-	}
+	to.Id = m.Id
 	if m.CreatedAt != nil {
 		if to.CreatedAt, err = ptypes1.TimestampProto(*m.CreatedAt); err != nil {
 			return to, err
@@ -220,7 +203,7 @@ func DefaultReadProfile(ctx context.Context, in *Profile, db *gorm1.DB) (*Profil
 	if err != nil {
 		return nil, err
 	}
-	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
+	if ormObj.Id == "" {
 		return nil, errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeReadApplyQuery); ok {
@@ -267,7 +250,7 @@ func DefaultDeleteProfile(ctx context.Context, in *Profile, db *gorm1.DB) error 
 	if err != nil {
 		return err
 	}
-	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
+	if ormObj.Id == "" {
 		return errors1.EmptyIdError
 	}
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeDelete_); ok {
@@ -297,13 +280,13 @@ func DefaultDeleteProfileSet(ctx context.Context, in []*Profile, db *gorm1.DB) e
 		return errors1.NilArgumentError
 	}
 	var err error
-	keys := []*go_uuid1.UUID{}
+	keys := []string{}
 	for _, obj := range in {
 		ormObj, err := obj.ToORM(ctx)
 		if err != nil {
 			return err
 		}
-		if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
+		if ormObj.Id == "" {
 			return errors1.EmptyIdError
 		}
 		keys = append(keys, ormObj.Id)
@@ -313,11 +296,7 @@ func DefaultDeleteProfileSet(ctx context.Context, in []*Profile, db *gorm1.DB) e
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&ProfileORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&ProfileORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -343,11 +322,6 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &ProfileORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(ProfileORMWithBeforeStrictUpdateCleanup); ok {
@@ -356,11 +330,11 @@ func DefaultStrictUpdateProfile(ctx context.Context, in *Profile, db *gorm1.DB) 
 		}
 	}
 	filterGroups := GroupORM{}
-	if ormObj.Id == nil || *ormObj.Id == go_uuid1.Nil {
+	if ormObj.Id == "" {
 		return nil, errors1.EmptyIdError
 	}
-	filterGroups.ProfileId = new(go_uuid1.UUID)
-	*filterGroups.ProfileId = *ormObj.Id
+	filterGroups.ProfileId = new(string)
+	*filterGroups.ProfileId = ormObj.Id
 	if err = db.Where(filterGroups).Delete(GroupORM{}).Error; err != nil {
 		return nil, err
 	}

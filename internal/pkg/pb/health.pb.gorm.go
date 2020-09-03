@@ -36,7 +36,7 @@ type HealthMenstruationPersonalInfoORM struct {
 	CycleLengthInDays  int32
 	Id                 uint64 `gorm:"type:serial;primary_key"`
 	PeriodLengthInDays int32
-	ProfileId          string `gorm:"type:uuid"`
+	ProfileId          string
 	UpdatedAt          *time.Time
 }
 
@@ -139,7 +139,7 @@ type HealthMenstruationDailyEntryORM struct {
 	Id                  uint64 `gorm:"type:serial;primary_key"`
 	IntensityPercentage int32
 	Manual              bool
-	ProfileId           string `gorm:"type:uuid"`
+	ProfileId           string
 	Type                int32
 	UpdatedAt           *time.Time
 }

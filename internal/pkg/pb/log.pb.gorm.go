@@ -10,7 +10,6 @@ import context "context"
 import fmt "fmt"
 import time "time"
 
-import auth1 "github.com/kodesmil/atlas-app-toolkit/auth"
 import errors1 "github.com/infobloxopen/protoc-gen-gorm/errors"
 import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import gorm1 "github.com/jinzhu/gorm"
@@ -30,10 +29,10 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 type LogActivityORM struct {
-	AccountID string
 	CreatedAt *time.Time
 	Id        uint64 `gorm:"type:serial;primary_key"`
 	Ip        string
+	ProfileId string
 	UpdatedAt *time.Time
 }
 
@@ -68,11 +67,7 @@ func (m *LogActivity) ToORM(ctx context.Context) (LogActivityORM, error) {
 		to.UpdatedAt = &t
 	}
 	to.Ip = m.Ip
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return to, err
-	}
-	to.AccountID = accountID
+	to.ProfileId = m.ProfileId
 	if posthook, ok := interface{}(m).(LogActivityWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -101,6 +96,7 @@ func (m *LogActivityORM) ToPB(ctx context.Context) (LogActivity, error) {
 		}
 	}
 	to.Ip = m.Ip
+	to.ProfileId = m.ProfileId
 	if posthook, ok := interface{}(m).(LogActivityWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -265,11 +261,7 @@ func DefaultDeleteLogActivitySet(ctx context.Context, in []*LogActivity, db *gor
 			return err
 		}
 	}
-	acctId, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return err
-	}
-	err = db.Where("account_id = ? AND id in (?)", acctId, keys).Delete(&LogActivityORM{}).Error
+	err = db.Where("id in (?)", keys).Delete(&LogActivityORM{}).Error
 	if err != nil {
 		return err
 	}
@@ -295,11 +287,6 @@ func DefaultStrictUpdateLogActivity(ctx context.Context, in *LogActivity, db *go
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := auth1.GetAccountID(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	db = db.Where(map[string]interface{}{"account_id": accountID})
 	lockedRow := &LogActivityORM{}
 	db.Model(&ormObj).Set("gorm:query_option", "FOR UPDATE").Where("id=?", ormObj.Id).First(lockedRow)
 	if hook, ok := interface{}(&ormObj).(LogActivityORMWithBeforeStrictUpdateCleanup); ok {
@@ -434,6 +421,10 @@ func DefaultApplyFieldMaskLogActivity(ctx context.Context, patchee *LogActivity,
 		}
 		if f == prefix+"Ip" {
 			patchee.Ip = patcher.Ip
+			continue
+		}
+		if f == prefix+"ProfileId" {
+			patchee.ProfileId = patcher.ProfileId
 			continue
 		}
 	}
