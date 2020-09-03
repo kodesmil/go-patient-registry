@@ -5,6 +5,7 @@ import (
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/infobloxopen/protoc-gen-gorm/types"
 	"github.com/jinzhu/gorm"
 	"github.com/kodesmil/ks-backend/internal/pkg/pb"
@@ -20,7 +21,7 @@ func NewServiceSessionStreamServer(database *gorm.DB) *serviceSessionStreamServe
 	if err != nil {
 		log.Fatal(err)
 	}
-	messaging, err := app.Messaging(context.Background())
+	m, err := app.Messaging(context.Background())
 	if err != nil {
 		log.Errorf("error getting messaging client: %v", err)
 	}
@@ -28,7 +29,7 @@ func NewServiceSessionStreamServer(database *gorm.DB) *serviceSessionStreamServe
 		database:      database,
 		connections:   make(map[string]*ServiceStreamConnection),
 		fireApp:       app,
-		fireMessaging: messaging,
+		fireMessaging: m,
 	}
 }
 
@@ -111,33 +112,60 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 				return err
 			}
 
-			if err := s.SendNotification(notification{
-				title:     "You received new session request!",
-				body:      "XXX asked you for an advise on...",
-				profileId: session.Offer.Provider.Employments[0].ProfileId,
-			}); err != nil {
-				return err
+			if session.Status == pb.ServiceSession_NOT_STARTED {
+				if err := s.SendNotification(notification{
+					title:     "You received new session request!",
+					body:      "XXX asked you for an advise on...",
+					profileId: session.Offer.Provider.Employments[0].ProfileId,
+				}); err != nil {
+					return err
+				}
+
+				if err := s.SendNotification(notification{
+					title:     "Session request sent to XXX",
+					body:      "Waiting for getting connected...",
+					profileId: session.ProfileId,
+				}); err != nil {
+					return err
+				}
 			}
 
-			if err := s.SendNotification(notification{
-				title:     "Session request sent to XXX",
-				body:      "Waiting for getting connected...",
-				profileId: session.ProfileId,
-			}); err != nil {
-				return err
+			if session.Status == pb.ServiceSession_NOT_STARTED {
+				session.Status = pb.ServiceSession_ONGOING
+				session, err = pb.DefaultStrictUpdateServiceSession(
+					stream.Context(), session, s.database,
+				)
+				if err := s.SendNotification(notification{
+					title:     "Connected",
+					body:      "XXX has been successfully connected",
+					profileId: session.Offer.Provider.Employments[0].ProfileId,
+				}); err != nil {
+					return err
+				}
+
+				if err := s.SendNotification(notification{
+					title:     "Connected",
+					body:      "XXX has been successfully connected",
+					profileId: session.ProfileId,
+				}); err != nil {
+					return err
+				}
 			}
+
 			go func(sessionID *types.UUIDValue) {
 
-				session, err = pb.DefaultReadServiceSession(
-					context.Background(),
-					&pb.ServiceSession{Id: sessionID},
-					s.database,
-				)
-
 				defer func() {
+					session, err = pb.DefaultReadServiceSession(
+						context.Background(),
+						&pb.ServiceSession{Id: sessionID},
+						s.database,
+					)
 					if session.Status == pb.ServiceSession_NOT_STARTED {
-						session.Status = pb.ServiceSession_FINISHED // cancelled
-						session, err = pb.DefaultStrictUpdateServiceSession(context.Background(), session, s.database)
+						session.Status = pb.ServiceSession_CANCELED
+						session.FinishedAt = &timestamp.Timestamp{Seconds: time.Now().Unix()}
+						session, err = pb.DefaultStrictUpdateServiceSession(
+							context.Background(), session, s.database,
+						)
 						if err != nil {
 							log.Error(err)
 						}
@@ -145,7 +173,13 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 				}()
 
 				for {
+					session, err = pb.DefaultReadServiceSession(
+						context.Background(),
+						&pb.ServiceSession{Id: sessionID},
+						s.database,
+					)
 					if err != nil || stream.Context().Err() != nil {
+						log.Error(err)
 						return
 					}
 					if session.Status != pb.ServiceSession_NOT_STARTED {
@@ -163,26 +197,6 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 					time.Sleep(time.Second * 5)
 				}
 			}(session.Id)
-		} else if in.GetJoinSession() != nil {
-			msg := in.GetJoinSession()
-			session := msg.Session
-			session.Status = pb.ServiceSession_ONGOING
-			session, err = pb.DefaultStrictUpdateServiceSession(stream.Context(), session, s.database)
-			if err := s.SendNotification(notification{
-				title:     "Connected",
-				body:      "XXX has been successfully connected",
-				profileId: session.Offer.Provider.Employments[0].ProfileId,
-			}); err != nil {
-				return err
-			}
-
-			if err := s.SendNotification(notification{
-				title:     "Connected",
-				body:      "XXX has been successfully connected",
-				profileId: session.ProfileId,
-			}); err != nil {
-				return err
-			}
 		}
 	}
 }

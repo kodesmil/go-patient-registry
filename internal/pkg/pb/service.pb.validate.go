@@ -277,6 +277,31 @@ func (m *ServiceOffer) Validate() error {
 
 	// no validation rules for PictureUrl
 
+	for idx, item := range m.GetSessions() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceOfferValidationError{
+					field:  fmt.Sprintf("Sessions[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if v, ok := interface{}(m.GetOwner()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServiceOfferValidationError{
+				field:  "Owner",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -7456,17 +7481,22 @@ func (m *ServiceSession) Validate() error {
 
 	}
 
-	if v, ok := interface{}(m.GetEvaluation()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ServiceSessionValidationError{
-				field:  "Evaluation",
-				reason: "embedded message failed validation",
-				cause:  err,
+	// no validation rules for Status
+
+	for idx, item := range m.GetEvaluations() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ServiceSessionValidationError{
+					field:  fmt.Sprintf("Evaluations[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
 			}
 		}
-	}
 
-	// no validation rules for Status
+	}
 
 	return nil
 }
@@ -8434,6 +8464,986 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListServiceSessionResponseValidationError{}
+
+// Validate checks the field values on ListServiceOfferSessionRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListServiceOfferSessionRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceOfferSessionRequestValidationError{
+				field:  "Filter",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetOrderBy()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceOfferSessionRequestValidationError{
+				field:  "OrderBy",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetFields()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceOfferSessionRequestValidationError{
+				field:  "Fields",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetPaging()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceOfferSessionRequestValidationError{
+				field:  "Paging",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ListServiceOfferSessionRequestValidationError is the validation error
+// returned by ListServiceOfferSessionRequest.Validate if the designated
+// constraints aren't met.
+type ListServiceOfferSessionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceOfferSessionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListServiceOfferSessionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListServiceOfferSessionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListServiceOfferSessionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceOfferSessionRequestValidationError) ErrorName() string {
+	return "ListServiceOfferSessionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceOfferSessionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceOfferSessionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceOfferSessionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceOfferSessionRequestValidationError{}
+
+// Validate checks the field values on ListServiceOfferSessionResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *ListServiceOfferSessionResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListServiceOfferSessionResponseValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListServiceOfferSessionResponseValidationError is the validation error
+// returned by ListServiceOfferSessionResponse.Validate if the designated
+// constraints aren't met.
+type ListServiceOfferSessionResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceOfferSessionResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListServiceOfferSessionResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListServiceOfferSessionResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListServiceOfferSessionResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceOfferSessionResponseValidationError) ErrorName() string {
+	return "ListServiceOfferSessionResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceOfferSessionResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceOfferSessionResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceOfferSessionResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceOfferSessionResponseValidationError{}
+
+// Validate checks the field values on CreateServiceSessionEvaluationRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *CreateServiceSessionEvaluationRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateServiceSessionEvaluationRequestValidationError{
+				field:  "Payload",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateServiceSessionEvaluationRequestValidationError is the validation error
+// returned by CreateServiceSessionEvaluationRequest.Validate if the
+// designated constraints aren't met.
+type CreateServiceSessionEvaluationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateServiceSessionEvaluationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateServiceSessionEvaluationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateServiceSessionEvaluationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateServiceSessionEvaluationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateServiceSessionEvaluationRequestValidationError) ErrorName() string {
+	return "CreateServiceSessionEvaluationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateServiceSessionEvaluationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateServiceSessionEvaluationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateServiceSessionEvaluationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateServiceSessionEvaluationRequestValidationError{}
+
+// Validate checks the field values on CreateServiceSessionEvaluationResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *CreateServiceSessionEvaluationResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateServiceSessionEvaluationResponseValidationError{
+				field:  "Result",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// CreateServiceSessionEvaluationResponseValidationError is the validation
+// error returned by CreateServiceSessionEvaluationResponse.Validate if the
+// designated constraints aren't met.
+type CreateServiceSessionEvaluationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateServiceSessionEvaluationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateServiceSessionEvaluationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateServiceSessionEvaluationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateServiceSessionEvaluationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateServiceSessionEvaluationResponseValidationError) ErrorName() string {
+	return "CreateServiceSessionEvaluationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateServiceSessionEvaluationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateServiceSessionEvaluationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateServiceSessionEvaluationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateServiceSessionEvaluationResponseValidationError{}
+
+// Validate checks the field values on ReadServiceSessionEvaluationRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, an error is returned.
+func (m *ReadServiceSessionEvaluationRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// ReadServiceSessionEvaluationRequestValidationError is the validation error
+// returned by ReadServiceSessionEvaluationRequest.Validate if the designated
+// constraints aren't met.
+type ReadServiceSessionEvaluationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReadServiceSessionEvaluationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReadServiceSessionEvaluationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReadServiceSessionEvaluationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReadServiceSessionEvaluationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReadServiceSessionEvaluationRequestValidationError) ErrorName() string {
+	return "ReadServiceSessionEvaluationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReadServiceSessionEvaluationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadServiceSessionEvaluationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReadServiceSessionEvaluationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReadServiceSessionEvaluationRequestValidationError{}
+
+// Validate checks the field values on ReadServiceSessionEvaluationResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *ReadServiceSessionEvaluationResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ReadServiceSessionEvaluationResponseValidationError{
+				field:  "Result",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ReadServiceSessionEvaluationResponseValidationError is the validation error
+// returned by ReadServiceSessionEvaluationResponse.Validate if the designated
+// constraints aren't met.
+type ReadServiceSessionEvaluationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReadServiceSessionEvaluationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReadServiceSessionEvaluationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReadServiceSessionEvaluationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReadServiceSessionEvaluationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReadServiceSessionEvaluationResponseValidationError) ErrorName() string {
+	return "ReadServiceSessionEvaluationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReadServiceSessionEvaluationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReadServiceSessionEvaluationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReadServiceSessionEvaluationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReadServiceSessionEvaluationResponseValidationError{}
+
+// Validate checks the field values on UpdateServiceSessionEvaluationRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *UpdateServiceSessionEvaluationRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetPayload()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateServiceSessionEvaluationRequestValidationError{
+				field:  "Payload",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateServiceSessionEvaluationRequestValidationError is the validation error
+// returned by UpdateServiceSessionEvaluationRequest.Validate if the
+// designated constraints aren't met.
+type UpdateServiceSessionEvaluationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateServiceSessionEvaluationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateServiceSessionEvaluationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateServiceSessionEvaluationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateServiceSessionEvaluationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateServiceSessionEvaluationRequestValidationError) ErrorName() string {
+	return "UpdateServiceSessionEvaluationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateServiceSessionEvaluationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateServiceSessionEvaluationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateServiceSessionEvaluationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateServiceSessionEvaluationRequestValidationError{}
+
+// Validate checks the field values on UpdateServiceSessionEvaluationResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *UpdateServiceSessionEvaluationResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetResult()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateServiceSessionEvaluationResponseValidationError{
+				field:  "Result",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateServiceSessionEvaluationResponseValidationError is the validation
+// error returned by UpdateServiceSessionEvaluationResponse.Validate if the
+// designated constraints aren't met.
+type UpdateServiceSessionEvaluationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateServiceSessionEvaluationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateServiceSessionEvaluationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateServiceSessionEvaluationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateServiceSessionEvaluationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateServiceSessionEvaluationResponseValidationError) ErrorName() string {
+	return "UpdateServiceSessionEvaluationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateServiceSessionEvaluationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateServiceSessionEvaluationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateServiceSessionEvaluationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateServiceSessionEvaluationResponseValidationError{}
+
+// Validate checks the field values on DeleteServiceSessionEvaluationRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *DeleteServiceSessionEvaluationRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Id
+
+	return nil
+}
+
+// DeleteServiceSessionEvaluationRequestValidationError is the validation error
+// returned by DeleteServiceSessionEvaluationRequest.Validate if the
+// designated constraints aren't met.
+type DeleteServiceSessionEvaluationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteServiceSessionEvaluationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteServiceSessionEvaluationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteServiceSessionEvaluationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteServiceSessionEvaluationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteServiceSessionEvaluationRequestValidationError) ErrorName() string {
+	return "DeleteServiceSessionEvaluationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteServiceSessionEvaluationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteServiceSessionEvaluationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteServiceSessionEvaluationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteServiceSessionEvaluationRequestValidationError{}
+
+// Validate checks the field values on DeleteServiceSessionEvaluationResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *DeleteServiceSessionEvaluationResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	return nil
+}
+
+// DeleteServiceSessionEvaluationResponseValidationError is the validation
+// error returned by DeleteServiceSessionEvaluationResponse.Validate if the
+// designated constraints aren't met.
+type DeleteServiceSessionEvaluationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteServiceSessionEvaluationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteServiceSessionEvaluationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteServiceSessionEvaluationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteServiceSessionEvaluationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteServiceSessionEvaluationResponseValidationError) ErrorName() string {
+	return "DeleteServiceSessionEvaluationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteServiceSessionEvaluationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteServiceSessionEvaluationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteServiceSessionEvaluationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteServiceSessionEvaluationResponseValidationError{}
+
+// Validate checks the field values on ListServiceSessionEvaluationRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, an error is returned.
+func (m *ListServiceSessionEvaluationRequest) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceSessionEvaluationRequestValidationError{
+				field:  "Filter",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetOrderBy()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceSessionEvaluationRequestValidationError{
+				field:  "OrderBy",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetFields()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceSessionEvaluationRequestValidationError{
+				field:  "Fields",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if v, ok := interface{}(m.GetPaging()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListServiceSessionEvaluationRequestValidationError{
+				field:  "Paging",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// ListServiceSessionEvaluationRequestValidationError is the validation error
+// returned by ListServiceSessionEvaluationRequest.Validate if the designated
+// constraints aren't met.
+type ListServiceSessionEvaluationRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceSessionEvaluationRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListServiceSessionEvaluationRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListServiceSessionEvaluationRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListServiceSessionEvaluationRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceSessionEvaluationRequestValidationError) ErrorName() string {
+	return "ListServiceSessionEvaluationRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceSessionEvaluationRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceSessionEvaluationRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceSessionEvaluationRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceSessionEvaluationRequestValidationError{}
+
+// Validate checks the field values on ListServiceSessionEvaluationResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, an error is returned.
+func (m *ListServiceSessionEvaluationResponse) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetResults() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListServiceSessionEvaluationResponseValidationError{
+					field:  fmt.Sprintf("Results[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ListServiceSessionEvaluationResponseValidationError is the validation error
+// returned by ListServiceSessionEvaluationResponse.Validate if the designated
+// constraints aren't met.
+type ListServiceSessionEvaluationResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListServiceSessionEvaluationResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListServiceSessionEvaluationResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListServiceSessionEvaluationResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListServiceSessionEvaluationResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListServiceSessionEvaluationResponseValidationError) ErrorName() string {
+	return "ListServiceSessionEvaluationResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListServiceSessionEvaluationResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListServiceSessionEvaluationResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListServiceSessionEvaluationResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListServiceSessionEvaluationResponseValidationError{}
 
 // Validate checks the field values on StreamSessionInputEvent with the rules
 // defined in the proto definition for this message. If any rules are

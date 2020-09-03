@@ -142,6 +142,18 @@ It has these top-level messages:
 	DeleteServiceSessionResponse
 	ListServiceSessionRequest
 	ListServiceSessionResponse
+	ListServiceOfferSessionRequest
+	ListServiceOfferSessionResponse
+	CreateServiceSessionEvaluationRequest
+	CreateServiceSessionEvaluationResponse
+	ReadServiceSessionEvaluationRequest
+	ReadServiceSessionEvaluationResponse
+	UpdateServiceSessionEvaluationRequest
+	UpdateServiceSessionEvaluationResponse
+	DeleteServiceSessionEvaluationRequest
+	DeleteServiceSessionEvaluationResponse
+	ListServiceSessionEvaluationRequest
+	ListServiceSessionEvaluationResponse
 	StreamSessionInputEvent
 	EventRequestSession
 	EventJoinSession
