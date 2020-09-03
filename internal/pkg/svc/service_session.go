@@ -220,8 +220,14 @@ func (s *serviceSessionStreamServer) SendNotification(n notification) error {
 		}
 		message := &messaging.MulticastMessage{
 			Notification: &messaging.Notification{
-				Title: n.title,
-				Body:  n.body,
+				Title:    n.title,
+				Body:     n.body,
+				ImageURL: "https://t10.deviantart.net/QVcXOTC_lQ-zQeI_q4wrc9qpGhI=/fit-in/150x150/filters:no_upscale():origin()/pre07/c06e/th/pre/f/2014/098/a/1/png_random_by_throughtthedarknes-d7dnek9.png",
+			},
+			Android: &messaging.AndroidConfig{
+				Notification: &messaging.AndroidNotification{
+					Tag: "service_stream",
+				},
 			},
 			Tokens: pb.MapToDeviceTokens(notificationDevices),
 		}
