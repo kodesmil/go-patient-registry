@@ -114,17 +114,19 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 
 			if session.Status == pb.ServiceSession_NOT_STARTED {
 				if err := s.SendNotification(notification{
-					title:     "You received new session request!",
-					body:      "XXX asked you for an advise on...",
+					title:     "New session request!",
+					body:      fmt.Sprintf("%s asked you for an advise on %s", session.ProfileId, session.Offer.Title),
 					profileId: session.Offer.Provider.Employments[0].ProfileId,
+					sessionId: session.Id.Value,
 				}); err != nil {
 					return err
 				}
 
 				if err := s.SendNotification(notification{
-					title:     "Session request sent to XXX",
-					body:      "Waiting for getting connected...",
+					title:     fmt.Sprintf("Connecting with %s", session.Offer.Provider.Details.Name),
+					body:      "Waiting for an answer...",
 					profileId: session.ProfileId,
+					sessionId: session.Id.Value,
 				}); err != nil {
 					return err
 				}
@@ -138,7 +140,8 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 				if err := s.SendNotification(notification{
 					title:     "Connected",
 					body:      "XXX has been successfully connected",
-					profileId: session.Offer.Provider.Employments[0].ProfileId,
+					profileId: session.Offer.Owner.ProfileId,
+					sessionId: session.Id.Value,
 				}); err != nil {
 					return err
 				}
@@ -147,6 +150,7 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 					title:     "Connected",
 					body:      "XXX has been successfully connected",
 					profileId: session.ProfileId,
+					sessionId: session.Id.Value,
 				}); err != nil {
 					return err
 				}
@@ -188,9 +192,10 @@ func (s *serviceSessionStreamServer) BiDi(stream pb.ServiceSessionStream_BiDiSer
 					}
 					log.Infof("Waiting to connect service session...")
 					if err := s.SendNotification(notification{
-						title:     "Waiting for connection",
-						body:      fmt.Sprintf("%d seconds passed", time.Now().Unix()-session.CreatedAt.Seconds),
-						profileId: session.Offer.Provider.Employments[0].ProfileId,
+						title:     fmt.Sprintf("Connecting with %s", session.Offer.Provider.Details.Name),
+						body:      "Waiting for an answer...",
+						profileId: session.Offer.Owner.ProfileId,
+						sessionId: session.Id.Value,
 					}); err != nil {
 						return
 					}
@@ -220,13 +225,15 @@ func (s *serviceSessionStreamServer) SendNotification(n notification) error {
 		}
 		message := &messaging.MulticastMessage{
 			Notification: &messaging.Notification{
-				Title:    n.title,
-				Body:     n.body,
-				ImageURL: "https://t10.deviantart.net/QVcXOTC_lQ-zQeI_q4wrc9qpGhI=/fit-in/150x150/filters:no_upscale():origin()/pre07/c06e/th/pre/f/2014/098/a/1/png_random_by_throughtthedarknes-d7dnek9.png",
-			},
-			Android: &messaging.AndroidConfig{
+				Title: n.title,
+				Body:  n.body,
+			}, Android: &messaging.AndroidConfig{
+				Data: map[string]string{
+					"route": fmt.Sprintf("/sessions/%s", n.sessionId),
+				},
 				Notification: &messaging.AndroidNotification{
-					Tag: "service_stream",
+					Tag:         "service_stream",
+					ClickAction: "FLUTTER_NOTIFICATION_CLICK",
 				},
 			},
 			Tokens: pb.MapToDeviceTokens(notificationDevices),
@@ -245,6 +252,7 @@ type notification struct {
 	title     string
 	body      string
 	profileId string
+	sessionId string
 }
 
 func MapProfiles(vs []*pb.Profile, f func(*pb.Profile) string) []string {
