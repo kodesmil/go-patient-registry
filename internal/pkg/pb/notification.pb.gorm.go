@@ -962,182 +962,12 @@ type NotificationDeviceORMWithBeforeListFind interface {
 type NotificationDeviceORMWithAfterListFind interface {
 	AfterListFind(context.Context, *gorm1.DB, *[]NotificationDeviceORM) error
 }
-type NotificationSettingsDefaultServer struct {
+type NotificationsDefaultServer struct {
 	DB *gorm1.DB
 }
 
-// Create ...
-func (m *NotificationSettingsDefaultServer) Create(ctx context.Context, in *CreateNotificationSettingRequest) (*CreateNotificationSettingResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithBeforeCreate); ok {
-		var err error
-		if db, err = custom.BeforeCreate(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err := DefaultCreateNotificationSetting(ctx, in.GetPayload(), db)
-	if err != nil {
-		return nil, err
-	}
-	out := &CreateNotificationSettingResponse{Result: res}
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithAfterCreate); ok {
-		var err error
-		if err = custom.AfterCreate(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// NotificationSettingsNotificationSettingWithBeforeCreate called before DefaultCreateNotificationSetting in the default Create handler
-type NotificationSettingsNotificationSettingWithBeforeCreate interface {
-	BeforeCreate(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// NotificationSettingsNotificationSettingWithAfterCreate called before DefaultCreateNotificationSetting in the default Create handler
-type NotificationSettingsNotificationSettingWithAfterCreate interface {
-	AfterCreate(context.Context, *CreateNotificationSettingResponse, *gorm1.DB) error
-}
-
-// Read ...
-func (m *NotificationSettingsDefaultServer) Read(ctx context.Context, in *ReadNotificationSettingRequest) (*ReadNotificationSettingResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithBeforeRead); ok {
-		var err error
-		if db, err = custom.BeforeRead(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err := DefaultReadNotificationSetting(ctx, &NotificationSetting{Id: in.GetId()}, db)
-	if err != nil {
-		return nil, err
-	}
-	out := &ReadNotificationSettingResponse{Result: res}
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithAfterRead); ok {
-		var err error
-		if err = custom.AfterRead(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// NotificationSettingsNotificationSettingWithBeforeRead called before DefaultReadNotificationSetting in the default Read handler
-type NotificationSettingsNotificationSettingWithBeforeRead interface {
-	BeforeRead(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// NotificationSettingsNotificationSettingWithAfterRead called before DefaultReadNotificationSetting in the default Read handler
-type NotificationSettingsNotificationSettingWithAfterRead interface {
-	AfterRead(context.Context, *ReadNotificationSettingResponse, *gorm1.DB) error
-}
-
-// Update ...
-func (m *NotificationSettingsDefaultServer) Update(ctx context.Context, in *UpdateNotificationSettingRequest) (*UpdateNotificationSettingResponse, error) {
-	var err error
-	var res *NotificationSetting
-	db := m.DB
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithBeforeUpdate); ok {
-		var err error
-		if db, err = custom.BeforeUpdate(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err = DefaultStrictUpdateNotificationSetting(ctx, in.GetPayload(), db)
-	if err != nil {
-		return nil, err
-	}
-	out := &UpdateNotificationSettingResponse{Result: res}
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithAfterUpdate); ok {
-		var err error
-		if err = custom.AfterUpdate(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// NotificationSettingsNotificationSettingWithBeforeUpdate called before DefaultUpdateNotificationSetting in the default Update handler
-type NotificationSettingsNotificationSettingWithBeforeUpdate interface {
-	BeforeUpdate(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// NotificationSettingsNotificationSettingWithAfterUpdate called before DefaultUpdateNotificationSetting in the default Update handler
-type NotificationSettingsNotificationSettingWithAfterUpdate interface {
-	AfterUpdate(context.Context, *UpdateNotificationSettingResponse, *gorm1.DB) error
-}
-
-// Delete ...
-func (m *NotificationSettingsDefaultServer) Delete(ctx context.Context, in *DeleteNotificationSettingRequest) (*DeleteNotificationSettingResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithBeforeDelete); ok {
-		var err error
-		if db, err = custom.BeforeDelete(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	err := DefaultDeleteNotificationSetting(ctx, &NotificationSetting{Id: in.GetId()}, db)
-	if err != nil {
-		return nil, err
-	}
-	out := &DeleteNotificationSettingResponse{}
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithAfterDelete); ok {
-		var err error
-		if err = custom.AfterDelete(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// NotificationSettingsNotificationSettingWithBeforeDelete called before DefaultDeleteNotificationSetting in the default Delete handler
-type NotificationSettingsNotificationSettingWithBeforeDelete interface {
-	BeforeDelete(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// NotificationSettingsNotificationSettingWithAfterDelete called before DefaultDeleteNotificationSetting in the default Delete handler
-type NotificationSettingsNotificationSettingWithAfterDelete interface {
-	AfterDelete(context.Context, *DeleteNotificationSettingResponse, *gorm1.DB) error
-}
-
-// List ...
-func (m *NotificationSettingsDefaultServer) List(ctx context.Context, in *ListNotificationSettingRequest) (*ListNotificationSettingResponse, error) {
-	db := m.DB
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithBeforeList); ok {
-		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, err
-		}
-	}
-	res, err := DefaultListNotificationSetting(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
-	if err != nil {
-		return nil, err
-	}
-	out := &ListNotificationSettingResponse{Results: res}
-	if custom, ok := interface{}(in).(NotificationSettingsNotificationSettingWithAfterList); ok {
-		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, err
-		}
-	}
-	return out, nil
-}
-
-// NotificationSettingsNotificationSettingWithBeforeList called before DefaultListNotificationSetting in the default List handler
-type NotificationSettingsNotificationSettingWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
-}
-
-// NotificationSettingsNotificationSettingWithAfterList called before DefaultListNotificationSetting in the default List handler
-type NotificationSettingsNotificationSettingWithAfterList interface {
-	AfterList(context.Context, *ListNotificationSettingResponse, *gorm1.DB) error
-}
-type NotificationDevicesDefaultServer struct {
-	DB *gorm1.DB
-}
-
-func (m *NotificationDevicesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
-	_, span := trace1.StartSpan(ctx, fmt.Sprint("NotificationDevicesDefaultServer.", methodName))
+func (m *NotificationsDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("NotificationsDefaultServer.", methodName))
 	raw, err := json1.Marshal(in)
 	if err != nil {
 		return nil, err
@@ -1147,7 +977,7 @@ func (m *NotificationDevicesDefaultServer) spanCreate(ctx context.Context, in in
 }
 
 // spanError ...
-func (m *NotificationDevicesDefaultServer) spanError(span *trace1.Span, err error) error {
+func (m *NotificationsDefaultServer) spanError(span *trace1.Span, err error) error {
 	span.SetStatus(trace1.Status{
 		Code:    trace1.StatusCodeUnknown,
 		Message: err.Error(),
@@ -1156,7 +986,7 @@ func (m *NotificationDevicesDefaultServer) spanError(span *trace1.Span, err erro
 }
 
 // spanResult ...
-func (m *NotificationDevicesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+func (m *NotificationsDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
 	raw, err := json1.Marshal(out)
 	if err != nil {
 		return err
@@ -1165,17 +995,17 @@ func (m *NotificationDevicesDefaultServer) spanResult(span *trace1.Span, out int
 	return nil
 }
 
-// Create ...
-func (m *NotificationDevicesDefaultServer) Create(ctx context.Context, in *CreateNotificationDeviceRequest) (*CreateNotificationDeviceResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Create")
+// CreateNotificationDevice ...
+func (m *NotificationsDefaultServer) CreateNotificationDevice(ctx context.Context, in *CreateNotificationDeviceRequest) (*CreateNotificationDeviceResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateNotificationDevice")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(NotificationDevicesNotificationDeviceWithBeforeCreate); ok {
+	if custom, ok := interface{}(in).(NotificationsNotificationDeviceWithBeforeCreateNotificationDevice); ok {
 		var err error
-		if db, err = custom.BeforeCreate(ctx, db); err != nil {
+		if db, err = custom.BeforeCreateNotificationDevice(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -1184,9 +1014,9 @@ func (m *NotificationDevicesDefaultServer) Create(ctx context.Context, in *Creat
 		return nil, m.spanError(span, err)
 	}
 	out := &CreateNotificationDeviceResponse{Result: res}
-	if custom, ok := interface{}(in).(NotificationDevicesNotificationDeviceWithAfterCreate); ok {
+	if custom, ok := interface{}(in).(NotificationsNotificationDeviceWithAfterCreateNotificationDevice); ok {
 		var err error
-		if err = custom.AfterCreate(ctx, out, db); err != nil {
+		if err = custom.AfterCreateNotificationDevice(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -1197,12 +1027,224 @@ func (m *NotificationDevicesDefaultServer) Create(ctx context.Context, in *Creat
 	return out, nil
 }
 
-// NotificationDevicesNotificationDeviceWithBeforeCreate called before DefaultCreateNotificationDevice in the default Create handler
-type NotificationDevicesNotificationDeviceWithBeforeCreate interface {
-	BeforeCreate(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// NotificationsNotificationDeviceWithBeforeCreateNotificationDevice called before DefaultCreateNotificationDeviceNotificationDevice in the default CreateNotificationDevice handler
+type NotificationsNotificationDeviceWithBeforeCreateNotificationDevice interface {
+	BeforeCreateNotificationDevice(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// NotificationDevicesNotificationDeviceWithAfterCreate called before DefaultCreateNotificationDevice in the default Create handler
-type NotificationDevicesNotificationDeviceWithAfterCreate interface {
-	AfterCreate(context.Context, *CreateNotificationDeviceResponse, *gorm1.DB) error
+// NotificationsNotificationDeviceWithAfterCreateNotificationDevice called before DefaultCreateNotificationDeviceNotificationDevice in the default CreateNotificationDevice handler
+type NotificationsNotificationDeviceWithAfterCreateNotificationDevice interface {
+	AfterCreateNotificationDevice(context.Context, *CreateNotificationDeviceResponse, *gorm1.DB) error
+}
+
+// CreateNotificationSetting ...
+func (m *NotificationsDefaultServer) CreateNotificationSetting(ctx context.Context, in *CreateNotificationSettingRequest) (*CreateNotificationSettingResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateNotificationSetting")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	db := m.DB
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithBeforeCreateNotificationSetting); ok {
+		var err error
+		if db, err = custom.BeforeCreateNotificationSetting(ctx, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	res, err := DefaultCreateNotificationSetting(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, m.spanError(span, err)
+	}
+	out := &CreateNotificationSettingResponse{Result: res}
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithAfterCreateNotificationSetting); ok {
+		var err error
+		if err = custom.AfterCreateNotificationSetting(ctx, out, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}
+
+// NotificationsNotificationSettingWithBeforeCreateNotificationSetting called before DefaultCreateNotificationSettingNotificationSetting in the default CreateNotificationSetting handler
+type NotificationsNotificationSettingWithBeforeCreateNotificationSetting interface {
+	BeforeCreateNotificationSetting(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// NotificationsNotificationSettingWithAfterCreateNotificationSetting called before DefaultCreateNotificationSettingNotificationSetting in the default CreateNotificationSetting handler
+type NotificationsNotificationSettingWithAfterCreateNotificationSetting interface {
+	AfterCreateNotificationSetting(context.Context, *CreateNotificationSettingResponse, *gorm1.DB) error
+}
+
+// ReadNotificationSetting ...
+func (m *NotificationsDefaultServer) ReadNotificationSetting(ctx context.Context, in *ReadNotificationSettingRequest) (*ReadNotificationSettingResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadNotificationSetting")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	db := m.DB
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithBeforeReadNotificationSetting); ok {
+		var err error
+		if db, err = custom.BeforeReadNotificationSetting(ctx, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	res, err := DefaultReadNotificationSetting(ctx, &NotificationSetting{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, m.spanError(span, err)
+	}
+	out := &ReadNotificationSettingResponse{Result: res}
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithAfterReadNotificationSetting); ok {
+		var err error
+		if err = custom.AfterReadNotificationSetting(ctx, out, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}
+
+// NotificationsNotificationSettingWithBeforeReadNotificationSetting called before DefaultReadNotificationSettingNotificationSetting in the default ReadNotificationSetting handler
+type NotificationsNotificationSettingWithBeforeReadNotificationSetting interface {
+	BeforeReadNotificationSetting(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// NotificationsNotificationSettingWithAfterReadNotificationSetting called before DefaultReadNotificationSettingNotificationSetting in the default ReadNotificationSetting handler
+type NotificationsNotificationSettingWithAfterReadNotificationSetting interface {
+	AfterReadNotificationSetting(context.Context, *ReadNotificationSettingResponse, *gorm1.DB) error
+}
+
+// UpdateNotificationSetting ...
+func (m *NotificationsDefaultServer) UpdateNotificationSetting(ctx context.Context, in *UpdateNotificationSettingRequest) (*UpdateNotificationSettingResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateNotificationSetting")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	var err error
+	var res *NotificationSetting
+	db := m.DB
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithBeforeUpdateNotificationSetting); ok {
+		var err error
+		if db, err = custom.BeforeUpdateNotificationSetting(ctx, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	res, err = DefaultStrictUpdateNotificationSetting(ctx, in.GetPayload(), db)
+	if err != nil {
+		return nil, m.spanError(span, err)
+	}
+	out := &UpdateNotificationSettingResponse{Result: res}
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithAfterUpdateNotificationSetting); ok {
+		var err error
+		if err = custom.AfterUpdateNotificationSetting(ctx, out, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}
+
+// NotificationsNotificationSettingWithBeforeUpdateNotificationSetting called before DefaultUpdateNotificationSettingNotificationSetting in the default UpdateNotificationSetting handler
+type NotificationsNotificationSettingWithBeforeUpdateNotificationSetting interface {
+	BeforeUpdateNotificationSetting(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// NotificationsNotificationSettingWithAfterUpdateNotificationSetting called before DefaultUpdateNotificationSettingNotificationSetting in the default UpdateNotificationSetting handler
+type NotificationsNotificationSettingWithAfterUpdateNotificationSetting interface {
+	AfterUpdateNotificationSetting(context.Context, *UpdateNotificationSettingResponse, *gorm1.DB) error
+}
+
+// DeleteNotificationSetting ...
+func (m *NotificationsDefaultServer) DeleteNotificationSetting(ctx context.Context, in *DeleteNotificationSettingRequest) (*DeleteNotificationSettingResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteNotificationSetting")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	db := m.DB
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithBeforeDeleteNotificationSetting); ok {
+		var err error
+		if db, err = custom.BeforeDeleteNotificationSetting(ctx, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	err := DefaultDeleteNotificationSetting(ctx, &NotificationSetting{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, m.spanError(span, err)
+	}
+	out := &DeleteNotificationSettingResponse{}
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithAfterDeleteNotificationSetting); ok {
+		var err error
+		if err = custom.AfterDeleteNotificationSetting(ctx, out, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}
+
+// NotificationsNotificationSettingWithBeforeDeleteNotificationSetting called before DefaultDeleteNotificationSettingNotificationSetting in the default DeleteNotificationSetting handler
+type NotificationsNotificationSettingWithBeforeDeleteNotificationSetting interface {
+	BeforeDeleteNotificationSetting(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// NotificationsNotificationSettingWithAfterDeleteNotificationSetting called before DefaultDeleteNotificationSettingNotificationSetting in the default DeleteNotificationSetting handler
+type NotificationsNotificationSettingWithAfterDeleteNotificationSetting interface {
+	AfterDeleteNotificationSetting(context.Context, *DeleteNotificationSettingResponse, *gorm1.DB) error
+}
+
+// ListNotificationSetting ...
+func (m *NotificationsDefaultServer) ListNotificationSetting(ctx context.Context, in *ListNotificationSettingRequest) (*ListNotificationSettingResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListNotificationSetting")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	db := m.DB
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithBeforeListNotificationSetting); ok {
+		var err error
+		if db, err = custom.BeforeListNotificationSetting(ctx, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	res, err := DefaultListNotificationSetting(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
+	if err != nil {
+		return nil, m.spanError(span, err)
+	}
+	out := &ListNotificationSettingResponse{Results: res}
+	if custom, ok := interface{}(in).(NotificationsNotificationSettingWithAfterListNotificationSetting); ok {
+		var err error
+		if err = custom.AfterListNotificationSetting(ctx, out, db); err != nil {
+			return nil, m.spanError(span, err)
+		}
+	}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}
+
+// NotificationsNotificationSettingWithBeforeListNotificationSetting called before DefaultListNotificationSettingNotificationSetting in the default ListNotificationSetting handler
+type NotificationsNotificationSettingWithBeforeListNotificationSetting interface {
+	BeforeListNotificationSetting(context.Context, *gorm1.DB) (*gorm1.DB, error)
+}
+
+// NotificationsNotificationSettingWithAfterListNotificationSetting called before DefaultListNotificationSettingNotificationSetting in the default ListNotificationSetting handler
+type NotificationsNotificationSettingWithAfterListNotificationSetting interface {
+	AfterListNotificationSetting(context.Context, *ListNotificationSettingResponse, *gorm1.DB) error
 }

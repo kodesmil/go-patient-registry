@@ -1970,12 +1970,12 @@ type FeedArticleORMWithBeforeListFind interface {
 type FeedArticleORMWithAfterListFind interface {
 	AfterListFind(context.Context, *gorm1.DB, *[]FeedArticleORM, *query1.Filtering, *query1.Sorting, *query1.Pagination, *query1.FieldSelection) error
 }
-type FeedArticlesDefaultServer struct {
+type FeedDefaultServer struct {
 	DB *gorm1.DB
 }
 
-func (m *FeedArticlesDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
-	_, span := trace1.StartSpan(ctx, fmt.Sprint("FeedArticlesDefaultServer.", methodName))
+func (m *FeedDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
+	_, span := trace1.StartSpan(ctx, fmt.Sprint("FeedDefaultServer.", methodName))
 	raw, err := json1.Marshal(in)
 	if err != nil {
 		return nil, err
@@ -1985,7 +1985,7 @@ func (m *FeedArticlesDefaultServer) spanCreate(ctx context.Context, in interface
 }
 
 // spanError ...
-func (m *FeedArticlesDefaultServer) spanError(span *trace1.Span, err error) error {
+func (m *FeedDefaultServer) spanError(span *trace1.Span, err error) error {
 	span.SetStatus(trace1.Status{
 		Code:    trace1.StatusCodeUnknown,
 		Message: err.Error(),
@@ -1994,7 +1994,7 @@ func (m *FeedArticlesDefaultServer) spanError(span *trace1.Span, err error) erro
 }
 
 // spanResult ...
-func (m *FeedArticlesDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
+func (m *FeedDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
 	raw, err := json1.Marshal(out)
 	if err != nil {
 		return err
@@ -2003,17 +2003,17 @@ func (m *FeedArticlesDefaultServer) spanResult(span *trace1.Span, out interface{
 	return nil
 }
 
-// List ...
-func (m *FeedArticlesDefaultServer) List(ctx context.Context, in *ListFeedArticleRequest) (*ListFeedArticleResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "List")
+// ListFeedArticle ...
+func (m *FeedDefaultServer) ListFeedArticle(ctx context.Context, in *ListFeedArticleRequest) (*ListFeedArticleResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListFeedArticle")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(FeedArticlesFeedArticleWithBeforeList); ok {
+	if custom, ok := interface{}(in).(FeedFeedArticleWithBeforeListFeedArticle); ok {
 		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
+		if db, err = custom.BeforeListFeedArticle(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -2022,9 +2022,9 @@ func (m *FeedArticlesDefaultServer) List(ctx context.Context, in *ListFeedArticl
 		return nil, m.spanError(span, err)
 	}
 	out := &ListFeedArticleResponse{Results: res}
-	if custom, ok := interface{}(in).(FeedArticlesFeedArticleWithAfterList); ok {
+	if custom, ok := interface{}(in).(FeedFeedArticleWithAfterListFeedArticle); ok {
 		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
+		if err = custom.AfterListFeedArticle(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -2035,59 +2035,27 @@ func (m *FeedArticlesDefaultServer) List(ctx context.Context, in *ListFeedArticl
 	return out, nil
 }
 
-// FeedArticlesFeedArticleWithBeforeList called before DefaultListFeedArticle in the default List handler
-type FeedArticlesFeedArticleWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// FeedFeedArticleWithBeforeListFeedArticle called before DefaultListFeedArticleFeedArticle in the default ListFeedArticle handler
+type FeedFeedArticleWithBeforeListFeedArticle interface {
+	BeforeListFeedArticle(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// FeedArticlesFeedArticleWithAfterList called before DefaultListFeedArticle in the default List handler
-type FeedArticlesFeedArticleWithAfterList interface {
-	AfterList(context.Context, *ListFeedArticleResponse, *gorm1.DB) error
-}
-type FeedArticleDetailsDefaultServer struct {
-	DB *gorm1.DB
+// FeedFeedArticleWithAfterListFeedArticle called before DefaultListFeedArticleFeedArticle in the default ListFeedArticle handler
+type FeedFeedArticleWithAfterListFeedArticle interface {
+	AfterListFeedArticle(context.Context, *ListFeedArticleResponse, *gorm1.DB) error
 }
 
-func (m *FeedArticleDetailsDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
-	_, span := trace1.StartSpan(ctx, fmt.Sprint("FeedArticleDetailsDefaultServer.", methodName))
-	raw, err := json1.Marshal(in)
-	if err != nil {
-		return nil, err
-	}
-	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
-	return span, nil
-}
-
-// spanError ...
-func (m *FeedArticleDetailsDefaultServer) spanError(span *trace1.Span, err error) error {
-	span.SetStatus(trace1.Status{
-		Code:    trace1.StatusCodeUnknown,
-		Message: err.Error(),
-	})
-	return err
-}
-
-// spanResult ...
-func (m *FeedArticleDetailsDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
-	raw, err := json1.Marshal(out)
-	if err != nil {
-		return err
-	}
-	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
-	return nil
-}
-
-// Read ...
-func (m *FeedArticleDetailsDefaultServer) Read(ctx context.Context, in *ReadFeedArticleDetailsRequest) (*ReadFeedArticleDetailsResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Read")
+// ReadFeedArticleDetails ...
+func (m *FeedDefaultServer) ReadFeedArticleDetails(ctx context.Context, in *ReadFeedArticleDetailsRequest) (*ReadFeedArticleDetailsResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadFeedArticleDetails")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(FeedArticleDetailsFeedArticleDetailWithBeforeRead); ok {
+	if custom, ok := interface{}(in).(FeedFeedArticleDetailWithBeforeReadFeedArticleDetails); ok {
 		var err error
-		if db, err = custom.BeforeRead(ctx, db); err != nil {
+		if db, err = custom.BeforeReadFeedArticleDetails(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -2096,9 +2064,9 @@ func (m *FeedArticleDetailsDefaultServer) Read(ctx context.Context, in *ReadFeed
 		return nil, m.spanError(span, err)
 	}
 	out := &ReadFeedArticleDetailsResponse{Result: res}
-	if custom, ok := interface{}(in).(FeedArticleDetailsFeedArticleDetailWithAfterRead); ok {
+	if custom, ok := interface{}(in).(FeedFeedArticleDetailWithAfterReadFeedArticleDetails); ok {
 		var err error
-		if err = custom.AfterRead(ctx, out, db); err != nil {
+		if err = custom.AfterReadFeedArticleDetails(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -2109,12 +2077,12 @@ func (m *FeedArticleDetailsDefaultServer) Read(ctx context.Context, in *ReadFeed
 	return out, nil
 }
 
-// FeedArticleDetailsFeedArticleDetailWithBeforeRead called before DefaultReadFeedArticleDetail in the default Read handler
-type FeedArticleDetailsFeedArticleDetailWithBeforeRead interface {
-	BeforeRead(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// FeedFeedArticleDetailWithBeforeReadFeedArticleDetails called before DefaultReadFeedArticleDetailsFeedArticleDetail in the default ReadFeedArticleDetails handler
+type FeedFeedArticleDetailWithBeforeReadFeedArticleDetails interface {
+	BeforeReadFeedArticleDetails(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// FeedArticleDetailsFeedArticleDetailWithAfterRead called before DefaultReadFeedArticleDetail in the default Read handler
-type FeedArticleDetailsFeedArticleDetailWithAfterRead interface {
-	AfterRead(context.Context, *ReadFeedArticleDetailsResponse, *gorm1.DB) error
+// FeedFeedArticleDetailWithAfterReadFeedArticleDetails called before DefaultReadFeedArticleDetailsFeedArticleDetail in the default ReadFeedArticleDetails handler
+type FeedFeedArticleDetailWithAfterReadFeedArticleDetails interface {
+	AfterReadFeedArticleDetails(context.Context, *ReadFeedArticleDetailsResponse, *gorm1.DB) error
 }

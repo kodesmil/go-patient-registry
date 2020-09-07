@@ -7770,3 +7770,18 @@ type ServicesServiceProviderWithBeforeDeleteServiceProvider interface {
 type ServicesServiceProviderWithAfterDeleteServiceProvider interface {
 	AfterDeleteServiceProvider(context.Context, *DeleteServiceProviderResponse, *gorm1.DB) error
 }
+
+// BiDi ...
+func (m *ServicesDefaultServer) BiDi(ctx context.Context, in *StreamSessionInputEvent) (*StreamSessionOutputEvent, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "BiDi")
+	if errSpanCreate != nil {
+		return nil, errSpanCreate
+	}
+	defer span.End()
+	out := &StreamSessionOutputEvent{}
+	errSpanResult := m.spanResult(span, out)
+	if errSpanResult != nil {
+		return nil, m.spanError(span, errSpanResult)
+	}
+	return out, nil
+}

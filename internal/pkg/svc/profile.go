@@ -11,9 +11,9 @@ func NewProfilesServer(database *gorm.DB) (pb.ProfilesServer, error) {
 	return &profilesServer{&pb.ProfilesDefaultServer{DB: database}}, nil
 }
 
-func (s *profilesServer) Create(ctx context.Context, in *pb.CreateProfileRequest) (*pb.CreateProfileResponse, error) {
+func (s *profilesServer) CreateProfile(ctx context.Context, in *pb.CreateProfileRequest) (*pb.CreateProfileResponse, error) {
 	in.Payload.Id = fmt.Sprintf("%v", ctx.Value("AccountID"))
-	return s.ProfilesDefaultServer.Create(ctx, in)
+	return s.ProfilesDefaultServer.CreateProfile(ctx, in)
 }
 
 type profilesServer struct {

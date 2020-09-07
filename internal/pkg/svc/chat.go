@@ -12,20 +12,20 @@ import (
 	"time"
 )
 
-func NewChatServer(database *gorm.DB) *chatServer {
+func NewChatServer(database *gorm.DB) (*chatServer, error) {
 	return &chatServer{
-		database:    database,
-		connections: make(map[string]*Connection),
-	}
+		ChatDefaultServer: &pb.ChatDefaultServer{DB: database},
+		connections:       make(map[string]*Connection),
+	}, nil
 }
 
 type chatServer struct {
-	database    *gorm.DB
+	*pb.ChatDefaultServer
 	connections map[string]*Connection
 }
 
 type Connection struct {
-	stream pb.Chat_StreamServer
+	stream pb.Chat_BiDiServer
 	active bool
 	error  chan error
 }
@@ -53,7 +53,7 @@ func (s *chatServer) BroadcastMessage(ids []string, msg *pb.StreamChatEvent) err
 	return nil
 }
 
-func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
+func (s *chatServer) BiDi(stream pb.Chat_BiDiServer) error {
 	accountID := fmt.Sprintf(
 		"%v",
 		stream.Context().Value("AccountID"),
@@ -77,7 +77,7 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 			return err
 		}
 		if in.GetLoadRooms() != nil {
-			db := s.database.Joins("left join chat_room_participants on chat_room_participants.chat_room_id = chat_rooms.id")
+			db := s.DB.Joins("left join chat_room_participants on chat_room_participants.chat_room_id = chat_rooms.id")
 			out, err := pb.DefaultListChatRoom(stream.Context(), db, &query.Filtering{
 				Root: &query.Filtering_StringCondition{
 					StringCondition: &query.StringCondition{
@@ -119,8 +119,8 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 					},
 				},
 			}
-			db := s.database.
-				Joins("left join chat_room_participants on chat_room_participants.id = chat_messages.author_id").
+			db := s.DB.
+				Joins("left join chat_room_participants on chat_room_participants.id = chat_.author_id").
 				Joins("left join chat_rooms on chat_rooms.id = chat_room_participants.chat_room_id")
 			out, err := pb.DefaultListChatMessage(
 				stream.Context(), db,
@@ -150,21 +150,21 @@ func (s *chatServer) Stream(stream pb.Chat_StreamServer) error {
 		if in.GetSendMessage() != nil {
 			message := in.GetSendMessage().Message
 			var created, err = pb.DefaultCreateChatMessage(
-				stream.Context(), message, s.database,
+				stream.Context(), message, s.DB,
 			)
 			if err != nil {
 				return err
 			}
 			out, err := pb.DefaultReadChatMessage(
 				stream.Context(), &pb.ChatMessage{Id: created.Id},
-				s.database,
+				s.DB,
 			)
 			if err != nil {
 				return err
 			}
 
 			var profiles []profileId
-			err = s.database.
+			err = s.DB.
 				Table("chat_room_participants").
 				Select("profile_id").
 				Where("chat_room_id = ?", out.GetAuthor().ChatRoom.Id.Value).

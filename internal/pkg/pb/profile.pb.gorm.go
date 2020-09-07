@@ -579,17 +579,17 @@ func (m *ProfilesDefaultServer) spanResult(span *trace1.Span, out interface{}) e
 	return nil
 }
 
-// Create ...
-func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileRequest) (*CreateProfileResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Create")
+// CreateProfile ...
+func (m *ProfilesDefaultServer) CreateProfile(ctx context.Context, in *CreateProfileRequest) (*CreateProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "CreateProfile")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeCreate); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeCreateProfile); ok {
 		var err error
-		if db, err = custom.BeforeCreate(ctx, db); err != nil {
+		if db, err = custom.BeforeCreateProfile(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -598,9 +598,9 @@ func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileReq
 		return nil, m.spanError(span, err)
 	}
 	out := &CreateProfileResponse{Result: res}
-	if custom, ok := interface{}(in).(ProfilesProfileWithAfterCreate); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithAfterCreateProfile); ok {
 		var err error
-		if err = custom.AfterCreate(ctx, out, db); err != nil {
+		if err = custom.AfterCreateProfile(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -611,27 +611,27 @@ func (m *ProfilesDefaultServer) Create(ctx context.Context, in *CreateProfileReq
 	return out, nil
 }
 
-// ProfilesProfileWithBeforeCreate called before DefaultCreateProfile in the default Create handler
-type ProfilesProfileWithBeforeCreate interface {
-	BeforeCreate(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ProfilesProfileWithBeforeCreateProfile called before DefaultCreateProfileProfile in the default CreateProfile handler
+type ProfilesProfileWithBeforeCreateProfile interface {
+	BeforeCreateProfile(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ProfilesProfileWithAfterCreate called before DefaultCreateProfile in the default Create handler
-type ProfilesProfileWithAfterCreate interface {
-	AfterCreate(context.Context, *CreateProfileResponse, *gorm1.DB) error
+// ProfilesProfileWithAfterCreateProfile called before DefaultCreateProfileProfile in the default CreateProfile handler
+type ProfilesProfileWithAfterCreateProfile interface {
+	AfterCreateProfile(context.Context, *CreateProfileResponse, *gorm1.DB) error
 }
 
-// Read ...
-func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest) (*ReadProfileResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Read")
+// ReadProfile ...
+func (m *ProfilesDefaultServer) ReadProfile(ctx context.Context, in *ReadProfileRequest) (*ReadProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ReadProfile")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeRead); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeReadProfile); ok {
 		var err error
-		if db, err = custom.BeforeRead(ctx, db); err != nil {
+		if db, err = custom.BeforeReadProfile(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -640,9 +640,9 @@ func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest
 		return nil, m.spanError(span, err)
 	}
 	out := &ReadProfileResponse{Result: res}
-	if custom, ok := interface{}(in).(ProfilesProfileWithAfterRead); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithAfterReadProfile); ok {
 		var err error
-		if err = custom.AfterRead(ctx, out, db); err != nil {
+		if err = custom.AfterReadProfile(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -653,19 +653,19 @@ func (m *ProfilesDefaultServer) Read(ctx context.Context, in *ReadProfileRequest
 	return out, nil
 }
 
-// ProfilesProfileWithBeforeRead called before DefaultReadProfile in the default Read handler
-type ProfilesProfileWithBeforeRead interface {
-	BeforeRead(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ProfilesProfileWithBeforeReadProfile called before DefaultReadProfileProfile in the default ReadProfile handler
+type ProfilesProfileWithBeforeReadProfile interface {
+	BeforeReadProfile(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ProfilesProfileWithAfterRead called before DefaultReadProfile in the default Read handler
-type ProfilesProfileWithAfterRead interface {
-	AfterRead(context.Context, *ReadProfileResponse, *gorm1.DB) error
+// ProfilesProfileWithAfterReadProfile called before DefaultReadProfileProfile in the default ReadProfile handler
+type ProfilesProfileWithAfterReadProfile interface {
+	AfterReadProfile(context.Context, *ReadProfileResponse, *gorm1.DB) error
 }
 
-// Update ...
-func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileRequest) (*UpdateProfileResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Update")
+// UpdateProfile ...
+func (m *ProfilesDefaultServer) UpdateProfile(ctx context.Context, in *UpdateProfileRequest) (*UpdateProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "UpdateProfile")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
@@ -673,9 +673,9 @@ func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileReq
 	var err error
 	var res *Profile
 	db := m.DB
-	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeUpdate); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeUpdateProfile); ok {
 		var err error
-		if db, err = custom.BeforeUpdate(ctx, db); err != nil {
+		if db, err = custom.BeforeUpdateProfile(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -684,9 +684,9 @@ func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileReq
 		return nil, m.spanError(span, err)
 	}
 	out := &UpdateProfileResponse{Result: res}
-	if custom, ok := interface{}(in).(ProfilesProfileWithAfterUpdate); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithAfterUpdateProfile); ok {
 		var err error
-		if err = custom.AfterUpdate(ctx, out, db); err != nil {
+		if err = custom.AfterUpdateProfile(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -697,27 +697,27 @@ func (m *ProfilesDefaultServer) Update(ctx context.Context, in *UpdateProfileReq
 	return out, nil
 }
 
-// ProfilesProfileWithBeforeUpdate called before DefaultUpdateProfile in the default Update handler
-type ProfilesProfileWithBeforeUpdate interface {
-	BeforeUpdate(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ProfilesProfileWithBeforeUpdateProfile called before DefaultUpdateProfileProfile in the default UpdateProfile handler
+type ProfilesProfileWithBeforeUpdateProfile interface {
+	BeforeUpdateProfile(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ProfilesProfileWithAfterUpdate called before DefaultUpdateProfile in the default Update handler
-type ProfilesProfileWithAfterUpdate interface {
-	AfterUpdate(context.Context, *UpdateProfileResponse, *gorm1.DB) error
+// ProfilesProfileWithAfterUpdateProfile called before DefaultUpdateProfileProfile in the default UpdateProfile handler
+type ProfilesProfileWithAfterUpdateProfile interface {
+	AfterUpdateProfile(context.Context, *UpdateProfileResponse, *gorm1.DB) error
 }
 
-// Delete ...
-func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileRequest) (*DeleteProfileResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "Delete")
+// DeleteProfile ...
+func (m *ProfilesDefaultServer) DeleteProfile(ctx context.Context, in *DeleteProfileRequest) (*DeleteProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "DeleteProfile")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeDelete); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeDeleteProfile); ok {
 		var err error
-		if db, err = custom.BeforeDelete(ctx, db); err != nil {
+		if db, err = custom.BeforeDeleteProfile(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -726,9 +726,9 @@ func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileReq
 		return nil, m.spanError(span, err)
 	}
 	out := &DeleteProfileResponse{}
-	if custom, ok := interface{}(in).(ProfilesProfileWithAfterDelete); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithAfterDeleteProfile); ok {
 		var err error
-		if err = custom.AfterDelete(ctx, out, db); err != nil {
+		if err = custom.AfterDeleteProfile(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -739,27 +739,27 @@ func (m *ProfilesDefaultServer) Delete(ctx context.Context, in *DeleteProfileReq
 	return out, nil
 }
 
-// ProfilesProfileWithBeforeDelete called before DefaultDeleteProfile in the default Delete handler
-type ProfilesProfileWithBeforeDelete interface {
-	BeforeDelete(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ProfilesProfileWithBeforeDeleteProfile called before DefaultDeleteProfileProfile in the default DeleteProfile handler
+type ProfilesProfileWithBeforeDeleteProfile interface {
+	BeforeDeleteProfile(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ProfilesProfileWithAfterDelete called before DefaultDeleteProfile in the default Delete handler
-type ProfilesProfileWithAfterDelete interface {
-	AfterDelete(context.Context, *DeleteProfileResponse, *gorm1.DB) error
+// ProfilesProfileWithAfterDeleteProfile called before DefaultDeleteProfileProfile in the default DeleteProfile handler
+type ProfilesProfileWithAfterDeleteProfile interface {
+	AfterDeleteProfile(context.Context, *DeleteProfileResponse, *gorm1.DB) error
 }
 
-// List ...
-func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest) (*ListProfileResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "List")
+// ListProfile ...
+func (m *ProfilesDefaultServer) ListProfile(ctx context.Context, in *ListProfileRequest) (*ListProfileResponse, error) {
+	span, errSpanCreate := m.spanCreate(ctx, in, "ListProfile")
 	if errSpanCreate != nil {
 		return nil, errSpanCreate
 	}
 	defer span.End()
 	db := m.DB
-	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeList); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithBeforeListProfile); ok {
 		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
+		if db, err = custom.BeforeListProfile(ctx, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -768,9 +768,9 @@ func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest
 		return nil, m.spanError(span, err)
 	}
 	out := &ListProfileResponse{Results: res}
-	if custom, ok := interface{}(in).(ProfilesProfileWithAfterList); ok {
+	if custom, ok := interface{}(in).(ProfilesProfileWithAfterListProfile); ok {
 		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
+		if err = custom.AfterListProfile(ctx, out, db); err != nil {
 			return nil, m.spanError(span, err)
 		}
 	}
@@ -781,12 +781,12 @@ func (m *ProfilesDefaultServer) List(ctx context.Context, in *ListProfileRequest
 	return out, nil
 }
 
-// ProfilesProfileWithBeforeList called before DefaultListProfile in the default List handler
-type ProfilesProfileWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ProfilesProfileWithBeforeListProfile called before DefaultListProfileProfile in the default ListProfile handler
+type ProfilesProfileWithBeforeListProfile interface {
+	BeforeListProfile(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ProfilesProfileWithAfterList called before DefaultListProfile in the default List handler
-type ProfilesProfileWithAfterList interface {
-	AfterList(context.Context, *ListProfileResponse, *gorm1.DB) error
+// ProfilesProfileWithAfterListProfile called before DefaultListProfileProfile in the default ListProfile handler
+type ProfilesProfileWithAfterListProfile interface {
+	AfterListProfile(context.Context, *ListProfileResponse, *gorm1.DB) error
 }

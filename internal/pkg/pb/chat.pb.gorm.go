@@ -16,10 +16,8 @@ import field_mask1 "google.golang.org/genproto/protobuf/field_mask"
 import go_uuid1 "github.com/satori/go.uuid"
 import gorm1 "github.com/jinzhu/gorm"
 import gorm2 "github.com/infobloxopen/atlas-app-toolkit/gorm"
-import json1 "encoding/json"
 import ptypes1 "github.com/golang/protobuf/ptypes"
 import query1 "github.com/infobloxopen/atlas-app-toolkit/query"
-import trace1 "go.opencensus.io/trace"
 import types1 "github.com/infobloxopen/protoc-gen-gorm/types"
 
 import math "math"
@@ -1569,16 +1567,16 @@ type ChatRoomParticipantORMWithBeforeListFind interface {
 type ChatRoomParticipantORMWithAfterListFind interface {
 	AfterListFind(context.Context, *gorm1.DB, *[]ChatRoomParticipantORM) error
 }
-type ChatMessagesDefaultServer struct {
+type ChatDefaultServer struct {
 	DB *gorm1.DB
 }
 
-// List ...
-func (m *ChatMessagesDefaultServer) List(ctx context.Context, in *ListChatMessageRequest) (*ListChatMessageResponse, error) {
+// ListChatMessage ...
+func (m *ChatDefaultServer) ListChatMessage(ctx context.Context, in *ListChatMessageRequest) (*ListChatMessageResponse, error) {
 	db := m.DB
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithBeforeList); ok {
+	if custom, ok := interface{}(in).(ChatChatMessageWithBeforeListChatMessage); ok {
 		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
+		if db, err = custom.BeforeListChatMessage(ctx, db); err != nil {
 			return nil, err
 		}
 	}
@@ -1587,95 +1585,60 @@ func (m *ChatMessagesDefaultServer) List(ctx context.Context, in *ListChatMessag
 		return nil, err
 	}
 	out := &ListChatMessageResponse{Results: res}
-	if custom, ok := interface{}(in).(ChatMessagesChatMessageWithAfterList); ok {
+	if custom, ok := interface{}(in).(ChatChatMessageWithAfterListChatMessage); ok {
 		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
+		if err = custom.AfterListChatMessage(ctx, out, db); err != nil {
 			return nil, err
 		}
 	}
 	return out, nil
 }
 
-// ChatMessagesChatMessageWithBeforeList called before DefaultListChatMessage in the default List handler
-type ChatMessagesChatMessageWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ChatChatMessageWithBeforeListChatMessage called before DefaultListChatMessageChatMessage in the default ListChatMessage handler
+type ChatChatMessageWithBeforeListChatMessage interface {
+	BeforeListChatMessage(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ChatMessagesChatMessageWithAfterList called before DefaultListChatMessage in the default List handler
-type ChatMessagesChatMessageWithAfterList interface {
-	AfterList(context.Context, *ListChatMessageResponse, *gorm1.DB) error
-}
-type ChatRoomsDefaultServer struct {
-	DB *gorm1.DB
+// ChatChatMessageWithAfterListChatMessage called before DefaultListChatMessageChatMessage in the default ListChatMessage handler
+type ChatChatMessageWithAfterListChatMessage interface {
+	AfterListChatMessage(context.Context, *ListChatMessageResponse, *gorm1.DB) error
 }
 
-func (m *ChatRoomsDefaultServer) spanCreate(ctx context.Context, in interface{}, methodName string) (*trace1.Span, error) {
-	_, span := trace1.StartSpan(ctx, fmt.Sprint("ChatRoomsDefaultServer.", methodName))
-	raw, err := json1.Marshal(in)
-	if err != nil {
-		return nil, err
-	}
-	span.Annotate([]trace1.Attribute{trace1.StringAttribute("in", string(raw))}, "in parameter")
-	return span, nil
-}
-
-// spanError ...
-func (m *ChatRoomsDefaultServer) spanError(span *trace1.Span, err error) error {
-	span.SetStatus(trace1.Status{
-		Code:    trace1.StatusCodeUnknown,
-		Message: err.Error(),
-	})
-	return err
-}
-
-// spanResult ...
-func (m *ChatRoomsDefaultServer) spanResult(span *trace1.Span, out interface{}) error {
-	raw, err := json1.Marshal(out)
-	if err != nil {
-		return err
-	}
-	span.Annotate([]trace1.Attribute{trace1.StringAttribute("out", string(raw))}, "out parameter")
-	return nil
-}
-
-// List ...
-func (m *ChatRoomsDefaultServer) List(ctx context.Context, in *ListChatRoomRequest) (*ListChatRoomResponse, error) {
-	span, errSpanCreate := m.spanCreate(ctx, in, "List")
-	if errSpanCreate != nil {
-		return nil, errSpanCreate
-	}
-	defer span.End()
+// ListChatRoom ...
+func (m *ChatDefaultServer) ListChatRoom(ctx context.Context, in *ListChatRoomRequest) (*ListChatRoomResponse, error) {
 	db := m.DB
-	if custom, ok := interface{}(in).(ChatRoomsChatRoomWithBeforeList); ok {
+	if custom, ok := interface{}(in).(ChatChatRoomWithBeforeListChatRoom); ok {
 		var err error
-		if db, err = custom.BeforeList(ctx, db); err != nil {
-			return nil, m.spanError(span, err)
+		if db, err = custom.BeforeListChatRoom(ctx, db); err != nil {
+			return nil, err
 		}
 	}
 	res, err := DefaultListChatRoom(ctx, db, in.Filter, in.OrderBy, in.Paging, in.Fields)
 	if err != nil {
-		return nil, m.spanError(span, err)
+		return nil, err
 	}
 	out := &ListChatRoomResponse{Results: res}
-	if custom, ok := interface{}(in).(ChatRoomsChatRoomWithAfterList); ok {
+	if custom, ok := interface{}(in).(ChatChatRoomWithAfterListChatRoom); ok {
 		var err error
-		if err = custom.AfterList(ctx, out, db); err != nil {
-			return nil, m.spanError(span, err)
+		if err = custom.AfterListChatRoom(ctx, out, db); err != nil {
+			return nil, err
 		}
-	}
-	errSpanResult := m.spanResult(span, out)
-	if errSpanResult != nil {
-		return nil, m.spanError(span, errSpanResult)
 	}
 	return out, nil
 }
 
-// ChatRoomsChatRoomWithBeforeList called before DefaultListChatRoom in the default List handler
-type ChatRoomsChatRoomWithBeforeList interface {
-	BeforeList(context.Context, *gorm1.DB) (*gorm1.DB, error)
+// ChatChatRoomWithBeforeListChatRoom called before DefaultListChatRoomChatRoom in the default ListChatRoom handler
+type ChatChatRoomWithBeforeListChatRoom interface {
+	BeforeListChatRoom(context.Context, *gorm1.DB) (*gorm1.DB, error)
 }
 
-// ChatRoomsChatRoomWithAfterList called before DefaultListChatRoom in the default List handler
-type ChatRoomsChatRoomWithAfterList interface {
-	AfterList(context.Context, *ListChatRoomResponse, *gorm1.DB) error
+// ChatChatRoomWithAfterListChatRoom called before DefaultListChatRoomChatRoom in the default ListChatRoom handler
+type ChatChatRoomWithAfterListChatRoom interface {
+	AfterListChatRoom(context.Context, *ListChatRoomResponse, *gorm1.DB) error
+}
+
+// BiDi ...
+func (m *ChatDefaultServer) BiDi(ctx context.Context, in *StreamChatEvent) (*StreamChatEvent, error) {
+	out := &StreamChatEvent{}
+	return out, nil
 }

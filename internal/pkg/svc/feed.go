@@ -5,18 +5,10 @@ import (
 	"github.com/kodesmil/ks-backend/internal/pkg/pb"
 )
 
-func NewFeedArticlesServer(database *gorm.DB) (pb.FeedArticlesServer, error) {
-	return &feedArticlesServer{&pb.FeedArticlesDefaultServer{DB: database}}, nil
+func NewFeedServer(database *gorm.DB) (pb.FeedServer, error) {
+	return &feedServer{&pb.FeedDefaultServer{DB: database}}, nil
 }
 
-type feedArticlesServer struct {
-	*pb.FeedArticlesDefaultServer
-}
-
-func NewFeedArticleDetailsServer(database *gorm.DB) (pb.FeedArticleDetailsServer, error) {
-	return &feedArticleDetailsServer{&pb.FeedArticleDetailsDefaultServer{DB: database}}, nil
-}
-
-type feedArticleDetailsServer struct {
-	*pb.FeedArticleDetailsDefaultServer
+type feedServer struct {
+	*pb.FeedDefaultServer
 }

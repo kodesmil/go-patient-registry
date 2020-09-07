@@ -122,29 +122,17 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterHealthServer(grpcServer, ppe)
 
-	fa, err := svc.NewFeedArticlesServer(db)
+	fa, err := svc.NewFeedServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterFeedArticlesServer(grpcServer, fa)
+	pb.RegisterFeedServer(grpcServer, fa)
 
-	fad, err := svc.NewFeedArticleDetailsServer(db)
+	nd, err := svc.NewNotificationsServer(db)
 	if err != nil {
 		return nil, err
 	}
-	pb.RegisterFeedArticleDetailsServer(grpcServer, fad)
-
-	nd, err := svc.NewNotificationDevicesServer(db)
-	if err != nil {
-		return nil, err
-	}
-	pb.RegisterNotificationDevicesServer(grpcServer, nd)
-
-	ns, err := svc.NewNotificationSettingsServer(db)
-	if err != nil {
-		return nil, err
-	}
-	pb.RegisterNotificationSettingsServer(grpcServer, ns)
+	pb.RegisterNotificationsServer(grpcServer, nd)
 
 	ss, err := svc.NewServicesServer(db)
 	if err != nil {
@@ -152,10 +140,10 @@ func NewGRPCServer(logger *logrus.Logger, dbConnectionString string) (*grpc.Serv
 	}
 	pb.RegisterServicesServer(grpcServer, ss)
 
-	sss := svc.NewServiceSessionStreamServer(db)
-	pb.RegisterServiceSessionStreamServer(grpcServer, sss)
-
-	cm := svc.NewChatServer(db)
+	cm, err := svc.NewChatServer(db)
+	if err != nil {
+		return nil, err
+	}
 	pb.RegisterChatServer(grpcServer, cm)
 
 	go func() {
